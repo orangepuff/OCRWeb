@@ -1,0 +1,49 @@
+Change Logs
+===========
+
+Purpose
+- Use this file to record version changes for the project and key dependencies.
+- Add one entry whenever a version is added, upgraded, downgraded, or removed.
+
+Recommended Format
+- Date: YYYY-MM-DD
+- Area: Backend | Frontend | Testing | CI/CD | Infrastructure | Document
+- Item: package, framework, SDK, runtime, image, or tool name
+- From: previous version
+- To: new version
+- Reason: short explanation
+- Updated By: person or AI/automation name
+
+Template
+- Date:
+  Area:
+  Item:
+  From:
+  To:
+  Reason:
+  Updated By:
+
+Initial Recorded Versions
+- Date: 2026-07-11
+  Area: Backend
+  Item: .NET
+  From: N/A
+  To: 10
+  Reason: Initial architecture decision recorded in development-plan.docx
+  Updated By: Codex
+
+- Date: 2026-07-11
+  Area: Frontend
+  Item: Angular
+  From: N/A
+  To: 22
+  Reason: Initial frontend framework version recorded in development-plan.docx
+  Updated By: Codex
+
+- Date: 2026-07-11
+  Area: Frontend
+  Item: Angular Material
+  From: N/A
+  To: aligned with Angular 22
+  Reason: Initial UI framework decision recorded in development-plan.docx
+  Updated By: Codex
