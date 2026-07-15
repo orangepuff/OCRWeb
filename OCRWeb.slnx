@@ -8,6 +8,7 @@
     <Project Path="src/Backend/OCRWeb.Bff/OCRWeb.Bff.csproj" />
     <Project Path="src/Backend/OCRWeb.Contract/OCRWeb.Contract.csproj" />
     <Project Path="src/Backend/OCRWeb.DocumentProcessing/OCRWeb.DocumentProcessing.csproj" />
+    <Project Path="src/Backend/OCRWeb.Identity/OCRWeb.Identity.csproj" />
     <Project Path="src/Backend/OCRWeb.ProjectManagement/OCRWeb.ProjectManagement.csproj" />
     <Project Path="src/Backend/OCRWeb.Shared/OCRWeb.Shared.csproj" />
   </Folder>

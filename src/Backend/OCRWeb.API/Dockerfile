@@ -5,6 +5,7 @@ COPY ["OCRWeb.slnx", "./"]
 COPY ["src/Backend/OCRWeb.API/OCRWeb.API.csproj", "src/Backend/OCRWeb.API/"]
 COPY ["src/Backend/OCRWeb.Contract/OCRWeb.Contract.csproj", "src/Backend/OCRWeb.Contract/"]
 COPY ["src/Backend/OCRWeb.DocumentProcessing/OCRWeb.DocumentProcessing.csproj", "src/Backend/OCRWeb.DocumentProcessing/"]
+COPY ["src/Backend/OCRWeb.Identity/OCRWeb.Identity.csproj", "src/Backend/OCRWeb.Identity/"]
 COPY ["src/Backend/OCRWeb.ProjectManagement/OCRWeb.ProjectManagement.csproj", "src/Backend/OCRWeb.ProjectManagement/"]
 COPY ["src/Backend/OCRWeb.Shared/OCRWeb.Shared.csproj", "src/Backend/OCRWeb.Shared/"]
 RUN dotnet restore "src/Backend/OCRWeb.API/OCRWeb.API.csproj"

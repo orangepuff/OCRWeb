@@ -9,11 +9,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
+    <PackageReference Include="FastEndpoints" Version="8.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\OCRWeb.ProjectManagement\OCRWeb.ProjectManagement.csproj" />
     <ProjectReference Include="..\OCRWeb.DocumentProcessing\OCRWeb.DocumentProcessing.csproj" />
+    <ProjectReference Include="..\OCRWeb.Identity\OCRWeb.Identity.csproj" />
     <ProjectReference Include="..\OCRWeb.Contract\OCRWeb.Contract.csproj" />
   </ItemGroup>
 
