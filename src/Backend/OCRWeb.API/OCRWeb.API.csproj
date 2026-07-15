@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>c5ef46ba-1271-4f81-a9b0-8ad1b4cf90cc</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OCRWeb.ProjectManagement\OCRWeb.ProjectManagement.csproj" />
+    <ProjectReference Include="..\OCRWeb.DocumentProcessing\OCRWeb.DocumentProcessing.csproj" />
+    <ProjectReference Include="..\OCRWeb.Contract\OCRWeb.Contract.csproj" />
+  </ItemGroup>
+
+</Project>

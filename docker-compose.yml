@@ -1,0 +1,68 @@
+# SQL Server is expected to be running externally (permanent instance), so it is
+# not managed by this compose file. The API reads its connection string from
+# src/Backend/OCRWeb.API/appsettings*.json. From inside the containers the host
+# SQL Server is reachable via host.docker.internal.
+services:
+  api:
+    image: ocrweb-api
+    build:
+      context: .
+      dockerfile: src/Backend/OCRWeb.API/Dockerfile
+    container_name: ocrweb-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:8080;https://+:8081"
+      ASPNETCORE_Kestrel__Certificates__Default__Path: "/https/ocrweb-devcert.pfx"
+      ASPNETCORE_Kestrel__Certificates__Default__Password: "Your_dev_cert_password123!"
+    ports:
+      - "5101:8080"
+      - "7101:8081"
+    volumes:
+      - ./certs:/https:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  bff:
+    image: ocrweb-bff
+    build:
+      context: .
+      dockerfile: src/Backend/OCRWeb.Bff/Dockerfile
+    container_name: ocrweb-bff
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:8080;https://+:8081"
+      ASPNETCORE_Kestrel__Certificates__Default__Path: "/https/ocrweb-devcert.pfx"
+      ASPNETCORE_Kestrel__Certificates__Default__Password: "Your_dev_cert_password123!"
+      OCRWebApi__BaseUrl: "http://api:8080"
+    ports:
+      - "5100:8080"
+      - "7100:8081"
+    volumes:
+      - ./certs:/https:ro
+    depends_on:
+      api:
+        condition: service_started
+
+  # ---------------------------------------------------------------------------
+  # Frontend (Angular) — placeholder, not yet scaffolded.
+  # src/Frontend/OCRWeb.Frontend currently holds only a README, so this service
+  # is guarded by the "frontend" profile and is skipped by a plain
+  # `docker compose up`. Once the Angular app is scaffolded and its Dockerfile
+  # added, remove the `profiles:` line (or run `docker compose --profile frontend up`)
+  # to bring it up together with the rest of the stack.
+  # ---------------------------------------------------------------------------
+  frontend:
+    image: ocrweb-frontend
+    build:
+      context: .
+      dockerfile: src/Frontend/OCRWeb.Frontend/Dockerfile
+    container_name: ocrweb-frontend
+    profiles: ["frontend"]
+    environment:
+      # Angular talks only to the BFF, never directly to the API.
+      BFF_BASE_URL: "http://bff:8080"
+    ports:
+      - "4200:80"
+    depends_on:
+      bff:
+        condition: service_started

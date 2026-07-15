@@ -47,3 +47,59 @@ Initial Recorded Versions
   To: aligned with Angular 22
   Reason: Initial UI framework decision recorded in development-plan.docx
   Updated By: Codex
+
+- Date: 2026-07-14
+  Area: Backend
+  Item: Microsoft.AspNetCore.OpenApi
+  From: N/A
+  To: 10.0.9
+  Reason: Added by OCRWeb.API scaffold (webapi template, .NET 10)
+  Updated By: Claude
+
+- Date: 2026-07-14
+  Area: Testing
+  Item: xunit
+  From: N/A
+  To: 2.9.3
+  Reason: Added by unit/integration test scaffold (xunit template, .NET 10)
+  Updated By: Claude
+
+- Date: 2026-07-14
+  Area: Testing
+  Item: xunit.runner.visualstudio
+  From: N/A
+  To: 3.1.4
+  Reason: Added by xunit test scaffold
+  Updated By: Claude
+
+- Date: 2026-07-14
+  Area: Testing
+  Item: Microsoft.NET.Test.Sdk
+  From: N/A
+  To: 17.14.1
+  Reason: Added by xunit test scaffold
+  Updated By: Claude
+
+- Date: 2026-07-14
+  Area: Testing
+  Item: coverlet.collector
+  From: N/A
+  To: 6.0.4
+  Reason: Added by xunit test scaffold
+  Updated By: Claude
+
+- Date: 2026-07-14
+  Area: Testing
+  Item: Moq
+  From: N/A
+  To: 4.20.72
+  Reason: Added to unit test projects for mocking, per development-plan.docx testing stack
+  Updated By: Claude
+
+- Date: 2026-07-14
+  Area: Testing
+  Item: Microsoft.Playwright
+  From: N/A
+  To: 1.48.0
+  Reason: Added to OCRWeb.Frontend.PlaywrightTests for E2E journeys. Note: Microsoft.Playwright.Xunit was requested but is not available in the local cache and the private feed was unreachable; add it when network access is restored.
+  Updated By: Claude

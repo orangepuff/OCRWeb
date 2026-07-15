@@ -1,0 +1,25 @@
+<Solution>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Backend/">
+    <Project Path="src/Backend/OCRWeb.API/OCRWeb.API.csproj" />
+    <Project Path="src/Backend/OCRWeb.Bff/OCRWeb.Bff.csproj" />
+    <Project Path="src/Backend/OCRWeb.Contract/OCRWeb.Contract.csproj" />
+    <Project Path="src/Backend/OCRWeb.DocumentProcessing/OCRWeb.DocumentProcessing.csproj" />
+    <Project Path="src/Backend/OCRWeb.ProjectManagement/OCRWeb.ProjectManagement.csproj" />
+    <Project Path="src/Backend/OCRWeb.Shared/OCRWeb.Shared.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+  <Folder Name="/tests/integration/">
+    <Project Path="tests/integration/OCRWeb.API.IntegrationTests/OCRWeb.API.IntegrationTests.csproj" />
+    <Project Path="tests/integration/OCRWeb.Bff.IntegrationTests/OCRWeb.Bff.IntegrationTests.csproj" />
+    <Project Path="tests/integration/OCRWeb.Frontend.PlaywrightTests/OCRWeb.Frontend.PlaywrightTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/unit/">
+    <Project Path="tests/unit/OCRWeb.DocumentProcessing.UnitTests/OCRWeb.DocumentProcessing.UnitTests.csproj" />
+    <Project Path="tests/unit/OCRWeb.ProjectManagement.UnitTests/OCRWeb.ProjectManagement.UnitTests.csproj" />
+    <Project Path="tests/unit/OCRWeb.Shared.UnitTests/OCRWeb.Shared.UnitTests.csproj" />
+  </Folder>
+</Solution>
