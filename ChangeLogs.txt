@@ -103,3 +103,51 @@ Initial Recorded Versions
   To: 1.48.0
   Reason: Added to OCRWeb.Frontend.PlaywrightTests for E2E journeys. Note: Microsoft.Playwright.Xunit was requested but is not available in the local cache and the private feed was unreachable; add it when network access is restored.
   Updated By: Claude
+
+- Date: 2026-07-16
+  Area: Backend
+  Item: NLog
+  From: N/A
+  To: 5.5.0
+  Reason: Diagnostics.NLog adapter — custom LogsTarget/TransactionsTarget + ILogger bridge, per docs/diagnostics-logging-design.md
+  Updated By: Claude
+
+- Date: 2026-07-16
+  Area: Backend
+  Item: NLog.Extensions.Logging
+  From: N/A
+  To: 5.5.0
+  Reason: Bridges Microsoft.Extensions.Logging (ILogger) into NLog so app code depends only on ILogger
+  Updated By: Claude
+
+- Date: 2026-07-16
+  Area: Backend
+  Item: Dapper
+  From: N/A
+  To: 2.1.35
+  Reason: Small cached reads of DiagnosticLogs.Configurations/Environments/Categories (no EF Core for this library, per design doc §4)
+  Updated By: Claude
+
+- Date: 2026-07-16
+  Area: Backend
+  Item: Microsoft.Data.SqlClient
+  From: N/A
+  To: 6.0.2
+  Reason: SqlBulkCopy writer for [Logs]/[Transactions] in Diagnostics.NLog
+  Updated By: Claude
+
+- Date: 2026-07-16
+  Area: Backend
+  Item: Microsoft.Extensions.Hosting.Abstractions
+  From: N/A
+  To: 10.0.9
+  Reason: DiagnosticsConfigHostedService (BackgroundService) polls DiagnosticLogs.Configurations for hot-reload
+  Updated By: Claude
+
+- Date: 2026-07-16
+  Area: Document
+  Item: Diagnostics.* logging library (src/Shared/Diagnostics.Abstractions, .NLog, .AspNetCore)
+  From: N/A
+  To: Implemented, wired into OCRWeb.API against a new DiagnosticLogs connection string
+  Reason: Implements docs/diagnostics-logging-design.md — reusable, product-neutral observability library with zero OCRWeb.* dependency
+  Updated By: Claude

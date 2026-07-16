@@ -17,6 +17,18 @@ Both docs currently describe some projects with names/status that differ slightl
 
 This repo uses **Conventional Commits**: `type(scope): summary`, e.g. `feat(backend): implement DocumentProcessing and Identity modules`, `refactor(backend)!: per-module contract/api projects, shared PDF lib, rename Document`, `docs: add OCR web development plan and changelog`. Common types seen in history: `feat`, `fix`, `refactor`, `docs`, `chore`, `test`. Use `!` after the type/scope and a `BREAKING CHANGE:` footer for breaking changes. After making a change, always suggest a commit message in this format (with an appropriate scope such as `backend`, `frontend`, `docs`, `document`, `identity`, etc.) — don't just describe the change in prose.
 
+## Code style
+
+One top-level/public type per file (class, record, interface, enum), filename matching the type name. Private nested helper types (e.g. a small `private sealed class`/`record` used only internally, like `CorrelationContext.State`/`RestoreScope`) are exempt and may stay in the same file as their containing type.
+
+Once a project/area has more than 1 interface, move interfaces into an `Interfaces/` subfolder, with the namespace matching the folder (e.g. `Diagnostics.Abstractions.Interfaces` for files under `Diagnostics.Abstractions/Interfaces/`) — update every consuming file's `using` accordingly, not just the moved files.
+
+Always brace `if`/`else`/`for`/`foreach`/`while` bodies, even single-statement ones — no braceless one-liners (`if (x) return;`). Many existing files predate this rule; apply it to code you touch rather than reformatting files wholesale just to conform.
+
+XML doc `<summary>` text should be short and precise: one line per sentence, no run-on multi-clause paragraphs.
+
+`<summary>` and `</summary>` each go on their own line, never inline with the text — wrong: `/// <summary>Opts an <see cref="IHttpClientBuilder"/> into outbound X-Correlation-ID propagation.</summary>`; right: `<summary>` on its own `///` line, the sentence(s) below it, `</summary>` on its own `///` line.
+
 ## Commands
 
 Backend (.NET 10, solution file is `OCRWeb.slnx`):
@@ -25,6 +37,8 @@ Backend (.NET 10, solution file is `OCRWeb.slnx`):
 dotnet build OCRWeb.slnx
 dotnet test OCRWeb.slnx                                   # all unit + integration tests
 dotnet test tests/unit/OCRWeb.Document.UnitTests           # single test project
+dotnet test tests/Shared/Logs/unit/Diagnostics.Logs.UnitTests               # Diagnostics unit tests
+dotnet test tests/Shared/Logs/integration/Diagnostics.Logs.IntegrationTests # Diagnostics integration tests — needs a real DiagnosticLogs DB, see below
 dotnet test --filter "FullyQualifiedName~ClassName.MethodName"  # single test
 ```
 
@@ -84,10 +98,14 @@ Tests live under `tests/unit` (xUnit + Moq, one project per bounded context) and
 
 ### Diagnostics logging (separate, reusable concern)
 
-`docs/diagnostics-logging-design.md` and `docs/diagnostics-logs-schema.sql` describe a planned observability library, **not yet implemented in code**. It is intentionally decoupled from `OCRWeb.*` (root namespace `Diagnostics.*`, to eventually ship as its own NuGet package) and will live under `src/Shared/Diagnostics.*`. Key points if/when implementing it:
+`docs/diagnostics-logging-design.md` and `docs/diagnostics-logs-schema.sql` describe the observability library implemented under `src/Shared/Diagnostics.*` (root namespace `Diagnostics.*`, intentionally decoupled from `OCRWeb.*` so it can eventually ship as its own NuGet package). Key points:
 
 - Own database (`DiagnosticLogs`), separate from `OCRWeb` — tables `Environments`, `Configurations`, `Categories`, `Transactions`, `Logs`.
 - Two independent sinks via NLog custom targets + `SqlBulkCopy`: `[Logs]` (severity line logs via `ILogger`) and `[Transactions]` (operation telemetry via `ITransactionScope`, opened through `ITransactionLogger.BeginTransaction(category, message)`).
 - Body capture (`RequestJson`/`ResponseXml`/etc.) is explicit per call, never automatic; the ASP.NET middleware only captures metadata.
 - No EF Core for this library — Dapper for the small config/lookup reads, SqlBulkCopy for writes (columnstore-friendly).
 - `docs/diagnostics-logs-schema.sql` is idempotent (`IF OBJECT_ID(...) IS NULL` / `IF NOT EXISTS` guards) — safe to re-run.
+
+Tests live under `tests/Shared/Logs/{unit,integration}/Diagnostics.Logs.{UnitTests,IntegrationTests}`, mirroring the `tests/unit`/`tests/integration` split above rather than living alongside `OCRWeb.*`'s bounded-context tests. The integration project (`Diagnostics.Logs.IntegrationTests`) exercises the real pipeline end-to-end (writes via `ILogger`, then reads back `[dbo].[Logs]`) against a real SQL Server — its own `appsettings.json` holds `ConnectionStrings:DiagnosticLogs` (same convention as `OCRWeb.API`'s `appsettings.Development.json`) and it runs `docs/diagnostics-logs-schema.sql` itself on startup since the script is idempotent, so no manual schema step is needed beyond having a reachable SQL Server.
+
+Note: `.gitignore`'s generic `[Ll]ogs/` build-output rule collides with the `tests/Shared/Logs` folder name — it's explicitly un-ignored near the bottom of `.gitignore`. Don't remove that override.

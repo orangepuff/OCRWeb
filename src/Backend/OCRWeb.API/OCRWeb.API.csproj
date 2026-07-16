@@ -19,6 +19,9 @@
     <ProjectReference Include="..\OCRWeb.Identity\OCRWeb.Identity.csproj" />
     <ProjectReference Include="..\OCRWeb.OCR\OCRWeb.OCR.csproj" />
     <ProjectReference Include="..\OCRWeb.Pdf\OCRWeb.Pdf.csproj" />
+    <ProjectReference Include="..\..\Shared\Diagnostics.Abstractions\Diagnostics.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Shared\Diagnostics.NLog\Diagnostics.NLog.csproj" />
+    <ProjectReference Include="..\..\Shared\Diagnostics.AspNetCore\Diagnostics.AspNetCore.csproj" />
   </ItemGroup>
 
 </Project>

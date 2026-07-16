@@ -399,3 +399,12 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Project-specific overrides
+# The generic [Ll]ogs/ build-output rule above also matches our tests/Shared/Logs test project
+# folder (named after the Logs feature it tests, not a log-output directory) — un-ignore it, but
+# keep its own bin/obj build output ignored as usual.
+!tests/Shared/Logs/
+!tests/Shared/Logs/**
+tests/Shared/Logs/**/bin/
+tests/Shared/Logs/**/obj/

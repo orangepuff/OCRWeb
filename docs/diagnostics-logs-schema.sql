@@ -79,12 +79,22 @@ GO
 ------------------------------------------------------------------------------
 GO
 IF NOT EXISTS(
-	SELECT 1 
+	SELECT 1
 	FROM Configurations
 )
-BEGIN 
-INSERT [dbo].[Configurations] ([sLoggerName], [iEnvironmentId], [xValue], [dtUpdatedTime]) 
-VALUES (N'NLogLogger', NULL, N'<nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.nlog-project.org/schemas/NLog.xsd NLog.xsd" autoReload="true" throwExceptions="false" internalLogLevel="Error" internalLogFile="c:\temp\nlog-internal.log"><targets async="true"><target name="Log" xsi:type="Database" connectionStringName="DiagnosticFramework" commandType="StoredProcedure" commandText="[dbo].[spAddLog]"><parameter name="@sTransactionId" layout="${event-properties:item=TransactionId}" /><parameter name="@iEnvironmentId" layout="${event-properties:item=EnvironmentId}" /><parameter name="@sCorrelationId" layout="${event-properties:item=CorrelationId}" /><parameter name="@iClientId" layout="${event-properties:item=ClientId}" /><parameter name="@iCategoryId" layout="${event-properties:item=CategoryId}" /><parameter name="@iServerId" layout="${event-properties:item=ServerId}" /><parameter name="@sSeverity" layout="${level}" /><parameter name="@dtTimeLogged" layout="${event-properties:item=TimeLogged}" /><parameter name="@sMessage" layout="${message}" /><parameter name="@sException" layout="${exception:format=ToString,StackTrace}" /><parameter name="@sUser" layout="${event-properties:item=User}" /><parameter name="@sModule" layout="${event-properties:item=Module}" /><parameter name="@sCustomAttributes" layout="${event-properties:item=CustomAttributes}" /></target><target name="Transaction" xsi:type="Database" connectionStringName="DiagnosticFramework" commandType="StoredProcedure" commandText="[dbo].[spAddTransaction]"><parameter name="@sId" layout="${event-properties:item=Id}" /><parameter name="@sParentId" layout="${event-properties:item=ParentId}" /><parameter name="@iEnvironmentId" layout="${event-properties:item=EnvironmentId}" /><parameter name="@sCorrelationId" layout="${event-properties:item=CorrelationId}" /><parameter name="@iClientId" layout="${event-properties:item=ClientId}" /><parameter name="@iCategoryId" layout="${event-properties:item=CategoryId}" /><parameter name="@iServerId" layout="${event-properties:item=ServerId}" /><parameter name="@sMessage" layout="${message}" /><parameter name="@sUrl" layout="${event-properties:item=Url}" /><parameter name="@dtStartTime" layout="${event-properties:item=StartTime}" /><parameter name="@iDuration" layout="${event-properties:item=Duration}" /><parameter name="@xRequestXml" layout="${event-properties:item=RequestXml}" /><parameter name="@sRequestJson" layout="${event-properties:item=RequestJson}" /><parameter name="@sRequestText" layout="${event-properties:item=RequestText}" /><parameter name="@xResponseXml" layout="${event-properties:item=ResponseXml}" /><parameter name="@sResponseJson" layout="${event-properties:item=ResponseJson}" /><parameter name="@sResponseText" layout="${event-properties:item=ResponseText}" /><parameter name="@sModule" layout="${event-properties:item=Module}" /><parameter name="@sUser" layout="${event-properties:item=User}" /><parameter name="@sCustomAttributes" layout="${event-properties:item=CustomAttributes}" /><parameter name="@sSql" layout="${event-properties:item=SQL}" /><parameter name="@sBaseUrl" layout="${event-properties:item=BaseUrl}" /></target></targets><rules><logger name="Log" minlevel="Info" writeTo="Log" /><logger name="Transaction" minlevel="Info" writeTo="Transaction" /><logger name="RootTransaction" minlevel="Trace" writeTo="Transaction" /><logger name="DatabaseTransaction" minlevel="Info" writeTo="Transaction" /><logger name="ExternalServiceTransaction" minlevel="Trace" writeTo="Transaction" /></rules></nlog>', CAST(N'2023-02-28T03:15:53.020' AS DateTime))
+BEGIN
+-- NOTE: Diagnostics.NLog's DbConfigProvider (src/Shared/Diagnostics.NLog) reads ONLY the <rules>
+-- section of this XML (logger name pattern + minlevel). <targets> are NOT read from here — the
+-- LogsTarget/TransactionsTarget custom targets are constructed in code by AddDiagnostics so they
+-- can take constructor-injected dependencies (connection string, resolver, correlation context)
+-- instead of relying on NLog's XML-driven property binding. See diagnostics-logging-design.md's
+-- status note for the full rationale. writeTo names below are documentation only.
+INSERT [dbo].[Configurations] ([sLoggerName], [iEnvironmentId], [xValue], [dtUpdatedTime])
+VALUES (N'NLogLogger', NULL, N'<nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.nlog-project.org/schemas/NLog.xsd NLog.xsd" autoReload="true" throwExceptions="false"><rules><logger name="*" minlevel="Info" writeTo="DiagnosticsLogsAsync" /></rules></nlog>', SYSUTCDATETIME())
+
+UPDATE Configurations SET iEnvironmentId = (SELECT TOP 1 iId FROM Environments WHERE sName = 'DEV')
+WHERE sLoggerName = 'NLogLogger'
+
 END
 GO
 ------------------------------------------------------------------------------
