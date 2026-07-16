@@ -3,7 +3,10 @@ WORKDIR /src
 
 COPY ["OCRWeb.slnx", "./"]
 COPY ["src/Backend/OCRWeb.Bff/OCRWeb.Bff.csproj", "src/Backend/OCRWeb.Bff/"]
-COPY ["src/Backend/OCRWeb.Contract/OCRWeb.Contract.csproj", "src/Backend/OCRWeb.Contract/"]
+COPY ["src/Backend/OCRWeb.Document.Contract/OCRWeb.Document.Contract.csproj", "src/Backend/OCRWeb.Document.Contract/"]
+COPY ["src/Backend/OCRWeb.Identity.Contract/OCRWeb.Identity.Contract.csproj", "src/Backend/OCRWeb.Identity.Contract/"]
+COPY ["src/Backend/OCRWeb.ProjectManagement.Contract/OCRWeb.ProjectManagement.Contract.csproj", "src/Backend/OCRWeb.ProjectManagement.Contract/"]
+COPY ["src/Backend/OCRWeb.OCR.Contract/OCRWeb.OCR.Contract.csproj", "src/Backend/OCRWeb.OCR.Contract/"]
 RUN dotnet restore "src/Backend/OCRWeb.Bff/OCRWeb.Bff.csproj"
 
 COPY . .

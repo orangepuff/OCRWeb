@@ -1,7 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
-    <ProjectReference Include="..\OCRWeb.Contract\OCRWeb.Contract.csproj" />
+    <ProjectReference Include="..\OCRWeb.Document.Contract\OCRWeb.Document.Contract.csproj" />
+    <ProjectReference Include="..\OCRWeb.Identity.Contract\OCRWeb.Identity.Contract.csproj" />
+    <ProjectReference Include="..\OCRWeb.ProjectManagement.Contract\OCRWeb.ProjectManagement.Contract.csproj" />
+    <ProjectReference Include="..\OCRWeb.OCR.Contract\OCRWeb.OCR.Contract.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OCRWeb.Shared\OCRWeb.Shared.csproj" />
+    <ProjectReference Include="..\OCRWeb.ProjectManagement.Contract\OCRWeb.ProjectManagement.Contract.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

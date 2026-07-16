@@ -1,24 +1,31 @@
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using OCRWeb.API.Infrastructure;
-using OCRWeb.DocumentProcessing.Infrastructure;
+using OCRWeb.Document.Api;
+using OCRWeb.Document.Infrastructure;
 using OCRWeb.Identity.Infrastructure;
 using OCRWeb.Identity.Infrastructure.Seeding;
+using OCRWeb.OCR.Infrastructure;
+using OCRWeb.Pdf;
 using OCRWeb.Shared.Auditing;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Web / API surface.
+// Web / API surface. Endpoints live in the per-module *.Api assemblies; point discovery at them.
 builder.Services.AddOpenApi();
-builder.Services.AddFastEndpoints();
+builder.Services.AddFastEndpoints(o => o.Assemblies = [typeof(DocumentApiMarker).Assembly]);
 
 // Current user (stub until auth is added) — used to fill audit fields.
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 
+// Shared PDF engine (technical adapter behind IPdfManipulator, consumed by the modules).
+builder.Services.AddPdfEngine();
+
 // Modules (each registers its own DbContext, repositories, and MediatR handlers).
 builder.Services.AddIdentityModule(builder.Configuration);
-builder.Services.AddDocumentProcessing(builder.Configuration);
+builder.Services.AddDocument(builder.Configuration);
+builder.Services.AddOcr(builder.Configuration);
 
 var app = builder.Build();
 
@@ -30,7 +37,7 @@ if (builder.Configuration.GetValue<bool>("bMigration"))
     var services = scope.ServiceProvider;
 
     await services.GetRequiredService<UserDbContext>().Database.MigrateAsync();
-    await services.GetRequiredService<DocumentProcessingDbContext>().Database.MigrateAsync();
+    await services.GetRequiredService<DocumentDbContext>().Database.MigrateAsync();
     await services.GetRequiredService<UserDbSeeder>().SeedAsync();
 }
 

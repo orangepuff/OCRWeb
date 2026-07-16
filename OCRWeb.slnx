@@ -6,10 +6,17 @@
   <Folder Name="/src/Backend/">
     <Project Path="src/Backend/OCRWeb.API/OCRWeb.API.csproj" />
     <Project Path="src/Backend/OCRWeb.Bff/OCRWeb.Bff.csproj" />
-    <Project Path="src/Backend/OCRWeb.Contract/OCRWeb.Contract.csproj" />
-    <Project Path="src/Backend/OCRWeb.DocumentProcessing/OCRWeb.DocumentProcessing.csproj" />
+    <Project Path="src/Backend/OCRWeb.Document/OCRWeb.Document.csproj" />
+    <Project Path="src/Backend/OCRWeb.Document.Api/OCRWeb.Document.Api.csproj" />
+    <Project Path="src/Backend/OCRWeb.Document.Contract/OCRWeb.Document.Contract.csproj" />
     <Project Path="src/Backend/OCRWeb.Identity/OCRWeb.Identity.csproj" />
+    <Project Path="src/Backend/OCRWeb.Identity.Contract/OCRWeb.Identity.Contract.csproj" />
+    <Project Path="src/Backend/OCRWeb.OCR/OCRWeb.OCR.csproj" />
+    <Project Path="src/Backend/OCRWeb.OCR.Contract/OCRWeb.OCR.Contract.csproj" />
+    <Project Path="src/Backend/OCRWeb.Pdf/OCRWeb.Pdf.csproj" />
+    <Project Path="src/Backend/OCRWeb.Pdf.Contract/OCRWeb.Pdf.Contract.csproj" />
     <Project Path="src/Backend/OCRWeb.ProjectManagement/OCRWeb.ProjectManagement.csproj" />
+    <Project Path="src/Backend/OCRWeb.ProjectManagement.Contract/OCRWeb.ProjectManagement.Contract.csproj" />
     <Project Path="src/Backend/OCRWeb.Shared/OCRWeb.Shared.csproj" />
   </Folder>
   <Folder Name="/tests/" />
@@ -19,7 +26,7 @@
     <Project Path="tests/integration/OCRWeb.Frontend.PlaywrightTests/OCRWeb.Frontend.PlaywrightTests.csproj" />
   </Folder>
   <Folder Name="/tests/unit/">
-    <Project Path="tests/unit/OCRWeb.DocumentProcessing.UnitTests/OCRWeb.DocumentProcessing.UnitTests.csproj" />
+    <Project Path="tests/unit/OCRWeb.Document.UnitTests/OCRWeb.Document.UnitTests.csproj" />
     <Project Path="tests/unit/OCRWeb.ProjectManagement.UnitTests/OCRWeb.ProjectManagement.UnitTests.csproj" />
     <Project Path="tests/unit/OCRWeb.Shared.UnitTests/OCRWeb.Shared.UnitTests.csproj" />
   </Folder>

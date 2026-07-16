@@ -14,9 +14,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OCRWeb.ProjectManagement\OCRWeb.ProjectManagement.csproj" />
-    <ProjectReference Include="..\OCRWeb.DocumentProcessing\OCRWeb.DocumentProcessing.csproj" />
+    <ProjectReference Include="..\OCRWeb.Document\OCRWeb.Document.csproj" />
+    <ProjectReference Include="..\OCRWeb.Document.Api\OCRWeb.Document.Api.csproj" />
     <ProjectReference Include="..\OCRWeb.Identity\OCRWeb.Identity.csproj" />
-    <ProjectReference Include="..\OCRWeb.Contract\OCRWeb.Contract.csproj" />
+    <ProjectReference Include="..\OCRWeb.OCR\OCRWeb.OCR.csproj" />
+    <ProjectReference Include="..\OCRWeb.Pdf\OCRWeb.Pdf.csproj" />
   </ItemGroup>
 
 </Project>
