@@ -23,6 +23,8 @@ One top-level/public type per file (class, record, interface, enum), filename ma
 
 Once a project/area has more than 1 interface, move interfaces into an `Interfaces/` subfolder, with the namespace matching the folder (e.g. `Diagnostics.Abstractions.Interfaces` for files under `Diagnostics.Abstractions/Interfaces/`) — update every consuming file's `using` accordingly, not just the moved files.
 
+Once a parent folder has more than 1 class of the same role (e.g. resolvers, policies, validators), group them into a role-named subfolder under that parent, with the namespace matching the folder (e.g. multiple `*Resolver` classes under `Diagnostics.NLog/Lookups/` move into `Diagnostics.NLog/Lookups/Resolvers/`, namespace `Diagnostics.NLog.Lookups.Resolvers`) — update every consuming file's `using` accordingly, not just the moved files.
+
 Always brace `if`/`else`/`for`/`foreach`/`while` bodies, even single-statement ones — no braceless one-liners (`if (x) return;`). Many existing files predate this rule; apply it to code you touch rather than reformatting files wholesale just to conform.
 
 XML doc `<summary>` text should be short and precise: one line per sentence, no run-on multi-clause paragraphs.

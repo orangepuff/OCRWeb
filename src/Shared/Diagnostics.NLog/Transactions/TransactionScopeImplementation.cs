@@ -9,7 +9,7 @@ namespace Diagnostics.NLog.Transactions;
 /// <summary>
 /// Default <see cref="ITransactionScope"/>. Opens the ambient transaction/category for its lifetime and, on <see cref="Dispose"/>, computes duration and hands the completed <see cref="TransactionRecord"/> to <see cref="TransactionsTarget"/> — never blocking the caller (the target's own bounded/batched writer owns the actual DB write).
 /// </summary>
-internal sealed class TransactionScopeImpl : ITransactionScope
+internal sealed class TransactionScopeImplementation : ITransactionScope
 {
     private readonly TransactionsTarget _sink;
     private readonly IDisposable _ambientScope;
@@ -18,7 +18,7 @@ internal sealed class TransactionScopeImpl : ITransactionScope
     private Dictionary<string, object?>? _customAttributes;
     private bool _disposed;
 
-    public TransactionScopeImpl(
+    public TransactionScopeImplementation(
         ICorrelationContext correlationContext,
         TransactionsTarget sink,
         string category,

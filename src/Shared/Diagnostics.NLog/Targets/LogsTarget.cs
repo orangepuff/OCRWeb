@@ -3,7 +3,7 @@ using System.Text.Json;
 using Diagnostics.Abstractions;
 using Diagnostics.Abstractions.Interfaces;
 using Diagnostics.NLog.Buffering;
-using Diagnostics.NLog.Lookups;
+using Diagnostics.NLog.Interfaces;
 using Microsoft.Data.SqlClient;
 using NLog;
 using NLog.Targets;
@@ -18,7 +18,8 @@ namespace Diagnostics.NLog.Targets;
 public sealed class LogsTarget : Target
 {
     private readonly string _connectionString;
-    private readonly IEnvironmentCategoryResolver _resolver;
+    private readonly IEnvironmentResolver _environmentResolver;
+    private readonly ICategoryResolver _categoryResolver;
     private readonly DiagnosticsOptions _options;
     private readonly WriteMetrics _metrics = new();
     private readonly Dictionary<string, int> _categoryIdCache = new(StringComparer.OrdinalIgnoreCase);
@@ -36,11 +37,13 @@ public sealed class LogsTarget : Target
 
     public LogsTarget(
         string connectionString,
-        IEnvironmentCategoryResolver resolver,
+        IEnvironmentResolver environmentResolver,
+        ICategoryResolver categoryResolver,
         DiagnosticsOptions options)
     {
         _connectionString = connectionString;
-        _resolver = resolver;
+        _environmentResolver = environmentResolver;
+        _categoryResolver = categoryResolver;
         _options = options;
         Name = "DiagnosticsLogs";
     }
@@ -63,8 +66,8 @@ public sealed class LogsTarget : Target
 
         try
         {
-            _environmentId = _resolver
-                .ResolveEnvironmentIdAsync(_options.EnvironmentName, _options.EnvironmentVersion, _options.EnvironmentUrl)
+            _environmentId = _environmentResolver
+                .ResolveIdAsync(_options.EnvironmentName, _options.EnvironmentVersion, _options.EnvironmentUrl)
                 .GetAwaiter().GetResult();
         }
         catch
@@ -128,7 +131,7 @@ public sealed class LogsTarget : Target
         }
 
         // Rare path (new category name) — resolver itself caches, so subsequent calls are fast.
-        var resolved = _resolver.ResolveCategoryIdAsync(category).GetAwaiter().GetResult();
+        var resolved = _categoryResolver.ResolveIdAsync(category).GetAwaiter().GetResult();
 
         lock (_categoryLock)
         {

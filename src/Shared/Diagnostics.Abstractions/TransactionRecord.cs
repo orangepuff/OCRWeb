@@ -3,11 +3,8 @@ using Diagnostics.Abstractions.Interfaces;
 namespace Diagnostics.Abstractions;
 
 /// <summary>
-/// Shape of one completed <see cref="ITransactionScope"/>.
-/// Handed off to the NLog target on <c>Dispose</c>.
-/// Field names mirror <c>[dbo].[Transactions]</c> (see docs/diagnostics-logs-schema.sql).
-/// <see cref="Category"/> and environment are names, not resolved ids.
-/// <c>EnvironmentCategoryResolver</c> resolves ids at write time, keeping this DTO free of any DB dependency.
+/// Shape of one completed <see cref="ITransactionScope"/>. Handed off to the NLog target on <c>Dispose</c>.
+/// Field names mirror <c>[dbo].[Transactions]</c> (see docs/diagnostics-logs-schema.sql). <see cref="Category"/> and environment are names, not resolved ids. <c>EnvironmentResolver</c>/<c>CategoryResolver</c> resolve ids at write time, keeping this DTO free of any DB dependency.
 /// </summary>
 public sealed class TransactionRecord
 {

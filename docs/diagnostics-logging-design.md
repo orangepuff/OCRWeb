@@ -18,7 +18,7 @@ line logs (with exception + severity) and `[dbo].[Transactions]` for operation t
 > literal reading of §5: `DbConfigProvider` parses only the `<rules>` section of the DB-stored NLog
 > XML (minlevel per logger-name pattern); `<targets>` are NOT read from the DB — the two custom
 > targets are constructed in code via `AddDiagnostics` so they can take constructor-injected
-> dependencies (connection string, `IEnvironmentCategoryResolver`, `ICorrelationContext`) instead of
+> dependencies (connection string, `IEnvironmentResolver`/`ICategoryResolver`, `ICorrelationContext`) instead of
 > NLog's XML-driven property binding. This matches the intent of §5's "split of concerns" bullet
 > (infra wiring in code, levels/rules in the DB) even though it narrows what the DB XML controls.
 

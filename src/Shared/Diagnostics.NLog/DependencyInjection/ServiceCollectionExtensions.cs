@@ -1,7 +1,8 @@
 using Diagnostics.Abstractions;
 using Diagnostics.Abstractions.Interfaces;
 using Diagnostics.NLog.Configuration;
-using Diagnostics.NLog.Lookups;
+using Diagnostics.NLog.Interfaces;
+using Diagnostics.NLog.Lookups.Resolvers;
 using Diagnostics.NLog.Targets;
 using Diagnostics.NLog.Transactions;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,20 +36,23 @@ public static class ServiceCollectionExtensions
         
         services.AddSingleton(options);
         services.AddSingleton<ICorrelationContext, CorrelationContext>();
-        services.AddSingleton<IEnvironmentCategoryResolver>(_ => new EnvironmentCategoryResolver(options.ConnectionString));
-        services.AddSingleton(sp => new DbConfigProvider(options.ConnectionString, sp.GetRequiredService<IEnvironmentCategoryResolver>()));
+        services.AddSingleton<IEnvironmentResolver>(_ => new EnvironmentResolver(options.ConnectionString));
+        services.AddSingleton<ICategoryResolver>(_ => new CategoryResolver(options.ConnectionString));
+        services.AddSingleton(sp => new DbConfigProvider(options.ConnectionString, sp.GetRequiredService<IEnvironmentResolver>()));
 
         services.AddSingleton(sp => new LogsTarget(
             options.ConnectionString,
-            sp.GetRequiredService<IEnvironmentCategoryResolver>(),
+            sp.GetRequiredService<IEnvironmentResolver>(),
+            sp.GetRequiredService<ICategoryResolver>(),
             options));
 
         services.AddSingleton(sp => new TransactionsTarget(
             options.ConnectionString,
-            sp.GetRequiredService<IEnvironmentCategoryResolver>(),
+            sp.GetRequiredService<IEnvironmentResolver>(),
+            sp.GetRequiredService<ICategoryResolver>(),
             options));
 
-        services.AddSingleton<ITransactionLogger, TransactionLoggerImpl>();
+        services.AddSingleton<ITransactionLogger, TransactionLoggerImplementation>();
 
         services.AddHostedService<DiagnosticsConfigHostedService>();
 

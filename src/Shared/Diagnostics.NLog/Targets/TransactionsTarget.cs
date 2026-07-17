@@ -2,7 +2,7 @@ using System.Data;
 using Diagnostics.Abstractions;
 using Diagnostics.Abstractions.Interfaces;
 using Diagnostics.NLog.Buffering;
-using Diagnostics.NLog.Lookups;
+using Diagnostics.NLog.Interfaces;
 using Microsoft.Data.SqlClient;
 
 namespace Diagnostics.NLog.Targets;
@@ -14,7 +14,8 @@ namespace Diagnostics.NLog.Targets;
 public sealed class TransactionsTarget : IAsyncDisposable
 {
     private readonly string _connectionString;
-    private readonly IEnvironmentCategoryResolver _resolver;
+    private readonly IEnvironmentResolver _environmentResolver;
+    private readonly ICategoryResolver _categoryResolver;
     private readonly DiagnosticsOptions _options;
     private readonly WriteMetrics _metrics = new();
     private readonly Dictionary<string, int> _categoryIdCache = new(StringComparer.OrdinalIgnoreCase);
@@ -23,10 +24,15 @@ public sealed class TransactionsTarget : IAsyncDisposable
     private BoundedBatchWriter<TransactionRecord>? _writer;
     private int _environmentId;
 
-    public TransactionsTarget(string connectionString, IEnvironmentCategoryResolver resolver, DiagnosticsOptions options)
+    public TransactionsTarget(
+        string connectionString,
+        IEnvironmentResolver environmentResolver,
+        ICategoryResolver categoryResolver,
+        DiagnosticsOptions options)
     {
         _connectionString = connectionString;
-        _resolver = resolver;
+        _environmentResolver = environmentResolver;
+        _categoryResolver = categoryResolver;
         _options = options;
     }
 
@@ -42,8 +48,8 @@ public sealed class TransactionsTarget : IAsyncDisposable
 
         try
         {
-            _environmentId = _resolver
-                .ResolveEnvironmentIdAsync(_options.EnvironmentName, _options.EnvironmentVersion, _options.EnvironmentUrl)
+            _environmentId = _environmentResolver
+                .ResolveIdAsync(_options.EnvironmentName, _options.EnvironmentVersion, _options.EnvironmentUrl)
                 .GetAwaiter().GetResult();
         }
         catch
@@ -77,7 +83,7 @@ public sealed class TransactionsTarget : IAsyncDisposable
             } 
         }
 
-        var resolved = _resolver.ResolveCategoryIdAsync(category).GetAwaiter().GetResult();
+        var resolved = _categoryResolver.ResolveIdAsync(category).GetAwaiter().GetResult();
 
         lock (_categoryLock)
         {

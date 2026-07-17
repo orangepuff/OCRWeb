@@ -42,6 +42,34 @@ END
 GO
 
 ------------------------------------------------------------------------------
+-- Unique Constraints
+------------------------------------------------------------------------------
+/*
+-- Duplicate Environments
+SELECT
+    sName,
+    COUNT(*) AS DuplicateCount
+FROM dbo.Environments
+GROUP BY sName
+HAVING COUNT(*) > 1;
+*/
+
+-- Environments.sName
+IF NOT EXISTS
+(
+    SELECT 1
+    FROM sys.key_constraints kc
+    WHERE kc.[type] = 'UQ'
+      AND kc.[name] = 'UQ_Environments_sName'
+)
+BEGIN
+    ALTER TABLE dbo.Environments
+        ADD CONSTRAINT UQ_Environments_sName
+            UNIQUE (sName);
+END
+GO
+
+------------------------------------------------------------------------------
 -- Configurations
 ------------------------------------------------------------------------------
 IF OBJECT_ID('dbo.Configurations', 'U') IS NULL
@@ -142,6 +170,35 @@ WHERE NOT EXISTS
     FROM dbo.Categories c
     WHERE c.sName = v.sName
 );
+GO
+
+------------------------------------------------------------------------------
+-- Categories Constraints
+------------------------------------------------------------------------------
+/*
+-- Duplicate Categories
+SELECT
+    sName,
+    COUNT(*) AS DuplicateCount
+FROM dbo.Categories
+GROUP BY sName
+HAVING COUNT(*) > 1;
+GO
+*/
+
+-- Categories.sName
+IF NOT EXISTS
+(
+    SELECT 1
+    FROM sys.key_constraints kc
+    WHERE kc.[type] = 'UQ'
+      AND kc.[name] = 'UQ_Categories_sName'
+)
+BEGIN
+    ALTER TABLE dbo.Categories
+        ADD CONSTRAINT UQ_Categories_sName
+            UNIQUE (sName);
+END
 GO
 
 ------------------------------------------------------------------------------

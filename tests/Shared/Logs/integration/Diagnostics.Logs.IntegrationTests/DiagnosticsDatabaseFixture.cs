@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using Diagnostics.Abstractions.Interfaces;
 using Diagnostics.NLog.DependencyInjection;
+using Diagnostics.NLog.Interfaces;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,6 +51,10 @@ public sealed class DiagnosticsDatabaseFixture : IAsyncLifetime
     public ICorrelationContext CorrelationContext => _host!.Services.GetRequiredService<ICorrelationContext>();
 
     public ILogger Logger => _host!.Services.GetRequiredService<ILoggerFactory>().CreateLogger("Diagnostics.Logs.IntegrationTests");
+
+    public IEnvironmentResolver EnvironmentResolver => _host!.Services.GetRequiredService<IEnvironmentResolver>();
+
+    public ICategoryResolver CategoryResolver => _host!.Services.GetRequiredService<ICategoryResolver>();
 
     public async Task InitializeAsync()
     {
