@@ -183,7 +183,6 @@ SELECT
 FROM dbo.Categories
 GROUP BY sName
 HAVING COUNT(*) > 1;
-GO
 */
 
 -- Categories.sName

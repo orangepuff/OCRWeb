@@ -9,7 +9,8 @@ namespace Diagnostics.Logs.IntegrationTests;
 /// CategoryResolver exists to close.
 /// Requires a reachable SQL Server — see <see cref="DiagnosticsDatabaseFixture"/>.
 /// </summary>
-public sealed class CategoryResolverIntegrationTests(DiagnosticsDatabaseFixture fixture) : IClassFixture<DiagnosticsDatabaseFixture>
+[Collection(nameof(DiagnosticsDatabaseCollection))]
+public sealed class CategoryResolverIntegrationTests(DiagnosticsDatabaseFixture fixture)
 {
     [Fact]
     public async Task ResolveIdAsync_NewName_InsertsExactlyOneRow()

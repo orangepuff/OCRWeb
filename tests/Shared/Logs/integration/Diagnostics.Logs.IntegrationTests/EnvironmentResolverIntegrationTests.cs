@@ -9,7 +9,8 @@ namespace Diagnostics.Logs.IntegrationTests;
 /// EnvironmentResolver exists to close.
 /// Requires a reachable SQL Server — see <see cref="DiagnosticsDatabaseFixture"/>.
 /// </summary>
-public sealed class EnvironmentResolverIntegrationTests(DiagnosticsDatabaseFixture fixture) : IClassFixture<DiagnosticsDatabaseFixture>
+[Collection(nameof(DiagnosticsDatabaseCollection))]
+public sealed class EnvironmentResolverIntegrationTests(DiagnosticsDatabaseFixture fixture)
 {
     [Fact]
     public async Task ResolveIdAsync_NewName_InsertsExactlyOneRow()

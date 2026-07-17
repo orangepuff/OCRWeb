@@ -9,7 +9,8 @@ namespace Diagnostics.Logs.IntegrationTests;
 /// Verifies a log written through <see cref="ILogger"/> lands in the real DiagnosticLogs database with the expected column values.
 /// Requires a reachable SQL Server — see <see cref="DiagnosticsDatabaseFixture"/>.
 /// </summary>
-public sealed class LogsIntegrationTests(DiagnosticsDatabaseFixture fixture) : IClassFixture<DiagnosticsDatabaseFixture>
+[Collection(nameof(DiagnosticsDatabaseCollection))]
+public sealed class LogsIntegrationTests(DiagnosticsDatabaseFixture fixture)
 {
     private static readonly TimeSpan PollTimeout = TimeSpan.FromSeconds(20);
     private static readonly TimeSpan PollInterval = TimeSpan.FromMilliseconds(250);
