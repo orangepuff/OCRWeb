@@ -1,0 +1,14 @@
+<header class="app-header">
+  <span class="app-header__title">OCRWeb</span>
+
+  @if (authService.checked()) {
+    @if (authService.isAuthenticated()) {
+      <div class="app-header__user">
+        <span>{{ authService.currentUser()?.displayName ?? authService.currentUser()?.email }}</span>
+        <button type="button" (click)="signOut()">Sign out</button>
+      </div>
+    } @else {
+      <button type="button" (click)="signIn()">Sign in with Google</button>
+    }
+  }
+</header>

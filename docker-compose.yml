@@ -14,6 +14,9 @@ services:
       ASPNETCORE_URLS: "http://+:8080;https://+:8081"
       ASPNETCORE_Kestrel__Certificates__Default__Path: "/https/ocrweb-devcert.pfx"
       ASPNETCORE_Kestrel__Certificates__Default__Password: "Your_dev_cert_password123!"
+      # RS256 public key only — API must never hold the private key (see
+      # docs/Authentication/authentication-design.docx §6.1). Values come from .env (git-ignored).
+      Authentication__InternalToken__PublicKey: "${INTERNAL_TOKEN_PUBLIC_KEY}"
     ports:
       - "5101:8080"
       - "7101:8081"
@@ -33,7 +36,16 @@ services:
       ASPNETCORE_URLS: "http://+:8080;https://+:8081"
       ASPNETCORE_Kestrel__Certificates__Default__Path: "/https/ocrweb-devcert.pfx"
       ASPNETCORE_Kestrel__Certificates__Default__Password: "Your_dev_cert_password123!"
-      OCRWebApi__BaseUrl: "http://api:8080"
+      Services__OCRWebApi__BaseUrl: "http://api:8080"
+      # The frontend runs outside Docker (ng serve) until it has its own compose profile wired up
+      # for real, so this points at the browser-facing dev server, not a container hostname.
+      # https, not http — ng serve now runs with the same dev cert so Secure cookies survive the proxy.
+      Frontend__BaseUrl: "https://localhost:4200"
+      # Google OAuth client + RS256 private key — values come from .env (git-ignored). See
+      # docs/Authentication/prepare-for-dev.docx §6.
+      Authentication__Google__ClientId: "${GOOGLE_CLIENT_ID}"
+      Authentication__Google__ClientSecret: "${GOOGLE_CLIENT_SECRET}"
+      Authentication__InternalToken__PrivateKey: "${INTERNAL_TOKEN_PRIVATE_KEY}"
     ports:
       - "5100:8080"
       - "7100:8081"

@@ -11,6 +11,7 @@ namespace Diagnostics.NLog.Transactions;
 /// </summary>
 internal sealed class TransactionScopeImplementation : ITransactionScope
 {
+    private readonly ICorrelationContext _correlationContext;
     private readonly TransactionsTarget _sink;
     private readonly IDisposable _ambientScope;
     private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
@@ -24,6 +25,7 @@ internal sealed class TransactionScopeImplementation : ITransactionScope
         string category,
         string? message)
     {
+        _correlationContext = correlationContext;
         _sink = sink;
 
         Id = Guid.NewGuid();
@@ -45,7 +47,11 @@ internal sealed class TransactionScopeImplementation : ITransactionScope
 
     public Guid? ParentId { get; }
 
-    public void SetUser(string? user) => _record.User = user;
+    public void SetUser(string? user)
+    {
+        _record.User = user;
+        _correlationContext.SetUser(user);
+    }
 
     public void SetUrl(string? url, string? baseUrl = null)
     {

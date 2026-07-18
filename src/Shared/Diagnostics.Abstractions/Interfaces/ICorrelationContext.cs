@@ -27,9 +27,21 @@ public interface ICorrelationContext
     string CurrentCategory { get; }
 
     /// <summary>
+    /// User of the innermost open transaction scope, or null if none has been set.
+    /// </summary>
+    string? CurrentUser { get; }
+
+    /// <summary>
     /// Sets the correlation id for the current async flow (e.g. from an inbound header). Intended to be called once, near the start of request processing.
     /// </summary>
     void SetCorrelationId(Guid correlationId);
+
+    /// <summary>
+    /// Sets the user for the current async flow.
+    /// Used by <see cref="ITransactionScope.SetUser"/> so line logs written inside the scope inherit it.
+    /// Application code does not call this directly.
+    /// </summary>
+    void SetUser(string? user);
 
     /// <summary>
     /// Opens a new ambient transaction scope (sets current transaction id/parent id/category for the current async flow) and returns a disposable that restores the previous ambient state.

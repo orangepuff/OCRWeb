@@ -23,12 +23,54 @@ namespace OCRWeb.Identity.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("OCRWeb.Identity.Domain.Entity.ExternalLogin", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("iId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("InsertedTime")
+                        .HasColumnType("datetime2(3)")
+                        .HasColumnName("dtInsertedTime");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("sProvider");
+
+                    b.Property<string>("ProviderKey")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("sProviderKey");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("iUserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Provider", "ProviderKey")
+                        .IsUnique()
+                        .HasDatabaseName("UQ_ExternalLogins_Provider_ProviderKey");
+
+                    b.HasIndex("UserId", "Provider")
+                        .IsUnique()
+                        .HasDatabaseName("UQ_ExternalLogins_UserId_Provider");
+
+                    b.ToTable("ExternalLogins", "identity");
+                });
+
             modelBuilder.Entity("OCRWeb.Identity.Domain.Entity.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("Id");
+                        .HasColumnName("iId");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
@@ -53,8 +95,8 @@ namespace OCRWeb.Identity.Infrastructure.Migrations
                         .HasColumnName("btIsActive");
 
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("sPasswordHash");
 
                     b.Property<DateTime?>("UpdatedTime")
@@ -74,6 +116,15 @@ namespace OCRWeb.Identity.Infrastructure.Migrations
                         .HasDatabaseName("UQ_Users_Username");
 
                     b.ToTable("Users", "identity");
+                });
+
+            modelBuilder.Entity("OCRWeb.Identity.Domain.Entity.ExternalLogin", b =>
+                {
+                    b.HasOne("OCRWeb.Identity.Domain.Entity.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

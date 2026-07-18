@@ -132,4 +132,53 @@ public class CorrelationContextTests
 
         Assert.Null(exception);
     }
+
+    [Fact]
+    public void CurrentUser_WhenNeverSet_IsNull()
+    {
+        var sut = new CorrelationContext();
+
+        Assert.Null(sut.CurrentUser);
+    }
+
+    [Fact]
+    public void SetUser_ThenCurrentUser_ReturnsTheSetValue()
+    {
+        var sut = new CorrelationContext();
+
+        sut.SetUser("alice");
+
+        Assert.Equal("alice", sut.CurrentUser);
+    }
+
+    [Fact]
+    public void PushTransaction_NestedScope_InheritsEnclosingScopesUser()
+    {
+        var sut = new CorrelationContext();
+        sut.SetUser("alice");
+
+        using (sut.PushTransaction(Guid.NewGuid(), null, "Outer"))
+        {
+            // A scope opened after the user is already known should not start with a blank user.
+            Assert.Equal("alice", sut.CurrentUser);
+        }
+    }
+
+    [Fact]
+    public void SetUser_InsideNestedScope_DoesNotLeakIntoEnclosingScopeAfterDispose()
+    {
+        var sut = new CorrelationContext();
+
+        using (sut.PushTransaction(Guid.NewGuid(), null, "Outer"))
+        {
+            using (sut.PushTransaction(Guid.NewGuid(), null, "Inner"))
+            {
+                sut.SetUser("bob");
+                Assert.Equal("bob", sut.CurrentUser);
+            }
+
+            // Disposing the inner scope must restore the outer scope's user, not keep the inner one.
+            Assert.Null(sut.CurrentUser);
+        }
+    }
 }

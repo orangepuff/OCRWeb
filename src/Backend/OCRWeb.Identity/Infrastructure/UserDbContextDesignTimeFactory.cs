@@ -3,7 +3,9 @@ using OCRWeb.Shared.Infrastructure.Design;
 
 namespace OCRWeb.Identity.Infrastructure;
 
-/// <summary>Design-time factory for <see cref="UserDbContext"/> (see the shared base).</summary>
+/// <summary>
+/// Design-time factory for <see cref="UserDbContext"/> (see the shared base).
+/// </summary>
 public class UserDbContextDesignTimeFactory : DesignTimeDbContextFactoryBase<UserDbContext>
 {
     protected override string MigrationsHistorySchema => UserDbContext.Schema;

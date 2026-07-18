@@ -31,6 +31,7 @@ public sealed class LogsTarget : Target
     internal const string CorrelationIdPropertyKey = "__Diagnostics.CorrelationId";
     internal const string TransactionIdPropertyKey = "__Diagnostics.TransactionId";
     internal const string CategoryPropertyKey = "__Diagnostics.Category";
+    internal const string UserPropertyKey = "__Diagnostics.User";
 
     private BoundedBatchWriter<LogRow>? _writer;
     private int _environmentId;
@@ -114,7 +115,7 @@ public sealed class LogsTarget : Target
             Message: logEvent.FormattedMessage,
             Exception: logEvent.Exception?.ToString(),
             Severity: logEvent.Level.Name,
-            User: logEvent.Properties.TryGetValue("User", out var user) ? user?.ToString() : null,
+            User: logEvent.Properties.TryGetValue(UserPropertyKey, out var user) ? user as string : null,
             CustomAttributesJson: SerializeCustomAttributes(logEvent));
 
         _writer?.Enqueue(row);
@@ -160,7 +161,7 @@ public sealed class LogsTarget : Target
     }
 
     private static bool IsInternalPropertyKey(string key) =>
-        key is CorrelationIdPropertyKey or TransactionIdPropertyKey or CategoryPropertyKey;
+        key is CorrelationIdPropertyKey or TransactionIdPropertyKey or CategoryPropertyKey or UserPropertyKey;
 
     private async Task FlushBatchAsync(IReadOnlyList<LogRow> rows, CancellationToken ct)
     {

@@ -408,3 +408,11 @@ FodyWeavers.xsd
 !tests/Shared/Logs/**
 tests/Shared/Logs/**/bin/
 tests/Shared/Logs/**/obj/
+
+# Docker Compose secrets (Google OAuth client secret, RS256 internal token keypair) — never commit.
+# See docs/Authentication/prepare-for-dev.docx §6. .env.example is the committed template.
+.env
+
+# Dev HTTPS cert material — the .pfx itself plus the decrypted PEM cert/key extracted from it
+# for the Angular dev server. Never commit any of these, decrypted or not.
+certs/

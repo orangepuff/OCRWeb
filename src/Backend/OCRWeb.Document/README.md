@@ -23,7 +23,7 @@ PDF manipulation uses **PDFsharp** (MIT). The `IPdfManipulator` port lives in Ap
 ## Database
 
 The app does **not** create the database — it is assumed to already exist. Schema and tables
-are created by EF Core migrations when `bMigration = true` (see `OCRWeb.API`).
+are created by EF Core migrations when `DoMigration = true` (see `OCRWeb.API`).
 
 Create the shared database once (if it does not exist):
 

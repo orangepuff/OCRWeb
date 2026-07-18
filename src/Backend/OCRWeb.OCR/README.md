@@ -18,7 +18,7 @@ Infrastructure/ OcrDbContext, DesignTimeDbContextFactory, ModuleRegistration
 ## Database
 
 The app does **not** create the database — it is assumed to already exist. Schema and tables
-are created by EF Core migrations when `bMigration = true` (see `OCRWeb.API`).
+are created by EF Core migrations when `DoMigration = true` (see `OCRWeb.API`).
 
 No migration exists yet (no aggregates are mapped). Once the first entity + configuration is
 added, create the initial migration with the **API as the startup project**:

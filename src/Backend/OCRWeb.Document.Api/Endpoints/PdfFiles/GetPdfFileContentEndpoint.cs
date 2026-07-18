@@ -1,5 +1,6 @@
 using FastEndpoints;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using OCRWeb.Document.Application.Queries.GetPdfFileContent;
 
 namespace OCRWeb.Document.Api.Endpoints.PdfFiles;
@@ -16,7 +17,7 @@ public class GetPdfFileContentEndpoint(IMediator mediator)
     public override void Configure()
     {
         Get("/pdf-files/{id}/content");
-        AllowAnonymous();
+        AuthSchemes(JwtBearerDefaults.AuthenticationScheme);
     }
 
     public override async Task HandleAsync(GetPdfFileContentEndpointRequest req, CancellationToken ct)

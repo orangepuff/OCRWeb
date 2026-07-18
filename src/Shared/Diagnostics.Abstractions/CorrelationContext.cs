@@ -9,7 +9,7 @@ namespace Diagnostics.Abstractions;
 /// </summary>
 public sealed class CorrelationContext : ICorrelationContext
 {
-    private sealed record State(Guid CorrelationId, Guid? TransactionId, Guid? ParentTransactionId, string Category);
+    private sealed record State(Guid CorrelationId, Guid? TransactionId, Guid? ParentTransactionId, string Category, string? User);
 
     private readonly AsyncLocal<State?> _ambient = new();
 
@@ -22,9 +22,9 @@ public sealed class CorrelationContext : ICorrelationContext
             {
                 return current.CorrelationId;
             }
-            
+
             var generated = Guid.NewGuid();
-            _ambient.Value = new State(generated, null, null, CategoryNames.None);
+            _ambient.Value = new State(generated, null, null, CategoryNames.None, null);
             return generated;
         }
     }
@@ -35,12 +35,22 @@ public sealed class CorrelationContext : ICorrelationContext
 
     public string CurrentCategory => _ambient.Value?.Category ?? CategoryNames.None;
 
+    public string? CurrentUser => _ambient.Value?.User;
+
     public void SetCorrelationId(Guid correlationId)
     {
         var current = _ambient.Value;
         _ambient.Value = current is null
-            ? new State(correlationId, null, null, CategoryNames.None)
+            ? new State(correlationId, null, null, CategoryNames.None, null)
             : current with { CorrelationId = correlationId };
+    }
+
+    public void SetUser(string? user)
+    {
+        var current = _ambient.Value;
+        _ambient.Value = current is null
+            ? new State(Guid.NewGuid(), null, null, CategoryNames.None, user)
+            : current with { User = user };
     }
 
     public IDisposable PushTransaction(Guid transactionId, Guid? parentTransactionId, string category)
@@ -48,7 +58,7 @@ public sealed class CorrelationContext : ICorrelationContext
         var previous = _ambient.Value;
         var correlationId = previous?.CorrelationId ?? Guid.NewGuid();
 
-        _ambient.Value = new State(correlationId, transactionId, parentTransactionId, category);
+        _ambient.Value = new State(correlationId, transactionId, parentTransactionId, category, previous?.User);
 
         return new RestoreScope(_ambient, previous);
     }

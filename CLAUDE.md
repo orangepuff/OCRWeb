@@ -21,6 +21,10 @@ This repo uses **Conventional Commits**: `type(scope): summary`, e.g. `feat(back
 
 One top-level/public type per file (class, record, interface, enum), filename matching the type name. Private nested helper types (e.g. a small `private sealed class`/`record` used only internally, like `CorrelationContext.State`/`RestoreScope`) are exempt and may stay in the same file as their containing type.
 
+FastEndpoints Request/Response DTOs are not exempt from the one-type-per-file rule: give each its own file (e.g. `GoogleProvisionRequest.cs`, `GoogleProvisionResponse.cs`), separate from the `Endpoint` class itself. Some existing endpoint files (e.g. `UploadPdfEndpoint.cs`) colocate them and predate this rule; apply the split to new endpoints you write, don't reformat old ones just to conform.
+
+Group every file belonging to a single operation into one subfolder named after that operation, even though the files inside serve different roles (Request, Response, Endpoint) — e.g. `Endpoints/Internal/IsUserActive/` holding `IsUserActiveRequest.cs`, `IsUserActiveResponse.cs`, `IsUserActiveEndpoint.cs`. This mirrors the existing `Application/Commands/<Name>/` and `Application/Queries/<Name>/` convention, extended to endpoints. Some existing endpoint folders instead group several different operations under one shared area folder (e.g. `OCRWeb.Document.Api/Endpoints/PdfFiles/` holding Upload/Crop/List/Get endpoints together) and predate this rule; apply the per-operation split to new endpoints you write.
+
 Once a project/area has more than 1 interface, move interfaces into an `Interfaces/` subfolder, with the namespace matching the folder (e.g. `Diagnostics.Abstractions.Interfaces` for files under `Diagnostics.Abstractions/Interfaces/`) — update every consuming file's `using` accordingly, not just the moved files.
 
 Once a parent folder has more than 1 class of the same role (e.g. resolvers, policies, validators), group them into a role-named subfolder under that parent, with the namespace matching the folder (e.g. multiple `*Resolver` classes under `Diagnostics.NLog/Lookups/` move into `Diagnostics.NLog/Lookups/Resolvers/`, namespace `Diagnostics.NLog.Lookups.Resolvers`) — update every consuming file's `using` accordingly, not just the moved files.
@@ -30,6 +34,8 @@ Always brace `if`/`else`/`for`/`foreach`/`while` bodies, even single-statement o
 XML doc `<summary>` text should be short and precise: one line per sentence, no run-on multi-clause paragraphs.
 
 `<summary>` and `</summary>` each go on their own line, never inline with the text — wrong: `/// <summary>Opts an <see cref="IHttpClientBuilder"/> into outbound X-Correlation-ID propagation.</summary>`; right: `<summary>` on its own `///` line, the sentence(s) below it, `</summary>` on its own `///` line.
+
+Every `ILogger` call includes a `LogPrefix` identifying the class and method as the first structured parameter, built from `nameof(...)` so renames stay safe: `private const string LogPrefix = nameof(ProvisionGoogleUserCommandHandler) + "." + nameof(Handle);` for a single-method class (e.g. a MediatR handler's `Handle`), or a local `const string LogPrefix = ...` declared inside each method for classes with more than one. Usage: `logger.LogInformation("{LogPrefix}: did the thing", LogPrefix)`.
 
 ## Commands
 
@@ -70,7 +76,7 @@ Dev HTTPS cert (mounted into API/BFF containers):
 dotnet dev-certs https -ep .\certs\ocrweb-devcert.pfx -p "Your_dev_cert_password123!"
 ```
 
-EF Core migrations run automatically on API startup **only** when `bMigration: true` in appsettings (applies to all modules at once; the flag is off by default in `appsettings.json`, on in `appsettings.Development.json`). Migrations create schema/tables, never the database itself.
+EF Core migrations run automatically on API startup **only** when `DoMigration: true` in appsettings (applies to all modules at once; the flag is off by default in `appsettings.json`, on in `appsettings.Development.json`). Migrations create schema/tables, never the database itself.
 
 Frontend (Angular 22 + Angular Material) is not yet scaffolded — `src/Frontend/OCRWeb.Frontend` currently holds only a placeholder.
 
@@ -90,11 +96,11 @@ Persistence is a **single SQL Server database** (`OCRWeb`), one schema + one EF 
 | `OCRWeb.Pdf` (+ `.Contract`) | none | cross-cutting technical library: PDF manipulation via PDFsharp behind an `IPdfManipulator` port |
 | `OCRWeb.OCR` (+ `.Contract`) | none | future context — page extraction, job queue, recognition, indexing are out of scope for now |
 | `OCRWeb.Shared` | none | shared DDD primitives (`ICurrentUser`, `IAuditable`, `AuditableEntity` with `MarkInserted`/`MarkUpdated`) reused by all modules |
-| `OCRWeb.API` | none of its own | web host / composition root; FastEndpoints → MediatR; runs migrations + admin seeding on startup when `bMigration` is true; `CurrentUser` is a stub until real auth exists |
+| `OCRWeb.API` | none of its own | web host / composition root; FastEndpoints → MediatR; runs migrations + admin seeding on startup when `DoMigration` is true; `CurrentUser` is a stub until real auth exists |
 | `OCRWeb.Bff` | none | Scaffold — Backend-for-Frontend facade for Angular, meant to be the auth boundary; Angular talks only to the BFF, never directly to the API |
 | `OCRWeb.Frontend` / `OCRWeb.Frontend.Shared` | — | Planned, not scaffolded |
 
-Column naming convention: DB columns use a type prefix (`s` string, `i` int, `dt` datetime, `b` bool, `x` xml, etc.); domain models keep clean names — prefixes live only in the EF mapping layer. Audit fields (`iInsertedUserId`/`dtInsertedTime`, nullable `iUpdatedUserId`/`dtUpdatedTime`) are set explicitly in command handlers, not via an EF interceptor.
+Column naming convention: every DB column, with no exceptions, uses a type prefix (`s` string, `i` int, `dt` datetime, `bt` bool, `x` xml, etc.) — this includes a table's own primary key (`iId`, not bare `Id`); domain models keep clean names — prefixes live only in the EF mapping layer. Audit fields (`iInsertedUserId`/`dtInsertedTime`, nullable `iUpdatedUserId`/`dtUpdatedTime`) are set explicitly in command handlers, not via an EF interceptor.
 
 Tests live under `tests/unit` (xUnit + Moq, one project per bounded context) and `tests/integration` (FastEndpoints contract tests for API/Bff, Playwright for the frontend once it exists); `tests/component` also exists.
 

@@ -11,7 +11,7 @@ public class User
     public string Username { get; private set; } = string.Empty;
     public string? Email { get; private set; }
     public string? DisplayName { get; private set; }
-    public string PasswordHash { get; private set; } = string.Empty;
+    public string? PasswordHash { get; private set; }
     public bool IsActive { get; private set; }
     public DateTime InsertedTime { get; private set; }
     public DateTime? UpdatedTime { get; private set; }
@@ -21,8 +21,10 @@ public class User
     public User(string username, string? email, string? displayName, DateTime utcNow)
     {
         if (string.IsNullOrWhiteSpace(username))
+        {
             throw new ArgumentException("Username is required.", nameof(username));
-
+        }
+        
         Username = username.Trim();
         Email = string.IsNullOrWhiteSpace(email) ? null : email.Trim();
         DisplayName = string.IsNullOrWhiteSpace(displayName) ? null : displayName.Trim();
@@ -34,7 +36,9 @@ public class User
     public void SetPasswordHash(string passwordHash, DateTime utcNow)
     {
         if (string.IsNullOrWhiteSpace(passwordHash))
+        {
             throw new ArgumentException("Password hash is required.", nameof(passwordHash));
+        }
 
         PasswordHash = passwordHash;
         UpdatedTime = utcNow;

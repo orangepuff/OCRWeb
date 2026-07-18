@@ -2,6 +2,8 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 COPY ["OCRWeb.slnx", "./"]
+COPY ["Directory.Packages.props", "./"]
+COPY ["NuGet.config", "./"]
 COPY ["src/Backend/OCRWeb.API/OCRWeb.API.csproj", "src/Backend/OCRWeb.API/"]
 COPY ["src/Backend/OCRWeb.Document/OCRWeb.Document.csproj", "src/Backend/OCRWeb.Document/"]
 COPY ["src/Backend/OCRWeb.Document.Api/OCRWeb.Document.Api.csproj", "src/Backend/OCRWeb.Document.Api/"]

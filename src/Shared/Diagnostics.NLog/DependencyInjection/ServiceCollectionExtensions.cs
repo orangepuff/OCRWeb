@@ -52,7 +52,8 @@ public static class ServiceCollectionExtensions
             sp.GetRequiredService<ICategoryResolver>(),
             options));
 
-        services.AddSingleton<ITransactionLogger, TransactionLoggerImplementation>();
+        services.AddSingleton<TransactionLoggerImplementation>();
+        services.AddSingleton<ITransactionLogger>(sp => sp.GetRequiredService<TransactionLoggerImplementation>());
 
         services.AddHostedService<DiagnosticsConfigHostedService>();
 

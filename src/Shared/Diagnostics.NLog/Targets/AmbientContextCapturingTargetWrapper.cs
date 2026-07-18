@@ -25,6 +25,7 @@ public sealed class AmbientContextCapturingTargetWrapper : WrapperTargetBase
         logEvent.LogEvent.Properties[LogsTarget.CorrelationIdPropertyKey] = _correlationContext.CorrelationId;
         logEvent.LogEvent.Properties[LogsTarget.TransactionIdPropertyKey] = _correlationContext.CurrentTransactionId;
         logEvent.LogEvent.Properties[LogsTarget.CategoryPropertyKey] = _correlationContext.CurrentCategory;
+        logEvent.LogEvent.Properties[LogsTarget.UserPropertyKey] = _correlationContext.CurrentUser;
 
         WrappedTarget.WriteAsyncLogEvent(logEvent);
     }

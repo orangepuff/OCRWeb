@@ -151,3 +151,51 @@ Initial Recorded Versions
   To: Implemented, wired into OCRWeb.API against a new DiagnosticLogs connection string
   Reason: Implements docs/diagnostics-logging-design.md — reusable, product-neutral observability library with zero OCRWeb.* dependency
   Updated By: Claude
+
+- Date: 2026-07-18
+  Area: Backend
+  Item: NuGet dependency management (repo-wide)
+  From: Per-project <PackageReference Version="..."> across 25 .csproj files
+  To: Central Package Management — new Directory.Packages.props at repo root, all PackageReference entries de-versioned
+  Reason: Avoid divergent package versions across the growing number of modules as the Google login work adds new dependencies
+  Updated By: Claude
+
+- Date: 2026-07-18
+  Area: Backend
+  Item: MediatR (OCRWeb.Identity)
+  From: MediatR.Contracts 2.0.1 (interfaces only, no mediator implementation)
+  To: MediatR 12.4.1 (matches OCRWeb.Document / OCRWeb.Document.Api / OCRWeb.OCR)
+  Reason: Identity previously referenced the wrong package — MediatR.Contracts alone has no IRequestHandler/Send() support, needed for the Google login provisioning command handler
+  Updated By: Claude
+
+- Date: 2026-07-18
+  Area: Backend
+  Item: Microsoft.AspNetCore.Authentication.Google (OCRWeb.Bff), System.IdentityModel.Tokens.Jwt (OCRWeb.Bff)
+  From: N/A
+  To: 10.0.10 / 8.19.2
+  Reason: Google OAuth sign-in wiring on the Bff, and minting the internal RS256 token the Bff uses to call OCRWeb.API — see docs/Authentication/authentication-design.docx
+  Updated By: Claude
+
+- Date: 2026-07-18
+  Area: Backend
+  Item: Microsoft.AspNetCore.Authentication.JwtBearer (OCRWeb.API, OCRWeb.Document.Api)
+  From: N/A
+  To: 10.0.10
+  Reason: Validate the Bff's internal RS256 tokens; also now required on all existing Document.Api endpoints after removing the CurrentUser admin-id fallback
+  Updated By: Claude
+
+- Date: 2026-07-18
+  Area: Frontend
+  Item: OCRWeb.Frontend (Angular 22 + Angular Material)
+  From: Planned (placeholder only)
+  To: Scaffolded — ng new + ng add @angular/material, AuthService/auth guard/auth-error page/session-aware header wired to the Bff auth endpoints
+  Reason: First real frontend code, built to exercise the Google sign-in flow end-to-end
+  Updated By: Claude
+
+- Date: 2026-07-18
+  Area: Frontend
+  Item: OCRWeb.Frontend.Shared
+  From: Planned (placeholder only)
+  To: Scaffold — ng generate library, no components yet
+  Reason: Reserved per development-plan.docx; not populated as part of the Google login work
+  Updated By: Claude

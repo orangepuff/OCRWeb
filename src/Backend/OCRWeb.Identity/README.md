@@ -18,7 +18,7 @@ Infrastructure/ UserDbContext, Configurations/, Repositories/,
 ## Database
 
 The app does **not** create the database — it is assumed to already exist. Schema and
-tables are created by EF Core migrations when `bMigration = true` (see `OCRWeb.API`).
+tables are created by EF Core migrations when `DoMigration = true` (see `OCRWeb.API`).
 
 Create the shared database once (if it does not exist):
 

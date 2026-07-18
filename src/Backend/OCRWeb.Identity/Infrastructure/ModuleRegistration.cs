@@ -24,8 +24,11 @@ public static class ModuleRegistration
                 sql.MigrationsHistoryTable("__EFMigrationsHistory", UserDbContext.Schema)));
 
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IUserRegistrationPolicy, ConfigurationUserRegistrationPolicy>();
         services.AddScoped<UserDbSeeder>();
         services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
+
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(ModuleRegistration).Assembly));
 
         return services;
     }
