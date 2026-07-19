@@ -100,13 +100,22 @@ to know whether a user has their own rows or inherits from a template.
 ## Bff layer
 
 `OCRWeb.Bff/Endpoints/`: `UserAdminEndpoints`, `SecurityRuleCategoryAdminEndpoints`,
-`SecurityRuleItemAdminEndpoints` (full CRUD + list, cookie-`.RequireAuthorization()`) under
-`/bff/admin/users`, `/bff/admin/security-rule-categories`, `/bff/admin/security-rule-items`;
-`AuthEndpoints` also gained `GET /bff/me/permissions` (resolves the current user's id from
-the auth cookie, calls `GetEffectivePermissionsQuery` via `IIdentityApiClient`). **None of
-these routes check anything beyond "is logged in"** — there is no admin/permission gate yet
-on the admin routes themselves, since the permission system they manage can't yet be used to
-gate access to itself without a bootstrapping story. Fix before this goes near production.
+`SecurityRuleItemAdminEndpoints` (full CRUD + list) are mapped under a single
+`app.MapGroup("/bff/admin").RequireAuthorization("AdminOnly")` in `Program.cs` — the group
+requires the `AdminOnly` policy (`RequireClaim("admin", "true")`), so every route under
+`/bff/admin/*` needs the coarse `Users.IsAdmin` bypass, not just "is logged in". The `admin`
+claim is added at Google sign-in (`OnCreatingTicket`) and refreshed every 5 minutes alongside
+the existing `IsActive` check (`OnValidatePrincipal`) — same staleness window already accepted
+there, so revoking `btAdmin` in the DB takes up to 5 minutes to take effect for an
+already-signed-in session, not instantly. `AuthEndpoints` also gained `GET
+/bff/me/permissions` (resolves the current user's id from the auth cookie, calls
+`GetEffectivePermissionsQuery` via `IIdentityApiClient`).
+
+The frontend also has its own `adminGuard` (`src/Frontend/OCRWeb.Frontend/src/app/auth/admin.guard.ts`)
+on all four `/admin/*` routes — checks `CurrentUser.isAdmin` (from `/bff/me`) and redirects a
+non-admin to `/home` instead of letting them hit a page whose API calls all 403. This is a UX
+nicety layered on top of the real boundary; the Bff's `AdminOnly` policy above is what actually
+enforces the permission.
 
 ## Frontend
 
@@ -137,10 +146,6 @@ next to other people's names too).
 ## Not yet built
 
 - Seed data / initial rule catalog.
-- Authorization gate on the `/bff/admin/*` routes themselves (see Bff layer above).
-- Header redesign (dark app bar, avatar + "Hello, {name}" dropdown menu: Settings for
-  everyone, Manage users / Manage rules / Manage themes for admins) — design approved, not
-  yet built.
 - Manage Themes: a single global `Theme` row (`PrimaryColor`, `TertiaryColor`, `DarkMode`,
   `AppName`) with an admin color-picker UI; applied at runtime via the M3 system CSS custom
   properties (`--mat-sys-primary` etc.), no rebuild needed. Scope still being refined with

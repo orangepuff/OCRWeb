@@ -9,6 +9,9 @@ using OCRWeb.Bff.Infrastructure.IdentityApiClient;
 using OCRWeb.Bff.Infrastructure.InternalToken;
 using System.Security.Claims;
 
+const string AdminClaimType = "admin";
+const string AdminOnlyPolicy = "AdminOnly";
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Diagnostics logging (Diagnostics.* — see the DiagnosticLog repo's README). Same DiagnosticLogs
@@ -107,6 +110,11 @@ builder.Services.AddAuthentication(options =>
                 return;
             }
 
+            // Re-checked every 5 minutes here (not on every request) — same staleness window
+            // already accepted for IsActive above. Revoking btAdmin in the DB takes effect for
+            // an already-signed-in session within 5 minutes, not instantly.
+            var isAdmin = await identityApiClient.IsUserAdminAsync(userId, context.HttpContext.RequestAborted);
+
             var identity = (ClaimsIdentity)context.Principal!.Identity!;
             var existingLvClaim = identity.FindFirst("lv");
             if (existingLvClaim is not null)
@@ -114,6 +122,16 @@ builder.Services.AddAuthentication(options =>
                 identity.RemoveClaim(existingLvClaim);
             }
             identity.AddClaim(new Claim("lv", DateTimeOffset.UtcNow.ToString("O")));
+
+            var existingAdminClaim = identity.FindFirst(AdminClaimType);
+            if (existingAdminClaim is not null)
+            {
+                identity.RemoveClaim(existingAdminClaim);
+            }
+            if (isAdmin)
+            {
+                identity.AddClaim(new Claim(AdminClaimType, "true"));
+            }
 
             context.ShouldRenew = true;
         };
@@ -153,6 +171,13 @@ builder.Services.AddAuthentication(options =>
             }
 
             context.Identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, result.UserId!.Value.ToString()));
+
+            // Without this, a freshly-signed-in admin would be locked out of /bff/admin/* for
+            // up to 5 minutes until OnValidatePrincipal's next periodic refresh adds the claim.
+            if (await identityApiClient.IsUserAdminAsync(result.UserId!.Value, context.HttpContext.RequestAborted))
+            {
+                context.Identity.AddClaim(new Claim(AdminClaimType, "true"));
+            }
         };
 
         options.Events.OnRemoteFailure = context =>
@@ -169,7 +194,10 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(AdminOnlyPolicy, policy => policy.RequireClaim(AdminClaimType, "true"));
+});
 
 var app = builder.Build();
 
@@ -182,9 +210,11 @@ app.UseAuthorization();
 app.UseDiagnostics();
 
 app.MapAuthEndpoints();
-app.MapUserAdminEndpoints();
-app.MapSecurityRuleCategoryAdminEndpoints();
-app.MapSecurityRuleItemAdminEndpoints();
 app.MapAvatarEndpoints();
+
+var adminGroup = app.MapGroup("/bff/admin").RequireAuthorization(AdminOnlyPolicy);
+adminGroup.MapUserAdminEndpoints();
+adminGroup.MapSecurityRuleCategoryAdminEndpoints();
+adminGroup.MapSecurityRuleItemAdminEndpoints();
 
 app.Run();
