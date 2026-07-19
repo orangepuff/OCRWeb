@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../auth/auth.service';
 
 const REASON_MESSAGES: Record<string, string> = {
@@ -9,7 +10,7 @@ const REASON_MESSAGES: Record<string, string> = {
 
 @Component({
   selector: 'app-auth-error-page',
-  imports: [],
+  imports: [MatButtonModule],
   templateUrl: './auth-error-page.html',
   styleUrl: './auth-error-page.scss'
 })

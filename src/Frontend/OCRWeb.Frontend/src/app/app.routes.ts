@@ -12,6 +12,10 @@ export const routes: Routes = [
     loadComponent: () => import('./auth-error/auth-error-page').then((m) => m.AuthErrorPage)
   },
   {
+    path: 'unauthorized',
+    loadComponent: () => import('./unauthorized/unauthorized-page').then((m) => m.UnauthorizedPage)
+  },
+  {
     path: 'home',
     canActivate: [authGuard],
     loadComponent: () => import('./home/home').then((m) => m.Home)

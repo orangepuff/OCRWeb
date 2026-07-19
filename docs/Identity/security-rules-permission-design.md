@@ -113,9 +113,10 @@ already-signed-in session, not instantly. `AuthEndpoints` also gained `GET
 
 The frontend also has its own `adminGuard` (`src/Frontend/OCRWeb.Frontend/src/app/auth/admin.guard.ts`)
 on all four `/admin/*` routes — checks `CurrentUser.isAdmin` (from `/bff/me`) and redirects a
-non-admin to `/home` instead of letting them hit a page whose API calls all 403. This is a UX
-nicety layered on top of the real boundary; the Bff's `AdminOnly` policy above is what actually
-enforces the permission.
+non-admin to `/unauthorized` (a dedicated "Access denied" page, same family as `/auth-error`)
+instead of letting them hit a page whose API calls all 403. This is a UX nicety layered on top
+of the real boundary; the Bff's `AdminOnly` policy above is what actually enforces the
+permission.
 
 ## Frontend
 

@@ -18,7 +18,7 @@ export const adminGuard: CanActivateFn = (_route, state) => {
         return true;
       }
 
-      return router.parseUrl('/home');
+      return router.parseUrl('/unauthorized');
     })
   );
 };
