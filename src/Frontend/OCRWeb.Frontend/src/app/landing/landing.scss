@@ -1,12 +1,18 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
 .landing {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100dvh;
+  height: 100%;
   gap: 1rem;
   text-align: center;
   padding: 2rem 1.5rem;
+  box-sizing: border-box;
 }
 
 .landing__hero {
