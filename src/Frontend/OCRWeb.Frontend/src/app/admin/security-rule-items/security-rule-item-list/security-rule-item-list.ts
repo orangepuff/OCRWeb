@@ -4,6 +4,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
+import { ConfirmDialog, ConfirmDialogData } from 'ocrweb.frontend.shared';
 import { SecurityRuleCategoryAdminService } from '../../security-rule-categories/security-rule-category-admin.service';
 import { SecurityRuleCategory } from '../../security-rule-categories/security-rule-category';
 import { SecurityRuleItemAdminService } from '../security-rule-item-admin.service';
@@ -104,16 +105,23 @@ export class SecurityRuleItemList implements OnInit {
   }
 
   protected deleteItem(item: SecurityRuleItem): void {
-    if (!confirm(`Delete rule item "${item.code}"?`)) {
-      return;
-    }
+    const data: ConfirmDialogData = { title: 'Delete rule item', message: `Delete rule item "${item.code}"?`, confirmLabel: 'Delete' };
 
-    this.itemAdminService.delete(item.id).subscribe((res) => {
-      if (res.success) {
-        this.reload();
-      } else {
-        this.snackBar.open(`Could not delete rule item: ${res.rejectionReason}`, 'Dismiss');
-      }
-    });
+    this.dialog
+      .open<ConfirmDialog, ConfirmDialogData, boolean>(ConfirmDialog, { data })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (!confirmed) {
+          return;
+        }
+
+        this.itemAdminService.delete(item.id).subscribe((res) => {
+          if (res.success) {
+            this.reload();
+          } else {
+            this.snackBar.open(`Could not delete rule item: ${res.rejectionReason}`, 'Dismiss');
+          }
+        });
+      });
   }
 }

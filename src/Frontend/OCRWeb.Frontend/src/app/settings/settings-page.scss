@@ -1,0 +1,17 @@
+.settings-page {
+  padding: 16px;
+  max-width: 480px;
+}
+
+.settings-page__avatar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.settings-page__avatar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

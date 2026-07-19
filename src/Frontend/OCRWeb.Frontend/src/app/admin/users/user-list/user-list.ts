@@ -4,6 +4,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
+import { ConfirmDialog, ConfirmDialogData } from 'ocrweb.frontend.shared';
 import { UserAdminService } from '../user-admin.service';
 import { User } from '../user';
 import { UserFormDialog, UserFormDialogData, UserFormDialogResult } from '../user-form-dialog/user-form-dialog';
@@ -92,16 +93,23 @@ export class UserList implements OnInit {
   }
 
   protected deleteUser(user: User): void {
-    if (!confirm(`Delete user "${user.username}"?`)) {
-      return;
-    }
+    const data: ConfirmDialogData = { title: 'Delete user', message: `Delete user "${user.username}"?`, confirmLabel: 'Delete' };
 
-    this.userAdminService.delete(user.id).subscribe((res) => {
-      if (res.success) {
-        this.reload();
-      } else {
-        this.snackBar.open(`Could not delete user: ${res.rejectionReason}`, 'Dismiss');
-      }
-    });
+    this.dialog
+      .open<ConfirmDialog, ConfirmDialogData, boolean>(ConfirmDialog, { data })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (!confirmed) {
+          return;
+        }
+
+        this.userAdminService.delete(user.id).subscribe((res) => {
+          if (res.success) {
+            this.reload();
+          } else {
+            this.snackBar.open(`Could not delete user: ${res.rejectionReason}`, 'Dismiss');
+          }
+        });
+      });
   }
 }

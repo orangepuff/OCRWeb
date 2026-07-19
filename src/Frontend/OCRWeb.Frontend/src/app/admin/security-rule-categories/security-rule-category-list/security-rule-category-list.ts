@@ -4,6 +4,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
+import { ConfirmDialog, ConfirmDialogData } from 'ocrweb.frontend.shared';
 import { SecurityRuleCategoryAdminService } from '../security-rule-category-admin.service';
 import { SecurityRuleCategory } from '../security-rule-category';
 import {
@@ -85,16 +86,27 @@ export class SecurityRuleCategoryList implements OnInit {
   }
 
   protected deleteCategory(category: SecurityRuleCategory): void {
-    if (!confirm(`Delete category "${category.categoryDesc}"?`)) {
-      return;
-    }
+    const data: ConfirmDialogData = {
+      title: 'Delete category',
+      message: `Delete category "${category.categoryDesc}"?`,
+      confirmLabel: 'Delete'
+    };
 
-    this.categoryAdminService.delete(category.id).subscribe((res) => {
-      if (res.success) {
-        this.reload();
-      } else {
-        this.snackBar.open(`Could not delete category: ${res.rejectionReason}`, 'Dismiss');
-      }
-    });
+    this.dialog
+      .open<ConfirmDialog, ConfirmDialogData, boolean>(ConfirmDialog, { data })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (!confirmed) {
+          return;
+        }
+
+        this.categoryAdminService.delete(category.id).subscribe((res) => {
+          if (res.success) {
+            this.reload();
+          } else {
+            this.snackBar.open(`Could not delete category: ${res.rejectionReason}`, 'Dismiss');
+          }
+        });
+      });
   }
 }

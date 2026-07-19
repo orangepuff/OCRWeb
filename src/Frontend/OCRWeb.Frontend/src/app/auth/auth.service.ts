@@ -1,31 +1,22 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { catchError, of, tap } from 'rxjs';
-import { CurrentUser } from './current-user';
+import { Injectable, inject } from '@angular/core';
+import { IdentityService } from 'ocrweb.frontend.shared';
 
+/**
+ * Shell-specific wrapper around the shared IdentityService — adds login() (the OAuth
+ * redirect, only the shell ever needs to trigger this) and re-exposes the shared
+ * currentUser/isAuthenticated/checked/checkSession/logout so existing call sites don't
+ * need to change.
+ */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly http = inject(HttpClient);
+  private readonly identityService = inject(IdentityService);
 
-  private readonly _currentUser = signal<CurrentUser | null>(null);
-  private readonly _checked = signal(false);
-
-  readonly currentUser = this._currentUser.asReadonly();
-  readonly isAuthenticated = computed(() => this._currentUser() !== null);
-  readonly checked = this._checked.asReadonly();
+  readonly currentUser = this.identityService.currentUser;
+  readonly isAuthenticated = this.identityService.isAuthenticated;
+  readonly checked = this.identityService.checked;
 
   checkSession() {
-    return this.http.get<CurrentUser>('/bff/me').pipe(
-      tap((user) => {
-        this._currentUser.set(user);
-        this._checked.set(true);
-      }),
-      catchError(() => {
-        this._currentUser.set(null);
-        this._checked.set(true);
-        return of(null);
-      })
-    );
+    return this.identityService.checkSession();
   }
 
   login(returnUrl: string): void {
@@ -39,8 +30,6 @@ export class AuthService {
   }
 
   logout() {
-    return this.http.post('/bff/logout', {}).pipe(
-      tap(() => this._currentUser.set(null))
-    );
+    return this.identityService.logout();
   }
 }

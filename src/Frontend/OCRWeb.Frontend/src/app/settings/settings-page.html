@@ -1,0 +1,18 @@
+<div class="settings-page">
+  <h1>Settings</h1>
+
+  <section class="settings-page__avatar">
+    <lib-avatar
+      [userId]="identityService.currentUser()?.userId ?? ''"
+      [displayName]="identityService.currentUser()?.displayName ?? null"
+      [size]="96"
+      [version]="avatarVersion()"
+    />
+
+    <div class="settings-page__avatar-actions">
+      <button mat-flat-button type="button" (click)="fileInput.click()">Upload photo</button>
+      <button mat-button type="button" (click)="removeAvatar()">Remove</button>
+      <input #fileInput type="file" accept="image/*" hidden (change)="onFileSelected($event)" />
+    </div>
+  </section>
+</div>

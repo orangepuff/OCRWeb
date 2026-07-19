@@ -1,17 +1,47 @@
 <header class="app-header">
   <span class="app-header__title">OCRWeb</span>
 
-  @if (authService.checked()) {
-    @if (authService.isAuthenticated()) {
-      <nav class="app-header__nav">
-        <a routerLink="/admin/users">Users</a>
-        <a routerLink="/admin/security-rule-categories">Rule categories</a>
-        <a routerLink="/admin/security-rule-items">Rule items</a>
-      </nav>
-      <div class="app-header__user">
-        <span>{{ authService.currentUser()?.displayName ?? authService.currentUser()?.email }}</span>
-        <button type="button" (click)="signOut()">Sign out</button>
-      </div>
-    }
+  @if (authService.checked() && authService.isAuthenticated()) {
+    <button type="button" class="app-header__trigger" [matMenuTriggerFor]="userMenu">
+      <lib-avatar
+        [userId]="authService.currentUser()!.userId"
+        [displayName]="authService.currentUser()!.displayName"
+        [size]="30"
+      />
+      <span>Hello, {{ authService.currentUser()!.displayName ?? authService.currentUser()!.email }}</span>
+      <mat-icon>expand_more</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu">
+      <a mat-menu-item routerLink="/settings">
+        <mat-icon>settings</mat-icon>
+        Settings
+      </a>
+
+      @if (authService.currentUser()!.isAdmin) {
+        <div class="app-header__menu-section">Admin</div>
+        <a mat-menu-item routerLink="/admin/users">
+          <mat-icon>group</mat-icon>
+          Manage users
+        </a>
+        <a mat-menu-item routerLink="/admin/security-rule-categories">
+          <mat-icon>verified_user</mat-icon>
+          Manage rule categories
+        </a>
+        <a mat-menu-item routerLink="/admin/security-rule-items">
+          <mat-icon>rule</mat-icon>
+          Manage rule items
+        </a>
+        <a mat-menu-item routerLink="/admin/themes">
+          <mat-icon>palette</mat-icon>
+          Manage themes
+        </a>
+      }
+
+      <button mat-menu-item type="button" (click)="signOut()">
+        <mat-icon>logout</mat-icon>
+        Sign out
+      </button>
+    </mat-menu>
   }
 </header>
