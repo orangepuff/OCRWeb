@@ -199,3 +199,27 @@ Initial Recorded Versions
   To: Scaffold — ng generate library, no components yet
   Reason: Reserved per development-plan.docx; not populated as part of the Google login work
   Updated By: Claude
+
+- Date: 2026-07-19
+  Area: Backend
+  Item: Diagnostics.Abstractions (OCRWeb.API, OCRWeb.Identity)
+  From: In-repo ProjectReference (src/Shared/Diagnostics.Abstractions)
+  To: NuGet PackageReference 0.1.0 (restored from a temporary local folder feed until published to nuget.org)
+  Reason: Extracted the Diagnostics.* logging library into its own repo (DiagnosticLog) for reuse/packaging, per the design doc's original decoupling plan
+  Updated By: Claude
+
+- Date: 2026-07-19
+  Area: Backend
+  Item: Diagnostics.NLog (OCRWeb.API)
+  From: In-repo ProjectReference (src/Shared/Diagnostics.NLog)
+  To: NuGet PackageReference 0.1.0 (restored from a temporary local folder feed until published to nuget.org)
+  Reason: Extracted the Diagnostics.* logging library into its own repo (DiagnosticLog) for reuse/packaging, per the design doc's original decoupling plan
+  Updated By: Claude
+
+- Date: 2026-07-19
+  Area: Backend
+  Item: Diagnostics.AspNetCore (OCRWeb.API)
+  From: In-repo ProjectReference (src/Shared/Diagnostics.AspNetCore)
+  To: NuGet PackageReference 0.1.0 (restored from a temporary local folder feed until published to nuget.org)
+  Reason: Extracted the Diagnostics.* logging library into its own repo (DiagnosticLog) for reuse/packaging, per the design doc's original decoupling plan
+  Updated By: Claude

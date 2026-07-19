@@ -11,7 +11,7 @@ Two files are the source of truth for project history and stay updated whenever 
 
 Both docs currently describe some projects with names/status that differ slightly from what exists in `src/` (e.g. the plan's "OCRWeb.DocumentProcessing" and "OCRWeb.Contract" correspond to the actual `OCRWeb.Document*` and `*.Contract` projects). Reconcile naming as you touch each area rather than assuming the docx is fully current.
 
-- **`docs/`** — whenever a new feature is implemented, add a design/reference doc for it here (follow the style of the existing `docs/diagnostics-logging-design.md` + `docs/diagnostics-logs-schema.sql` pair: a Markdown design doc, plus a `.sql` file if the feature owns database objects). Do this as part of implementing the feature, not as an afterthought.
+- **`docs/`** — whenever a new feature is implemented, add a design/reference doc for it here (a Markdown design doc, plus a `.sql` file if the feature owns database objects — see the `diagnostics-logging-design.md` + `diagnostics-logs-schema.sql` pair in the separate `DiagnosticLog` repo for the style to follow). Do this as part of implementing the feature, not as an afterthought.
 
 ## Commit messages
 
@@ -45,8 +45,6 @@ Backend (.NET 10, solution file is `OCRWeb.slnx`):
 dotnet build OCRWeb.slnx
 dotnet test OCRWeb.slnx                                   # all unit + integration tests
 dotnet test tests/unit/OCRWeb.Document.UnitTests           # single test project
-dotnet test tests/Shared/Logs/unit/Diagnostics.Logs.UnitTests               # Diagnostics unit tests
-dotnet test tests/Shared/Logs/integration/Diagnostics.Logs.IntegrationTests # Diagnostics integration tests — needs a real DiagnosticLogs DB, see below
 dotnet test --filter "FullyQualifiedName~ClassName.MethodName"  # single test
 ```
 
@@ -104,16 +102,16 @@ Column naming convention: every DB column, with no exceptions, uses a type prefi
 
 Tests live under `tests/unit` (xUnit + Moq, one project per bounded context) and `tests/integration` (FastEndpoints contract tests for API/Bff, Playwright for the frontend once it exists); `tests/component` also exists.
 
-### Diagnostics logging (separate, reusable concern)
+### Diagnostics logging (external dependency)
 
-`docs/diagnostics-logging-design.md` and `docs/diagnostics-logs-schema.sql` describe the observability library implemented under `src/Shared/Diagnostics.*` (root namespace `Diagnostics.*`, intentionally decoupled from `OCRWeb.*` so it can eventually ship as its own NuGet package). Key points:
+The observability library (`Diagnostics.Abstractions`/`.NLog`/`.AspNetCore` — NLog-backed logging to a
+`DiagnosticLogs` database, `[Logs]`/`[Transactions]` sinks via `SqlBulkCopy`, `X-Correlation-ID`
+propagation) used to live in-repo under `src/Shared/Diagnostics.*`; it has been extracted into its own
+repo, **`DiagnosticLog`**, and is now consumed by `OCRWeb.API`/`OCRWeb.Identity` as a NuGet
+`PackageReference` (versions pinned in `Directory.Packages.props`). Its design doc, DB schema script,
+and tests all live in that repo now — see `DiagnosticLog`'s own `docs/diagnostics-logging-design.md` and
+README for details.
 
-- Own database (`DiagnosticLogs`), separate from `OCRWeb` — tables `Environments`, `Configurations`, `Categories`, `Transactions`, `Logs`.
-- Two independent sinks via NLog custom targets + `SqlBulkCopy`: `[Logs]` (severity line logs via `ILogger`) and `[Transactions]` (operation telemetry via `ITransactionScope`, opened through `ITransactionLogger.BeginTransaction(category, message)`).
-- Body capture (`RequestJson`/`ResponseXml`/etc.) is explicit per call, never automatic; the ASP.NET middleware only captures metadata.
-- No EF Core for this library — Dapper for the small config/lookup reads, SqlBulkCopy for writes (columnstore-friendly).
-- `docs/diagnostics-logs-schema.sql` is idempotent (`IF OBJECT_ID(...) IS NULL` / `IF NOT EXISTS` guards) — safe to re-run.
-
-Tests live under `tests/Shared/Logs/{unit,integration}/Diagnostics.Logs.{UnitTests,IntegrationTests}`, mirroring the `tests/unit`/`tests/integration` split above rather than living alongside `OCRWeb.*`'s bounded-context tests. The integration project (`Diagnostics.Logs.IntegrationTests`) exercises the real pipeline end-to-end (writes via `ILogger`, then reads back `[dbo].[Logs]`) against a real SQL Server — its own `appsettings.json` holds `ConnectionStrings:DiagnosticLogs` (same convention as `OCRWeb.API`'s `appsettings.Development.json`) and it runs `docs/diagnostics-logs-schema.sql` itself on startup since the script is idempotent, so no manual schema step is needed beyond having a reachable SQL Server.
-
-Note: `.gitignore`'s generic `[Ll]ogs/` build-output rule collides with the `tests/Shared/Logs` folder name — it's explicitly un-ignored near the bottom of `.gitignore`. Don't remove that override.
+Until `Diagnostics.*` is published to nuget.org, `NuGet.config` here points at a temporary local-folder
+source (`D:\DiagnosticLog\artifacts`, produced by `dotnet pack` in the `DiagnosticLog` repo) — remove
+that source and re-pin the `Version` once the real nuget.org publish happens.

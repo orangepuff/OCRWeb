@@ -401,13 +401,6 @@ FodyWeavers.xsd
 *.sln.iml
 
 # Project-specific overrides
-# The generic [Ll]ogs/ build-output rule above also matches our tests/Shared/Logs test project
-# folder (named after the Logs feature it tests, not a log-output directory) — un-ignore it, but
-# keep its own bin/obj build output ignored as usual.
-!tests/Shared/Logs/
-!tests/Shared/Logs/**
-tests/Shared/Logs/**/bin/
-tests/Shared/Logs/**/obj/
 
 # Docker Compose secrets (Google OAuth client secret, RS256 internal token keypair) — never commit.
 # See docs/Authentication/prepare-for-dev.docx §6. .env.example is the committed template.
