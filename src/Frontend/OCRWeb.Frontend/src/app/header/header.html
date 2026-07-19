@@ -12,8 +12,6 @@
         <span>{{ authService.currentUser()?.displayName ?? authService.currentUser()?.email }}</span>
         <button type="button" (click)="signOut()">Sign out</button>
       </div>
-    } @else {
-      <button type="button" (click)="signIn()">Sign in with Google</button>
     }
   }
 </header>

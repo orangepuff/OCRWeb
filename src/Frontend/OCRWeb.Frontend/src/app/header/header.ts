@@ -16,10 +16,6 @@ export class Header implements OnInit {
     this.authService.checkSession().subscribe();
   }
 
-  protected signIn(): void {
-    this.authService.login('/home');
-  }
-
   protected signOut(): void {
     this.authService.logout().subscribe(() => this.router.navigateByUrl('/'));
   }
