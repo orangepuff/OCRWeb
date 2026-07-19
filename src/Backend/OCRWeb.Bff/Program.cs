@@ -11,13 +11,13 @@ using System.Security.Claims;
 var builder = WebApplication.CreateBuilder(args);
 
 // Diagnostics logging (Diagnostics.* — see the DiagnosticLog repo's README). Same DiagnosticLogs
-// database as OCRWeb.API, scoped to this app via a distinct LoggerName so NLog rules can be
-// tuned per-component.
+// database and LoggerName ("NLogLogger") as OCRWeb.API, so both share one set of DB-configured
+// NLog rules; give this a distinct LoggerName instead if it ever needs its own rule tuning.
 builder.Services.AddDiagnostics(options =>
 {
     options.ConnectionString = builder.Configuration.GetConnectionString("DiagnosticLogs")
         ?? throw new InvalidOperationException("ConnectionStrings:DiagnosticLogs is not configured.");
-    options.LoggerName = builder.Configuration["Diagnostics:LoggerName"] ?? "OCRWeb.Bff";
+    options.LoggerName = builder.Configuration["Diagnostics:LoggerName"] ?? "NLogLogger";
     options.EnvironmentName = builder.Configuration["Diagnostics:EnvironmentName"] ?? "DEV";
 });
 builder.Services.AddDiagnosticsAspNetCore();
