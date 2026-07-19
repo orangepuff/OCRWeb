@@ -20,7 +20,7 @@ public class SecurityRuleItem : AuditableEntity
 
     private SecurityRuleItem() { } // EF
 
-    public SecurityRuleItem(int categoryId, string code, string description, RuleType ruleType, int userId, DateTime utcNow)
+    public SecurityRuleItem(int categoryId, string code, string description, RuleType ruleType, string? textCode, int? sortOrder, int userId, DateTime utcNow)
     {
         if (string.IsNullOrWhiteSpace(code))
         {
@@ -36,6 +36,8 @@ public class SecurityRuleItem : AuditableEntity
         Code = code.Trim();
         Description = description.Trim();
         RuleType = ruleType;
+        TextCode = string.IsNullOrWhiteSpace(textCode) ? null : textCode.Trim();
+        SortOrder = sortOrder;
         MarkInserted(userId, utcNow);
     }
 
@@ -48,6 +50,21 @@ public class SecurityRuleItem : AuditableEntity
     public void SetHidden(bool hidden, int userId, DateTime utcNow)
     {
         Hidden = hidden;
+        MarkUpdated(userId, utcNow);
+    }
+
+    public void UpdateDetails(int categoryId, string description, RuleType ruleType, string? textCode, int? sortOrder, int userId, DateTime utcNow)
+    {
+        if (string.IsNullOrWhiteSpace(description))
+        {
+            throw new ArgumentException("Description is required.", nameof(description));
+        }
+
+        CategoryId = categoryId;
+        Description = description.Trim();
+        RuleType = ruleType;
+        TextCode = string.IsNullOrWhiteSpace(textCode) ? null : textCode.Trim();
+        SortOrder = sortOrder;
         MarkUpdated(userId, utcNow);
     }
 }

@@ -31,4 +31,16 @@ public class SecurityRuleCategory : AuditableEntity
         Hidden = hidden;
         MarkUpdated(userId, utcNow);
     }
+
+    public void UpdateDetails(string categoryDesc, string? textCode, int userId, DateTime utcNow)
+    {
+        if (string.IsNullOrWhiteSpace(categoryDesc))
+        {
+            throw new ArgumentException("CategoryDesc is required.", nameof(categoryDesc));
+        }
+
+        CategoryDesc = categoryDesc.Trim();
+        TextCode = string.IsNullOrWhiteSpace(textCode) ? null : textCode.Trim();
+        MarkUpdated(userId, utcNow);
+    }
 }

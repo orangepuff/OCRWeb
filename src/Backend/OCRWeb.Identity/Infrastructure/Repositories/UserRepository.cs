@@ -20,9 +20,17 @@ public class UserRepository(UserDbContext db) : IUserRepository
 
     public Task<bool> AnyAsync(CancellationToken ct = default) => db.Users.AnyAsync(ct);
 
+    public Task<bool> HasChildUsersAsync(int parentUserId, CancellationToken ct = default) => db.Users.AnyAsync(x => x.ParentId == parentUserId, ct);
+
     public async Task AddAsync(User user, CancellationToken ct = default) => await db.Users.AddAsync(user, ct);
 
     public async Task AddExternalLoginAsync(ExternalLogin externalLogin, CancellationToken ct = default) => await db.ExternalLogins.AddAsync(externalLogin, ct);
+
+    public Task DeleteAsync(User user, CancellationToken ct = default)
+    {
+        db.Users.Remove(user);
+        return Task.CompletedTask;
+    }
 
     public Task SaveChangesAsync(CancellationToken ct = default) => db.SaveChangesAsync(ct);
 }
