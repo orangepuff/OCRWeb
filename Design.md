@@ -1,42 +1,50 @@
 # OCRWeb Frontend — UI/UX Design
 
-> Design/planning doc for `OCRWeb.Frontend` (Angular 22 + Angular Material). Companion to `Product.md` (what the product does) and `development-plan.docx` (backend architecture). The auth shell (§5) is implemented and tested end-to-end; the project/document screens (§2) are still planning-only.
+> Design/planning doc for `OCRWeb.Frontend` (Angular 22 + Angular Material) — the template shell: auth, header, admin UI, and the body-content iframe. Companion to `Product.md` (what the eventual body app does), `development-plan.docx` (backend architecture), and `docs/Frontend/body-content-iframe-design.md` (the iframe itself). The auth shell (§5), admin UI, and Landing/Home (§2) are implemented; the body app that will actually do OCR work is a separate, not-yet-built project.
 
 ## 1. Stack & design principles
 
-- Angular 22, standalone components, Angular Material (theme TBD — see `ng add @angular/material` prompt), SCSS.
+- Angular 22, standalone components, Angular Material M3 (`mat.theme()`, cyan primary / orange tertiary — see `OCRWeb.Frontend.Shared/theme.scss`), SCSS.
 - `OCRWeb.Frontend` talks only to `OCRWeb.Bff` — never directly to `OCRWeb.API` (enforced architecturally, not just by convention).
-- `OCRWeb.Frontend.Shared` holds reusable, business-rule-free UI primitives: Text, Label, Button, CropPdf, and popup/window/form primitives. Screen-level components live in `OCRWeb.Frontend`; only genuinely reusable pieces move to `.Shared`.
+- `OCRWeb.Frontend.Shared` holds reusable UI and session state shared with any body app embedded in the shell's iframe — see §4.
+- **Every screen must be responsive.** Minimum target: usable at a 375px mobile viewport up to a 1280px+ desktop viewport, no horizontal scroll, no fixed pixel widths on layout containers. New screens pick one breakpoint (typically 600px, matching Landing's — see §2) rather than inventing bespoke ones per component. Verify with the browser's mobile and desktop presets, not just by eyeballing a wide window.
 
 ## 2. Screens
 
 | Screen | Route | Purpose | Backing use case | Status |
 |---|---|---|---|---|
-| Landing | `''` (public) | App name/blurb + explicit "Sign in with Google" button. Not guarded — anyone can see it. | Auth | Implemented |
+| Landing | `''` (public) | Hero graphic + title/tagline + explicit "Sign in with Google" button. Not guarded — anyone can see it. Content is generic/template-branded, not OCR-specific — see §2.1. | Auth | Implemented |
 | Auth error | `/auth-error` | Shown after a failed/rejected Google sign-in, with the rejection reason and a button back to sign-in | Auth (see §5) | Implemented |
-| Home | `/home` (guarded) | Placeholder post-login landing spot ("Signed in as X") until the real project list exists | — | Implemented (placeholder) |
-| Project list | `/projects` | List existing projects, entry point to create a new one | Use Case 2 | Planned |
-| New project (from PDF) | `/projects/new` | Upload a PDF to start a new project | Use Case 1 | Planned |
-| Project workspace | `/projects/:id` | View a project's files, file detail, crop tool, download/stream content | Use Case 2 | Planned |
+| Home | `/home` (guarded) | Hosts the body-content iframe (a separate embedded Angular body app, e.g. a future OCR web) — see `docs/Frontend/body-content-iframe-design.md`. Shows a placeholder when no body app is configured. | — | Implemented |
 
-`/home` is a temporary stand-in — once the project list screen exists it should likely become the guard's actual redirect target instead of `/home`.
+This shell is a template: it owns auth, the admin UI (Users/SecurityRuleCategories/SecurityRuleItems, `/admin/*`), and the header — not project/document screens. Those are expected to live in whatever body app gets embedded at `/home`, each with its own backend, not in `OCRWeb.Frontend` itself. `OCRWeb.ProjectManagement`/project-upload/workspace screens described in earlier drafts of this doc no longer apply to this shell; if this specific project's OCR functionality is ever built as the body app, it gets its own design doc rather than extending this one.
 
-Project creation/lifecycle screens are provisional — `OCRWeb.ProjectManagement` (backend) is still Planned, so this list will likely shift once that module's real shape lands.
+### 2.1 Landing hero content
+
+`Landing` (`src/app/landing/`) renders a `LandingContent` (`landing-content.ts`: `{ title, tagline, heroImageUrl? }`), currently the hardcoded `DEFAULT_LANDING_CONTENT`. Structured as its own type so a future site-settings feature (§6) can swap the constant for an HTTP-backed value with no template changes.
+
+- **`heroImageUrl` set** — renders an `<img>`, letting a project built on this template (or, once site settings exists, a per-deployment override) supply a real brand image.
+- **`heroImageUrl` unset (default)** — renders a built-in abstract graphic (four overlapping circles) instead of a literal illustration, so it never implies OCR/document functionality that belongs to the body app, not the shell. Colored entirely from Material system tokens (`var(--mat-sys-primary)`, `--mat-sys-primary-container`, `--mat-sys-secondary`) rather than hardcoded hex, so it re-themes automatically if Manage Themes (§6, planned) changes the palette.
+
+Responsive: single breakpoint at 600px — hero graphic shrinks from 220px to 160px, tagline max-width narrows, everything stays centered in a single column at both sizes (see §1).
 
 ## 3. Navigation structure
 
-- Top-level shell (`app.html`) with a header (app name, current signed-in user, sign-out) and a router outlet.
-- Header is session-aware: calls `GET /bff/me` on load; shows "Sign in with Google" if unauthenticated, or the user's display name + sign-out button if authenticated.
-- `''` (Landing) and `/auth-error` are public — no guard. Every other route (currently just `/home`) is behind `authGuard`: unauthenticated access redirects (full-page navigation) to `GET /bff/login?returnUrl=<the path the guard blocked>` so the user lands back where they were after signing in.
+- Top-level shell (`app.html`) is a fixed-height flex column: a 56px header bar, then a content area that fills the rest of the viewport (`router-outlet`) — see `docs/Frontend/body-content-iframe-design.md` for why (the iframe on `/home` needs to sit flush against the header with no gap).
+- Header (`lib-avatar` + `IdentityService` from `OCRWeb.Frontend.Shared`) is session-aware: calls `GET /bff/me` on load; shows "Sign in with Google" if unauthenticated, or an avatar + "Hello, {name}" dropdown if authenticated — Settings for everyone, Manage users / Manage rule categories / Manage rule items / Manage themes for admins only (`CurrentUser.isAdmin`).
+- `''` (Landing) and `/auth-error` are public — no guard. `/home` and `/settings` are behind `authGuard` (login required). `/admin/*` (four routes) is behind `adminGuard` (login **and** `isAdmin` required — a non-admin who navigates there directly is redirected to `/home` instead of hitting API calls that now 403; see `docs/Identity/security-rules-permission-design.md`).
 - A manual "Sign in with Google" click (from the Landing page or the header) is not defending a specific blocked route, so both send `returnUrl='/home'` explicitly rather than relying on the current path.
 
 ## 4. Shared component library (`OCRWeb.Frontend.Shared`)
 
-Per its README, scope is UI reuse only (no business rules):
+Consumed by both this shell and any future Angular body app embedded in its iframe, so they share auth state and UI with zero extra wiring. Packed via `npm pack` and depended on as a tarball, not a raw `file:` path — a symlinked directory resolves its own `@angular/core`, which breaks DI with a duplicate core instance (NG0203).
 
-- **Text / Label / Button** — base presentational primitives, themed via the chosen Angular Material palette.
-- **CropPdf** — the crop-region selection tool used on the project workspace screen. This is the component the crop-coordinate-orientation risk (`Product.md` §5) applies to: needs to agree with the backend's `CropX`/`CropY`/`Width`/`Height` coordinate system (top-left origin vs. PDF's bottom-left origin) before it's wired to `POST /pdf-files/{id}/crop`.
-- **Popup / window / form primitives** — shared modal/dialog/form-field scaffolding referenced in the original implementation plan.
+- **`IdentityService`** — current user + effective permissions via `/bff/me` and `/bff/me/permissions` (same-origin, cookie-authenticated). `OCRWeb.Frontend`'s own `AuthService` is a thin wrapper that adds `login()`.
+- **`Avatar`** — renders a user's `binAvatar` image (self or another user's, by id) with initials fallback.
+- **`ConfirmDialog`** — replaces the browser's `confirm()` in the three admin list screens' delete flows.
+- **`theme.scss`** (`apply-theme` mixin) — the M3 baseline (`mat.theme()`) both this shell and any body app `@use`, so colors/typography match without duplicating the palette definition.
+
+A CropPdf-style component, and other primitives specific to actual document/OCR work, are not built here — that functionality belongs in whatever body app eventually gets embedded, not in this template's shared library.
 
 ## 5. Auth UX flow (implemented)
 
@@ -56,10 +64,10 @@ Full backend design lives in `docs/Authentication/authentication-design.docx` �
 
 ## 6. Open design questions
 
-- Exact Angular Material prebuilt theme (or custom palette) — cosmetic, decide during scaffolding, trivially changeable later.
 - Whether `/login` is a dedicated route or just a button shown inline wherever an unauthenticated user lands.
-- Crop coordinate orientation between the frontend's `CropPdf` component and the backend's stored `CropX`/`CropY` — flagged as an open risk in `Product.md`, needs confirming before the crop screen is wired up for real.
-- Upload size limits / streaming UX for large PDFs (backend risk noted in `Product.md` — frontend needs a progress/error UX once that's decided).
+- **Site settings** (not built): a per-deployment source for `LandingContent` (§2.1), `environment.bodyAppUrl` (currently build-time, see `docs/Frontend/body-content-iframe-design.md`), and Manage Themes' palette/app-name (§ below) — likely one admin-editable DB-backed config rather than three separate mechanisms, but not designed yet.
+- Manage Themes (placeholder page only): a single global `Theme` row (`PrimaryColor`, `TertiaryColor`, `DarkMode`, `AppName`) with an admin color-picker UI, applied at runtime via `--mat-sys-*` overrides, no rebuild needed. Scope still being refined (full color wheel vs. primary/tertiary only).
+- Crop coordinate orientation, upload size limits, and other document/OCR-specific UX questions from earlier drafts of this doc belong to whatever body app eventually does that work — see `Product.md` for that scope — not to this shell.
 
 ## 7. Related documents
 

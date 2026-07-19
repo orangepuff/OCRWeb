@@ -3,8 +3,45 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100dvh;
+  min-height: 100dvh;
   gap: 1rem;
   text-align: center;
-  padding: 1rem;
+  padding: 2rem 1.5rem;
+}
+
+.landing__hero {
+  width: 160px;
+  max-width: 60vw;
+}
+
+.landing__hero-media {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.landing h1 {
+  margin: 0;
+  font: var(--mat-sys-headline-medium);
+}
+
+.landing p {
+  margin: 0;
+  max-width: 320px;
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-large);
+}
+
+@media (min-width: 600px) {
+  .landing {
+    gap: 1.5rem;
+  }
+
+  .landing__hero {
+    width: 220px;
+  }
+
+  .landing p {
+    max-width: 420px;
+  }
 }
