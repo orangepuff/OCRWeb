@@ -223,3 +223,27 @@ Initial Recorded Versions
   To: NuGet PackageReference 0.1.0 (restored from a temporary local folder feed until published to nuget.org)
   Reason: Extracted the Diagnostics.* logging library into its own repo (DiagnosticLog) for reuse/packaging, per the design doc's original decoupling plan
   Updated By: Claude
+
+- Date: 2026-07-19
+  Area: Backend
+  Item: Diagnostics.Abstractions (OCRWeb.API, OCRWeb.Identity)
+  From: NuGet PackageReference 0.1.0
+  To: NuGet PackageReference 1.0.0
+  Reason: API surface judged stable enough to start at 1.0.0 rather than a pre-release 0.x line, before the first real nuget.org publish
+  Updated By: Claude
+
+- Date: 2026-07-19
+  Area: Backend
+  Item: Diagnostics.NLog (OCRWeb.API)
+  From: NuGet PackageReference 0.1.0
+  To: NuGet PackageReference 1.0.0
+  Reason: API surface judged stable enough to start at 1.0.0 rather than a pre-release 0.x line, before the first real nuget.org publish
+  Updated By: Claude
+
+- Date: 2026-07-19
+  Area: Backend
+  Item: Diagnostics.AspNetCore (OCRWeb.API)
+  From: NuGet PackageReference 0.1.0
+  To: NuGet PackageReference 1.0.0
+  Reason: API surface judged stable enough to start at 1.0.0 rather than a pre-release 0.x line, before the first real nuget.org publish
+  Updated By: Claude
