@@ -1,0 +1,14 @@
+.user-list {
+  padding: 16px;
+}
+
+.user-list__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.user-list__table {
+  width: 100%;
+}

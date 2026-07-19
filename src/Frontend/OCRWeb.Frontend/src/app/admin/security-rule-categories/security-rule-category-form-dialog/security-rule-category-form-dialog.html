@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>{{ isEdit ? 'Edit category' : 'Add category' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="save()">
+  <mat-dialog-content class="security-rule-category-form-dialog__content">
+    <mat-form-field appearance="outline">
+      <mat-label>Category description</mat-label>
+      <input matInput formControlName="categoryDesc" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Text code (i18n key)</mat-label>
+      <input matInput formControlName="textCode" />
+    </mat-form-field>
+
+    <mat-checkbox formControlName="hidden">Hidden (DB-managed only, not shown in pickers)</mat-checkbox>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="cancel()">Cancel</button>
+    <button mat-flat-button type="submit" [disabled]="form.invalid">Save</button>
+  </mat-dialog-actions>
+</form>

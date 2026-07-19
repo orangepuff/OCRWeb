@@ -12,6 +12,9 @@ public class SecurityRuleCategoryRepository(UserDbContext db) : ISecurityRuleCat
     public Task<SecurityRuleCategory?> GetByDescAsync(string categoryDesc, CancellationToken ct = default) =>
         db.SecurityRuleCategories.FirstOrDefaultAsync(x => x.CategoryDesc == categoryDesc, ct);
 
+    public async Task<IReadOnlyList<SecurityRuleCategory>> GetAllAsync(CancellationToken ct = default) =>
+        await db.SecurityRuleCategories.OrderBy(x => x.CategoryDesc).ToListAsync(ct);
+
     public Task<bool> HasItemsAsync(int categoryId, CancellationToken ct = default) =>
         db.SecurityRuleItems.AnyAsync(x => x.CategoryId == categoryId, ct);
 

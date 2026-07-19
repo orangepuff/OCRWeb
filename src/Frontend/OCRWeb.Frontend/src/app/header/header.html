@@ -3,6 +3,11 @@
 
   @if (authService.checked()) {
     @if (authService.isAuthenticated()) {
+      <nav class="app-header__nav">
+        <a routerLink="/admin/users">Users</a>
+        <a routerLink="/admin/security-rule-categories">Rule categories</a>
+        <a routerLink="/admin/security-rule-items">Rule items</a>
+      </nav>
       <div class="app-header__user">
         <span>{{ authService.currentUser()?.displayName ?? authService.currentUser()?.email }}</span>
         <button type="button" (click)="signOut()">Sign out</button>

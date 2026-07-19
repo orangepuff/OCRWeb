@@ -52,13 +52,13 @@ Run the stack via Docker Compose (API + BFF; SQL Server is external, not managed
 
 ```powershell
 docker compose up -d --build                # API + BFF only
-docker compose --profile frontend up -d --build   # + Angular, once it's scaffolded
+docker compose --profile frontend up -d --build   # + Angular (needs a Dockerfile first — not added yet; run `ng serve` from src/Frontend/OCRWeb.Frontend instead)
 docker compose down
 ```
 
 - BFF: http://localhost:5100 / https://localhost:7100
 - API: http://localhost:5101 / https://localhost:7101 (OpenAPI at `/openapi/v1.json`)
-- Frontend (when scaffolded): http://localhost:4200
+- Frontend (via `ng serve` in `src/Frontend/OCRWeb.Frontend`): https://localhost:4200
 
 SQL Server setup (external instance, must already exist — the app never creates the database):
 
@@ -76,7 +76,7 @@ dotnet dev-certs https -ep .\certs\ocrweb-devcert.pfx -p "Your_dev_cert_password
 
 EF Core migrations run automatically on API startup **only** when `DoMigration: true` in appsettings (applies to all modules at once; the flag is off by default in `appsettings.json`, on in `appsettings.Development.json`). Migrations create schema/tables, never the database itself.
 
-Frontend (Angular 22 + Angular Material) is not yet scaffolded — `src/Frontend/OCRWeb.Frontend` currently holds only a placeholder.
+Frontend (Angular 22 + Angular Material, standalone components + signals) is scaffolded and has working Bff-mediated auth: `src/Frontend/OCRWeb.Frontend/src/app` has `auth/` (`AuthService` hitting `/bff/me`, `/bff/login`, `/bff/logout`; `authGuard` route guard), `landing/`, `home/` (guarded), `auth-error/`, and `header/`. Runs via `ng serve` (not yet in Docker — no Dockerfile at `src/Frontend/OCRWeb.Frontend/Dockerfile` yet, so the `frontend` compose profile isn't usable). `src/Frontend/OCRWeb.Frontend.Shared` is still an untouched `ng generate library` stub, not wired into anything.
 
 ## Architecture
 
@@ -95,8 +95,9 @@ Persistence is a **single SQL Server database** (`OCRWeb`), one schema + one EF 
 | `OCRWeb.OCR` (+ `.Contract`) | none | future context — page extraction, job queue, recognition, indexing are out of scope for now |
 | `OCRWeb.Shared` | none | shared DDD primitives (`ICurrentUser`, `IAuditable`, `AuditableEntity` with `MarkInserted`/`MarkUpdated`) reused by all modules |
 | `OCRWeb.API` | none of its own | web host / composition root; FastEndpoints → MediatR; runs migrations + admin seeding on startup when `DoMigration` is true; `CurrentUser` is a stub until real auth exists |
-| `OCRWeb.Bff` | none | Scaffold — Backend-for-Frontend facade for Angular, meant to be the auth boundary; Angular talks only to the BFF, never directly to the API |
-| `OCRWeb.Frontend` / `OCRWeb.Frontend.Shared` | — | Planned, not scaffolded |
+| `OCRWeb.Bff` | none | Partial Implemented — Backend-for-Frontend facade for Angular, the auth boundary; Angular talks only to the BFF, never directly to the API. Cookie auth + Google OAuth sign-in, `/bff/login`/`/bff/logout`/`/bff/me`, plus internal-token-secured proxy endpoints under `/bff/admin/*` for Identity user/permission management |
+| `OCRWeb.Frontend` | — | Partial Implemented — Angular 22 + Angular Material scaffolded, Bff-mediated auth (login/logout/session guard) working; admin UI for user/permission management not yet built |
+| `OCRWeb.Frontend.Shared` | — | Scaffold — untouched `ng generate library` stub, not referenced by `OCRWeb.Frontend` yet |
 
 Column naming convention: every DB column, with no exceptions, uses a type prefix (`s` string, `i` int, `dt` datetime, `bt` bool, `x` xml, etc.) — this includes a table's own primary key (`iId`, not bare `Id`); domain models keep clean names — prefixes live only in the EF mapping layer. Audit fields (`iInsertedUserId`/`dtInsertedTime`, nullable `iUpdatedUserId`/`dtUpdatedTime`) are set explicitly in command handlers, not via an EF interceptor.
 

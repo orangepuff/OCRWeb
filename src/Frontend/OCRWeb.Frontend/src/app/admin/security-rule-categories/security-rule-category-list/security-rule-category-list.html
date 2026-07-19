@@ -1,0 +1,38 @@
+<div class="security-rule-category-list">
+  <div class="security-rule-category-list__toolbar">
+    <h1>Security rule categories</h1>
+    <button mat-flat-button type="button" (click)="openAddDialog()">Add category</button>
+  </div>
+
+  <table mat-table [dataSource]="categories()" class="security-rule-category-list__table">
+    <ng-container matColumnDef="categoryDesc">
+      <th mat-header-cell *matHeaderCellDef>Description</th>
+      <td mat-cell *matCellDef="let category">{{ category.categoryDesc }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="textCode">
+      <th mat-header-cell *matHeaderCellDef>Text code</th>
+      <td mat-cell *matCellDef="let category">{{ category.textCode ?? '—' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="hidden">
+      <th mat-header-cell *matHeaderCellDef>Hidden</th>
+      <td mat-cell *matCellDef="let category">{{ category.hidden ? 'Yes' : 'No' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let category">
+        <button mat-icon-button type="button" (click)="openEditDialog(category)" aria-label="Edit">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button type="button" (click)="deleteCategory(category)" aria-label="Delete">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+</div>

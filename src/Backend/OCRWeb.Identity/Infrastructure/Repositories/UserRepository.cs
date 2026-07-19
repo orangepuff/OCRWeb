@@ -20,6 +20,9 @@ public class UserRepository(UserDbContext db) : IUserRepository
 
     public Task<bool> AnyAsync(CancellationToken ct = default) => db.Users.AnyAsync(ct);
 
+    public async Task<IReadOnlyList<User>> GetAllAsync(CancellationToken ct = default) =>
+        await db.Users.OrderBy(x => x.Username).ToListAsync(ct);
+
     public Task<bool> HasChildUsersAsync(int parentUserId, CancellationToken ct = default) => db.Users.AnyAsync(x => x.ParentId == parentUserId, ct);
 
     public async Task AddAsync(User user, CancellationToken ct = default) => await db.Users.AddAsync(user, ct);

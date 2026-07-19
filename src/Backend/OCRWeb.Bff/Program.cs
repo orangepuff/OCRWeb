@@ -174,5 +174,8 @@ app.UseAuthorization();
 app.UseDiagnostics();
 
 app.MapAuthEndpoints();
+app.MapUserAdminEndpoints();
+app.MapSecurityRuleCategoryAdminEndpoints();
+app.MapSecurityRuleItemAdminEndpoints();
 
 app.Run();
