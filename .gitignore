@@ -409,3 +409,6 @@ FodyWeavers.xsd
 # Dev HTTPS cert material — the .pfx itself plus the decrypted PEM cert/key extracted from it
 # for the Angular dev server. Never commit any of these, decrypted or not.
 certs/
+
+# ASP.NET Core Data Protection keys — these decrypt auth cookies; never commit them.
+data-protection-keys/

@@ -22,6 +22,10 @@ namespace OCRWeb.Bff.Endpoints
                 var properties = new AuthenticationProperties
                 {
                     RedirectUri = $"{frontendBaseUrl}{safeReturnUrl}",
+                    // Without this the cookie is session-only — it survives sliding
+                    // revalidation but is dropped the moment the browser closes, even
+                    // though ExpireTimeSpan says 8 hours.
+                    IsPersistent = true,
                 };
 
                 return Results.Challenge(properties, [GoogleDefaults.AuthenticationScheme]);

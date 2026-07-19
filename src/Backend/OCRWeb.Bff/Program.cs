@@ -2,6 +2,7 @@ using Diagnostics.AspNetCore.DependencyInjection;
 using Diagnostics.NLog.DependencyInjection;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using OCRWeb.Bff.Endpoints;
 using OCRWeb.Bff.Infrastructure;
 using OCRWeb.Bff.Infrastructure.IdentityApiClient;
@@ -24,6 +25,13 @@ builder.Services.AddDiagnosticsAspNetCore();
 
 builder.Services.AddSingleton<IInternalTokenIssuer, InternalTokenIssuer>();
 builder.Services.AddTransient<InternalTokenDelegatingHandler>();
+
+// Persisted to a mounted volume (see docker-compose.yml) so keys survive container
+// recreation — without this, every rebuild/restart silently invalidates every signed-in
+// user's auth cookie (it can no longer be decrypted), forcing a fresh login.
+builder.Services.AddDataProtection()
+    .SetApplicationName("OCRWeb.Bff")
+    .PersistKeysToFileSystem(new DirectoryInfo("/keys"));
 
 builder.Services.AddHttpClient<IIdentityApiClient, IdentityApiClient>(client =>
     {

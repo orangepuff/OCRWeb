@@ -51,6 +51,9 @@ services:
       - "7100:8081"
     volumes:
       - ./certs:/https:ro
+      # Data Protection keys, so auth cookies survive container recreation instead of
+      # being silently invalidated on every rebuild/restart.
+      - ./data-protection-keys/bff:/keys
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
