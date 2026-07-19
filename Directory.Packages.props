@@ -5,9 +5,9 @@
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
     <PackageVersion Include="Dapper" Version="2.1.35" />
-    <PackageVersion Include="Diagnostics.Abstractions" Version="1.0.0" />
-    <PackageVersion Include="Diagnostics.NLog" Version="1.0.0" />
-    <PackageVersion Include="Diagnostics.AspNetCore" Version="1.0.0" />
+    <PackageVersion Include="Orangepuff.Diagnostics.Abstractions" Version="1.0.1" />
+    <PackageVersion Include="Orangepuff.Diagnostics.NLog" Version="1.0.1" />
+    <PackageVersion Include="Orangepuff.Diagnostics.AspNetCore" Version="1.0.1" />
     <PackageVersion Include="FastEndpoints" Version="8.2.0" />
     <PackageVersion Include="MediatR" Version="12.4.1" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.10" />

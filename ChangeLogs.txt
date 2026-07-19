@@ -247,3 +247,19 @@ Initial Recorded Versions
   To: NuGet PackageReference 1.0.0
   Reason: API surface judged stable enough to start at 1.0.0 rather than a pre-release 0.x line, before the first real nuget.org publish
   Updated By: Claude
+
+- Date: 2026-07-19
+  Area: Backend
+  Item: Diagnostics.Abstractions / .NLog / .AspNetCore PackageId (OCRWeb.API, OCRWeb.Identity)
+  From: PackageId Diagnostics.Abstractions / Diagnostics.NLog / Diagnostics.AspNetCore
+  To: PackageId Orangepuff.Diagnostics.Abstractions / Orangepuff.Diagnostics.NLog / Orangepuff.Diagnostics.AspNetCore, version 1.0.1
+  Reason: nuget.org rejected the first real publish attempt with "The package ID is reserved" — the Diagnostics.* prefix is reserved by another, unrelated owner even though nothing is published under it. Renamed with a GitHub-username prefix to work around the reservation; C# namespaces/assembly names are unchanged (PackageId only). Also replaced the temporary local-folder NuGet.config source with the real nuget.org feed now that publishing succeeded.
+  Updated By: Claude
+
+- Date: 2026-07-19
+  Area: CI/CD
+  Item: DiagnosticLog GitHub Actions publish workflow (.github/workflows/publish.yml, DiagnosticLog repo)
+  From: N/A
+  To: Publishes to nuget.org via NuGet Trusted Publishing (OIDC, no stored API key) whenever a branch named Release/vX.Y.Z is pushed; version is derived from the branch name
+  Reason: nuget.org recommends Trusted Publishing over long-lived API keys for automated publishing; verified end-to-end with the 1.0.1 release
+  Updated By: Claude

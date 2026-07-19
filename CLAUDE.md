@@ -104,14 +104,20 @@ Tests live under `tests/unit` (xUnit + Moq, one project per bounded context) and
 
 ### Diagnostics logging (external dependency)
 
-The observability library (`Diagnostics.Abstractions`/`.NLog`/`.AspNetCore` — NLog-backed logging to a
-`DiagnosticLogs` database, `[Logs]`/`[Transactions]` sinks via `SqlBulkCopy`, `X-Correlation-ID`
-propagation) used to live in-repo under `src/Shared/Diagnostics.*`; it has been extracted into its own
-repo, **`DiagnosticLog`**, and is now consumed by `OCRWeb.API`/`OCRWeb.Identity` as a NuGet
-`PackageReference` (versions pinned in `Directory.Packages.props`). Its design doc, DB schema script,
-and tests all live in that repo now — see `DiagnosticLog`'s own `docs/diagnostics-logging-design.md` and
-README for details.
+The observability library (NLog-backed logging to a `DiagnosticLogs` database, `[Logs]`/`[Transactions]`
+sinks via `SqlBulkCopy`, `X-Correlation-ID` propagation) used to live in-repo under `src/Shared/Diagnostics.*`;
+it has been extracted into its own repo, **`DiagnosticLog`** (https://github.com/orangepuff/DiagnosticLog),
+and is now consumed by `OCRWeb.API`/`OCRWeb.Identity` as a NuGet `PackageReference` published to nuget.org
+(versions pinned in `Directory.Packages.props`). Its design doc, DB schema script, and tests all live in
+that repo now — see `DiagnosticLog`'s own `docs/diagnostics-logging-design.md` and README for details.
 
-Until `Diagnostics.*` is published to nuget.org, `NuGet.config` here points at a temporary local-folder
-source (`D:\DiagnosticLog\artifacts`, produced by `dotnet pack` in the `DiagnosticLog` repo) — remove
-that source and re-pin the `Version` once the real nuget.org publish happens.
+**Package IDs differ from the C# namespaces.** The NuGet `PackageId`s are `Orangepuff.Diagnostics.Abstractions`/
+`.NLog`/`.AspNetCore` (prefixed with the GitHub username) because nuget.org rejected the unprefixed
+`Diagnostics.*` IDs — that prefix is reserved by another, unrelated owner, even though no package is
+actually published under it. The C# namespaces and assembly names are unaffected and remain plain
+`Diagnostics.Abstractions`/`.NLog`/`.AspNetCore`, so existing `using Diagnostics.Abstractions;` etc.
+statements need no changes — only `PackageReference`/`PackageVersion` entries use the `Orangepuff.*` IDs.
+
+`DiagnosticLog`'s own repo publishes new versions via a GitHub Actions workflow
+(`.github/workflows/publish.yml`) using NuGet Trusted Publishing (OIDC, no stored API key): pushing a
+branch named `Release/vX.Y.Z` packs and publishes that exact version automatically.

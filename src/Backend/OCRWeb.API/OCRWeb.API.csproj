@@ -11,9 +11,9 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="FastEndpoints" />
-    <PackageReference Include="Diagnostics.Abstractions" />
-    <PackageReference Include="Diagnostics.NLog" />
-    <PackageReference Include="Diagnostics.AspNetCore" />
+    <PackageReference Include="Orangepuff.Diagnostics.Abstractions" />
+    <PackageReference Include="Orangepuff.Diagnostics.NLog" />
+    <PackageReference Include="Orangepuff.Diagnostics.AspNetCore" />
   </ItemGroup>
 
   <ItemGroup>

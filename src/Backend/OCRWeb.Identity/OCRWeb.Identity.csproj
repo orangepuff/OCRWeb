@@ -15,7 +15,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Identity.Core" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
-    <PackageReference Include="Diagnostics.Abstractions" />
+    <PackageReference Include="Orangepuff.Diagnostics.Abstractions" />
   </ItemGroup>
 
   <ItemGroup>
