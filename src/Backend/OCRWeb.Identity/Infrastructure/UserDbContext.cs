@@ -14,12 +14,18 @@ public class UserDbContext(DbContextOptions<UserDbContext> options) : DbContext(
 
     public DbSet<User> Users => Set<User>();
     public DbSet<ExternalLogin> ExternalLogins => Set<ExternalLogin>();
+    public DbSet<SecurityRuleCategory> SecurityRuleCategories => Set<SecurityRuleCategory>();
+    public DbSet<SecurityRuleItem> SecurityRuleItems => Set<SecurityRuleItem>();
+    public DbSet<SecurityUserRuleItem> SecurityUserRuleItems => Set<SecurityUserRuleItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(Schema);
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new ExternalLoginConfiguration());
+        modelBuilder.ApplyConfiguration(new SecurityRuleCategoryConfiguration());
+        modelBuilder.ApplyConfiguration(new SecurityRuleItemConfiguration());
+        modelBuilder.ApplyConfiguration(new SecurityUserRuleItemConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 }

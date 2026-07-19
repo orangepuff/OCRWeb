@@ -13,6 +13,8 @@ public class User
     public string? DisplayName { get; private set; }
     public string? PasswordHash { get; private set; }
     public bool IsActive { get; private set; }
+    public bool IsTemplateUser { get; private set; }
+    public int? ParentId { get; private set; }
     public DateTime InsertedTime { get; private set; }
     public DateTime? UpdatedTime { get; private set; }
 
@@ -47,6 +49,29 @@ public class User
     public void Deactivate(DateTime utcNow)
     {
         IsActive = false;
+        UpdatedTime = utcNow;
+    }
+
+    /// <summary>Mark this user as usable as a permission template for other users.</summary>
+    public void MarkAsTemplateUser(DateTime utcNow)
+    {
+        IsTemplateUser = true;
+        UpdatedTime = utcNow;
+    }
+
+    /// <summary>
+    /// Link this user to a template user it inherits permissions from.
+    /// Caller must verify <paramref name="templateUserId"/> refers to a user with <see cref="IsTemplateUser"/> set
+    /// and that this user has no rows of its own in SecurityUserRuleItems — this entity cannot see other users.
+    /// </summary>
+    public void SetParent(int templateUserId, DateTime utcNow)
+    {
+        if (templateUserId <= 0 || templateUserId == Id)
+        {
+            throw new ArgumentException("TemplateUserId must reference a different, existing user.", nameof(templateUserId));
+        }
+
+        ParentId = templateUserId;
         UpdatedTime = utcNow;
     }
 }
