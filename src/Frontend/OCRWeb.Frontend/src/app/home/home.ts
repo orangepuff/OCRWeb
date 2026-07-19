@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { AuthService } from '../auth/auth.service';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -8,5 +9,10 @@ import { AuthService } from '../auth/auth.service';
   styleUrl: './home.scss'
 })
 export class Home {
-  protected readonly authService = inject(AuthService);
+  private readonly sanitizer = inject(DomSanitizer);
+
+  protected readonly bodyAppUrl = environment.bodyAppUrl;
+  protected readonly safeBodyAppUrl: SafeResourceUrl | null = this.bodyAppUrl
+    ? this.sanitizer.bypassSecurityTrustResourceUrl(this.bodyAppUrl)
+    : null;
 }

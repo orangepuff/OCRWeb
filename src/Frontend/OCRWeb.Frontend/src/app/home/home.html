@@ -1,3 +1,7 @@
-<main class="home">
-  <p>Signed in as {{ authService.currentUser()?.displayName ?? authService.currentUser()?.email }}.</p>
-</main>
+@if (safeBodyAppUrl) {
+  <iframe class="body-app-frame" [src]="safeBodyAppUrl" title="Application content"></iframe>
+} @else {
+  <div class="body-app-placeholder">
+    <p>No body app configured for this deployment yet.</p>
+  </div>
+}
