@@ -1,3 +1,5 @@
+using Diagnostics.AspNetCore.DependencyInjection;
+using Diagnostics.NLog.DependencyInjection;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using OCRWeb.Bff.Endpoints;
@@ -8,6 +10,18 @@ using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Diagnostics logging (Diagnostics.* — see the DiagnosticLog repo's README). Same DiagnosticLogs
+// database as OCRWeb.API, scoped to this app via a distinct LoggerName so NLog rules can be
+// tuned per-component.
+builder.Services.AddDiagnostics(options =>
+{
+    options.ConnectionString = builder.Configuration.GetConnectionString("DiagnosticLogs")
+        ?? throw new InvalidOperationException("ConnectionStrings:DiagnosticLogs is not configured.");
+    options.LoggerName = builder.Configuration["Diagnostics:LoggerName"] ?? "OCRWeb.Bff";
+    options.EnvironmentName = builder.Configuration["Diagnostics:EnvironmentName"] ?? "DEV";
+});
+builder.Services.AddDiagnosticsAspNetCore();
+
 builder.Services.AddSingleton<IInternalTokenIssuer, InternalTokenIssuer>();
 builder.Services.AddTransient<InternalTokenDelegatingHandler>();
 
@@ -17,7 +31,10 @@ builder.Services.AddHttpClient<IIdentityApiClient, IdentityApiClient>(client =>
                          ?? throw new InvalidOperationException("Services:OCRWebApi:BaseUrl is not configured.");
         client.BaseAddress = new Uri(apiBaseUrl);
     })
-    .AddHttpMessageHandler<InternalTokenDelegatingHandler>();
+    .AddHttpMessageHandler<InternalTokenDelegatingHandler>()
+    // Forwards this request's X-Correlation-ID to OCRWeb.API so a single trace spans both
+    // services — see the DiagnosticLog repo's README, "Propagate correlation ids".
+    .AddDiagnosticsCorrelationPropagation();
 
 builder.Services.AddAuthentication(options =>
     {
@@ -150,6 +167,11 @@ var app = builder.Build();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Authentication must run before UseDiagnostics(): its transaction middleware reads
+// HttpContext.User to stamp the signed-in user onto the request's transaction span, so
+// HttpContext.User has to already be populated by the time it runs.
+app.UseDiagnostics();
 
 app.MapAuthEndpoints();
 

@@ -107,9 +107,14 @@ Tests live under `tests/unit` (xUnit + Moq, one project per bounded context) and
 The observability library (NLog-backed logging to a `DiagnosticLogs` database, `[Logs]`/`[Transactions]`
 sinks via `SqlBulkCopy`, `X-Correlation-ID` propagation) used to live in-repo under `src/Shared/Diagnostics.*`;
 it has been extracted into its own repo, **`DiagnosticLog`** (https://github.com/orangepuff/DiagnosticLog),
-and is now consumed by `OCRWeb.API`/`OCRWeb.Identity` as a NuGet `PackageReference` published to nuget.org
-(versions pinned in `Directory.Packages.props`). Its design doc, DB schema script, and tests all live in
-that repo now — see `DiagnosticLog`'s own `docs/diagnostics-logging-design.md` and README for details.
+and is now consumed by `OCRWeb.API`/`OCRWeb.Identity`/`OCRWeb.Bff` as a NuGet `PackageReference` published
+to nuget.org (versions pinned in `Directory.Packages.props`). Its design doc, DB schema script, and tests
+all live in that repo now — see `DiagnosticLog`'s own `docs/diagnostics-logging-design.md` and README for
+details.
+
+`OCRWeb.Bff` also uses the outbound `X-Correlation-ID` propagation feature (`AddDiagnosticsCorrelationPropagation()`
+on its `IIdentityApiClient` `HttpClient`) so a single trace id spans a request from the Bff through to the
+API — see the DiagnosticLog README's "Propagate correlation ids on outbound HTTP calls" section.
 
 **Package IDs differ from the C# namespaces.** The NuGet `PackageId`s are `Orangepuff.Diagnostics.Abstractions`/
 `.NLog`/`.AspNetCore` (prefixed with the GitHub username) because nuget.org rejected the unprefixed

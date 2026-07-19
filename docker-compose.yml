@@ -51,6 +51,8 @@ services:
       - "7100:8081"
     volumes:
       - ./certs:/https:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       api:
         condition: service_started

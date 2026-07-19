@@ -263,3 +263,11 @@ Initial Recorded Versions
   To: Publishes to nuget.org via NuGet Trusted Publishing (OIDC, no stored API key) whenever a branch named Release/vX.Y.Z is pushed; version is derived from the branch name
   Reason: nuget.org recommends Trusted Publishing over long-lived API keys for automated publishing; verified end-to-end with the 1.0.1 release
   Updated By: Claude
+
+- Date: 2026-07-19
+  Area: Backend
+  Item: Orangepuff.Diagnostics.Abstractions / .NLog / .AspNetCore (OCRWeb.Bff)
+  From: N/A
+  To: NuGet PackageReference 1.0.1
+  Reason: Give OCRWeb.Bff its own diagnostics logging (line logs + transaction spans to DiagnosticLogs) and, specifically, outbound X-Correlation-ID propagation on its OCRWeb.API HttpClient (IIdentityApiClient) so a request can be traced across both services instead of just within OCRWeb.API
+  Updated By: Claude
