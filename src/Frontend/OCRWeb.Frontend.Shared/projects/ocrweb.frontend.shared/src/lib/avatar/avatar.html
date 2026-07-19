@@ -1,0 +1,7 @@
+<div class="lib-avatar" [style.width.px]="size()" [style.height.px]="size()">
+  @if (!imageFailed()) {
+    <img [src]="avatarUrl()" [alt]="displayName() ?? 'User avatar'" (error)="onImageError()" />
+  } @else {
+    <span class="lib-avatar__initials">{{ initials() }}</span>
+  }
+</div>

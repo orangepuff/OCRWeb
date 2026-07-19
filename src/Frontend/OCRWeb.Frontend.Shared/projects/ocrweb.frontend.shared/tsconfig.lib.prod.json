@@ -6,6 +6,10 @@
     "declarationMap": false
   },
   "angularCompilerOptions": {
-    "compilationMode": "partial"
+    // "full" (not the default "partial") — this library is only ever consumed locally via
+    // a file: dependency at the exact same Angular version, and Vite's dependency
+    // pre-bundling doesn't reliably apply the Angular Linker step partial output needs to
+    // symlinked local packages, which broke DI (NG0203) at runtime.
+    "compilationMode": "full"
   }
 }
