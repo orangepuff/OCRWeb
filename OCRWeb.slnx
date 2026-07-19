@@ -31,6 +31,7 @@
   </Folder>
   <Folder Name="/tests/unit/">
     <Project Path="tests/unit/OCRWeb.Document.UnitTests/OCRWeb.Document.UnitTests.csproj" />
+    <Project Path="tests/unit/OCRWeb.Identity.UnitTests/OCRWeb.Identity.UnitTests.csproj" />
     <Project Path="tests/unit/OCRWeb.ProjectManagement.UnitTests/OCRWeb.ProjectManagement.UnitTests.csproj" />
     <Project Path="tests/unit/OCRWeb.Shared.UnitTests/OCRWeb.Shared.UnitTests.csproj" />
   </Folder>
