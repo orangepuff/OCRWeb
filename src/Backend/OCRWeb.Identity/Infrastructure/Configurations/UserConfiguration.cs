@@ -24,9 +24,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.Email).HasColumnName("sEmail").HasMaxLength(256);
         builder.Property(x => x.DisplayName).HasColumnName("sDisplayName").HasMaxLength(200);
         builder.Property(x => x.PasswordHash).HasColumnName("sPasswordHash").HasMaxLength(256);
-        builder.Property(x => x.IsActive).HasColumnName("btIsActive").HasDefaultValue(true);
-        builder.Property(x => x.IsTemplateUser).HasColumnName("btIsTemplateUser").HasDefaultValue(false);
+        builder.Property(x => x.IsActive).HasColumnName("btActive").HasDefaultValue(true);
+        builder.Property(x => x.IsTemplateUser).HasColumnName("btTemplateUser").HasDefaultValue(false);
         builder.Property(x => x.ParentId).HasColumnName("iParentId");
+        builder.Property(x => x.IsAdmin).HasColumnName("btAdmin").HasDefaultValue(false);
 
         builder.Property(x => x.InsertedTime).HasColumnName("dtInsertedTime").HasColumnType("datetime2(3)");
         builder.Property(x => x.UpdatedTime).HasColumnName("dtUpdatedTime").HasColumnType("datetime2(3)");

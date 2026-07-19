@@ -177,5 +177,6 @@ app.MapAuthEndpoints();
 app.MapUserAdminEndpoints();
 app.MapSecurityRuleCategoryAdminEndpoints();
 app.MapSecurityRuleItemAdminEndpoints();
+app.MapAvatarEndpoints();
 
 app.Run();

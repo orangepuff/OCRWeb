@@ -10,7 +10,7 @@ public class ListUsersQueryHandler(IUserRepository repository) : IRequestHandler
     {
         var users = await repository.GetAllAsync(cancellationToken);
         return users
-            .Select(u => new UserListItemDto(u.Id, u.Username, u.Email, u.DisplayName, u.IsActive, u.IsTemplateUser, u.ParentId))
+            .Select(u => new UserListItemDto(u.Id, u.Username, u.Email, u.DisplayName, u.IsActive, u.IsTemplateUser, u.ParentId, u.IsAdmin))
             .ToList();
     }
 }

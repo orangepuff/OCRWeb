@@ -12,6 +12,9 @@ public class SecurityRuleItemRepository(UserDbContext db) : ISecurityRuleItemRep
     public Task<SecurityRuleItem?> GetByCodeAsync(string code, CancellationToken ct = default) =>
         db.SecurityRuleItems.FirstOrDefaultAsync(x => x.Code == code, ct);
 
+    public async Task<IReadOnlyList<SecurityRuleItem>> GetByIdsAsync(IReadOnlyCollection<int> ids, CancellationToken ct = default) =>
+        await db.SecurityRuleItems.Where(x => ids.Contains(x.Id)).ToListAsync(ct);
+
     public async Task<IReadOnlyList<SecurityRuleItem>> GetAllAsync(int? categoryId, CancellationToken ct = default) =>
         await db.SecurityRuleItems
             .Where(x => categoryId == null || x.CategoryId == categoryId)

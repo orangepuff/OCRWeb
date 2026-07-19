@@ -5,6 +5,11 @@ namespace OCRWeb.Identity.Domain.Entity;
 /// Id is an INT identity so it lines up with the audit user-id columns used across modules.
 /// Users carry timestamp audit only (no user-id audit — creation is a system concern).
 /// </summary>
+/// <remarks>
+/// <see cref="IsAdmin"/> is deliberately not settable from application code — granting the
+/// coarse-grained super-admin bypass is a manual DB update on the seeded admin account, not
+/// something reachable through any command or UI.
+/// </remarks>
 public class User
 {
     public int Id { get; private set; }
@@ -15,6 +20,7 @@ public class User
     public bool IsActive { get; private set; }
     public bool IsTemplateUser { get; private set; }
     public int? ParentId { get; private set; }
+    public bool IsAdmin { get; private set; }
     public DateTime InsertedTime { get; private set; }
     public DateTime? UpdatedTime { get; private set; }
 

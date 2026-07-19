@@ -17,6 +17,7 @@ public class UserDbContext(DbContextOptions<UserDbContext> options) : DbContext(
     public DbSet<SecurityRuleCategory> SecurityRuleCategories => Set<SecurityRuleCategory>();
     public DbSet<SecurityRuleItem> SecurityRuleItems => Set<SecurityRuleItem>();
     public DbSet<SecurityUserRuleItem> SecurityUserRuleItems => Set<SecurityUserRuleItem>();
+    public DbSet<UserAvatar> UserAvatars => Set<UserAvatar>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -26,6 +27,7 @@ public class UserDbContext(DbContextOptions<UserDbContext> options) : DbContext(
         modelBuilder.ApplyConfiguration(new SecurityRuleCategoryConfiguration());
         modelBuilder.ApplyConfiguration(new SecurityRuleItemConfiguration());
         modelBuilder.ApplyConfiguration(new SecurityUserRuleItemConfiguration());
+        modelBuilder.ApplyConfiguration(new UserAvatarConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 }

@@ -14,5 +14,7 @@ public interface IUserRepository
     Task AddAsync(User user, CancellationToken ct = default);
     Task AddExternalLoginAsync(ExternalLogin externalLogin, CancellationToken ct = default);
     Task DeleteAsync(User user, CancellationToken ct = default);
+    Task<UserAvatar?> GetAvatarAsync(int userId, CancellationToken ct = default);
+    Task SetAvatarAsync(int userId, byte[]? image, string? contentType, DateTime utcNow, CancellationToken ct = default);
     Task SaveChangesAsync(CancellationToken ct = default);
 }

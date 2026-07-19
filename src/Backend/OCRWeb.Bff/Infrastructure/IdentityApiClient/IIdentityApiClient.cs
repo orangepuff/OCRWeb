@@ -9,6 +9,12 @@ namespace OCRWeb.Bff.Infrastructure.IdentityApiClient
     {
         Task<GoogleProvisionResult> ProvisionGoogleUserAsync(string providerKey, string email, bool emailVerified, string? displayName, CancellationToken ct = default);
         Task<bool> IsUserActiveAsync(int userId, CancellationToken ct = default);
+        Task<bool> IsUserAdminAsync(int userId, CancellationToken ct = default);
+
+        Task<IReadOnlyList<EffectivePermissionDto>> GetEffectivePermissionsAsync(int userId, CancellationToken ct = default);
+
+        Task<UpdateUserAvatarResult> UpdateAvatarAsync(int userId, byte[]? image, string? contentType, CancellationToken ct = default);
+        Task<UserAvatarDto?> GetAvatarAsync(int userId, CancellationToken ct = default);
 
         Task<IReadOnlyList<UserListItemDto>> ListUsersAsync(CancellationToken ct = default);
         Task<IReadOnlyList<SecurityRuleCategoryListItemDto>> ListSecurityRuleCategoriesAsync(CancellationToken ct = default);

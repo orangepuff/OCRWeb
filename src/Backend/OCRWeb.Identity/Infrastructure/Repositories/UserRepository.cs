@@ -35,5 +35,31 @@ public class UserRepository(UserDbContext db) : IUserRepository
         return Task.CompletedTask;
     }
 
+    public Task<UserAvatar?> GetAvatarAsync(int userId, CancellationToken ct = default) =>
+        db.UserAvatars.AsNoTracking().FirstOrDefaultAsync(x => x.UserId == userId, ct);
+
+    public async Task SetAvatarAsync(int userId, byte[]? image, string? contentType, DateTime utcNow, CancellationToken ct = default)
+    {
+        var existing = await db.UserAvatars.FirstOrDefaultAsync(x => x.UserId == userId, ct);
+
+        if (image is null)
+        {
+            if (existing is not null)
+            {
+                db.UserAvatars.Remove(existing);
+            }
+            return;
+        }
+
+        if (existing is null)
+        {
+            await db.UserAvatars.AddAsync(new UserAvatar(userId, image, contentType ?? "application/octet-stream", utcNow), ct);
+        }
+        else
+        {
+            existing.Replace(image, contentType ?? existing.ContentType, utcNow);
+        }
+    }
+
     public Task SaveChangesAsync(CancellationToken ct = default) => db.SaveChangesAsync(ct);
 }

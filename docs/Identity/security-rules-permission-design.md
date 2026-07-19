@@ -80,19 +80,81 @@ matching the existing `GoogleProvision`/`IsUserActive` internal endpoints:
 | POST | `/internal/identity/security-rule-items` |
 | PUT | `/internal/identity/security-rule-items/{id}` |
 | DELETE | `/internal/identity/security-rule-items/{id}` |
+| GET | `/internal/identity/users` |
+| GET | `/internal/identity/security-rule-categories` |
+| GET | `/internal/identity/security-rule-items` (optional `?categoryId=`) |
+| GET | `/internal/identity/users/{id}/permissions` |
 
-These are internal-only, same as the existing two — the Bff (or a future admin UI calling
-through it) is the intended caller, never Angular directly against `OCRWeb.API`.
+These are internal-only, same as the existing two — `OCRWeb.Bff` is the only caller, never
+Angular directly against `OCRWeb.API`. List DTOs (`UserListItemDto`,
+`SecurityRuleCategoryListItemDto`, `SecurityRuleItemListItemDto`, `EffectivePermissionDto`)
+live in `OCRWeb.Identity.Contract` and flow straight through API → Bff unchanged (no
+per-layer duplication, unlike the command Result types above) — same pattern as
+`OCRWeb.Document.Contract`'s `PdfFileListItemDto`.
+
+`GetEffectivePermissionsQuery` is the permission-resolution read side: given a user id, it
+follows `ParentId` (if set) to the template user, reads that user's `SecurityUserRuleItems`,
+and joins against `SecurityRuleItems` for `Code`/`Description`/`RuleType`. Callers never need
+to know whether a user has their own rows or inherits from a template.
+
+## Bff layer
+
+`OCRWeb.Bff/Endpoints/`: `UserAdminEndpoints`, `SecurityRuleCategoryAdminEndpoints`,
+`SecurityRuleItemAdminEndpoints` (full CRUD + list, cookie-`.RequireAuthorization()`) under
+`/bff/admin/users`, `/bff/admin/security-rule-categories`, `/bff/admin/security-rule-items`;
+`AuthEndpoints` also gained `GET /bff/me/permissions` (resolves the current user's id from
+the auth cookie, calls `GetEffectivePermissionsQuery` via `IIdentityApiClient`). **None of
+these routes check anything beyond "is logged in"** — there is no admin/permission gate yet
+on the admin routes themselves, since the permission system they manage can't yet be used to
+gate access to itself without a bootstrapping story. Fix before this goes near production.
+
+## Frontend
+
+`src/Frontend/OCRWeb.Frontend/src/app/admin/` — one feature per resource (`users/`,
+`security-rule-categories/`, `security-rule-items/`), each with a model, an `HttpClient`
+service, a Material-table list component, and an add/edit dialog. Routes under `/admin/*`,
+guarded by the existing `authGuard`, linked from the header nav.
+
+## Coarse admin flag and avatar
+
+`Users.IsAdmin` (`btAdmin`, default false) is a coarse-grained super-admin bypass, separate
+from the granular `SecurityRuleItems` system. It has no setter anywhere in application code —
+granting it is a manual DB update on the seeded admin account, by design (same bootstrapping
+philosophy as the rest of this system). `IsUserAdminQuery` / `GET
+/internal/identity/users/{id}/is-admin` / `IIdentityApiClient.IsUserAdminAsync` resolve it;
+`GET /bff/me` now includes `IsAdmin` in `MeResponse` so the frontend can gate UI.
+
+Avatars are a separate `UserAvatars` table (`UserAvatar` entity, 1:1 shared PK with `Users`,
+`binAvatar` + `sContentType`) — **not** a column on `Users` — so ordinary user lookups (the
+login hot path especially) never drag the blob along, mirroring the `PDFFiles`/
+`PDFFileContents` split. `UpdateUserAvatarCommand` is self-service only (2MB cap, rejects with
+`"avatar_too_large"`), exposed as `PUT /internal/identity/users/{id}/avatar` (multipart,
+`AllowFileUploads()`, no file clears it) and `GET .../avatar` (`Send.BytesAsync`, mirrors
+`GetPdfFileContentEndpoint`). Bff: `PUT /bff/me/avatar` (self only, userId from the auth
+cookie) and `GET /bff/users/{id}/avatar` (any authenticated user, so avatars can be shown
+next to other people's names too).
 
 ## Not yet built
 
-- Permission resolution query (read side: given a user id, compute effective rule set
-  following `ParentId`).
-- Bff-facing endpoints/proxy for the above.
-- Frontend admin UI component.
 - Seed data / initial rule catalog.
+- Authorization gate on the `/bff/admin/*` routes themselves (see Bff layer above).
+- Header redesign (dark app bar, avatar + "Hello, {name}" dropdown menu: Settings for
+  everyone, Manage users / Manage rules / Manage themes for admins) — design approved, not
+  yet built.
+- Manage Themes: a single global `Theme` row (`PrimaryColor`, `TertiaryColor`, `DarkMode`,
+  `AppName`) with an admin color-picker UI; applied at runtime via the M3 system CSS custom
+  properties (`--mat-sys-primary` etc.), no rebuild needed. Scope still being refined with
+  the user (wants a full color wheel, not just primary/tertiary).
+- Body-content iframe: the shell's content area below the header becomes a single iframe
+  whose `src` is a deployment-level config value (not per-route) — the embedded body app
+  owns 100% of its own navigation and UI; the shell contributes only the header bar. Body
+  apps are expected to have their own backend/API (reusing `Orangepuff.Diagnostics.*`
+  directly for their own logging, same as `OCRWeb.API` does) rather than proxying through
+  this shell's Bff.
 
-## Migration
+## Migrations
 
-`20260719061336_AddSecurityRules` (`src/Backend/OCRWeb.Identity/Infrastructure/Migrations/`).
-See `security-rules-schema.sql` in this folder for the resulting schema in plain SQL form.
+`20260719061336_AddSecurityRules` and `20260719111001_AddAdminFlagAndAvatar`
+(`src/Backend/OCRWeb.Identity/Infrastructure/Migrations/`). See `security-rules-schema.sql`
+in this folder for the `AddSecurityRules` schema in plain SQL form (not yet updated for the
+admin flag / avatar table).

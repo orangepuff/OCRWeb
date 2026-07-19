@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using OCRWeb.Identity.Domain.Entity;
 using OCRWeb.Identity.Domain.Repositories;
 
 namespace OCRWeb.Identity.Infrastructure.Repositories;
@@ -10,4 +11,7 @@ public class SecurityUserRuleItemRepository(UserDbContext db) : ISecurityUserRul
 
     public Task<bool> HasAnyForRuleItemAsync(int ruleItemId, CancellationToken ct = default) =>
         db.SecurityUserRuleItems.AnyAsync(x => x.RuleItemId == ruleItemId, ct);
+
+    public async Task<IReadOnlyList<SecurityUserRuleItem>> GetForUserAsync(int userId, CancellationToken ct = default) =>
+        await db.SecurityUserRuleItems.Where(x => x.UserId == userId).ToListAsync(ct);
 }

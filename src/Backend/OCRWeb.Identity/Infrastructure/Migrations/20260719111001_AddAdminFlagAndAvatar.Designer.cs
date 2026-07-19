@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OCRWeb.Identity.Infrastructure;
 
@@ -11,9 +12,11 @@ using OCRWeb.Identity.Infrastructure;
 namespace OCRWeb.Identity.Infrastructure.Migrations
 {
     [DbContext(typeof(UserDbContext))]
-    partial class UserDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260719111001_AddAdminFlagAndAvatar")]
+    partial class AddAdminFlagAndAvatar
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -266,7 +269,7 @@ namespace OCRWeb.Identity.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true)
-                        .HasColumnName("btActive");
+                        .HasColumnName("btIsActive");
 
                     b.Property<bool>("IsAdmin")
                         .ValueGeneratedOnAdd()
@@ -278,7 +281,7 @@ namespace OCRWeb.Identity.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false)
-                        .HasColumnName("btTemplateUser");
+                        .HasColumnName("btIsTemplateUser");
 
                     b.Property<int?>("ParentId")
                         .HasColumnType("int")

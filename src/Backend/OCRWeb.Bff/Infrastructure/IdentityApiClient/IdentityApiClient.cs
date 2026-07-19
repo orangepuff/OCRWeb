@@ -1,4 +1,6 @@
 ﻿using OCRWeb.Identity.Contract;
+using System.Net;
+using System.Net.Http.Headers;
 
 namespace OCRWeb.Bff.Infrastructure.IdentityApiClient
 {
@@ -6,6 +8,7 @@ namespace OCRWeb.Bff.Infrastructure.IdentityApiClient
     {
         private sealed record ProvisionRequestBody(string ProviderKey, string Email, bool EmailVerified, string? DisplayName);
         private sealed record IsActiveResult(bool IsActive);
+        private sealed record IsAdminResult(bool IsAdmin);
 
         private sealed record AddUserRequestBody(string Username, string? Email, string? DisplayName, int? TemplateUserId);
         private sealed record UpdateUserRequestBody(string? Email, string? DisplayName, bool IsTemplateUser, int? ParentId);
@@ -36,6 +39,52 @@ namespace OCRWeb.Bff.Infrastructure.IdentityApiClient
 
             var result = await response.Content.ReadFromJsonAsync<IsActiveResult>(ct);
             return result?.IsActive ?? false;
+        }
+
+        public async Task<bool> IsUserAdminAsync(int userId, CancellationToken ct = default)
+        {
+            var response = await httpClient.GetAsync($"/internal/identity/users/{userId}/is-admin", ct);
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadFromJsonAsync<IsAdminResult>(ct);
+            return result?.IsAdmin ?? false;
+        }
+
+        public async Task<IReadOnlyList<EffectivePermissionDto>> GetEffectivePermissionsAsync(int userId, CancellationToken ct = default)
+        {
+            var result = await httpClient.GetFromJsonAsync<IReadOnlyList<EffectivePermissionDto>>($"/internal/identity/users/{userId}/permissions", ct);
+            return result ?? [];
+        }
+
+        public async Task<UpdateUserAvatarResult> UpdateAvatarAsync(int userId, byte[]? image, string? contentType, CancellationToken ct = default)
+        {
+            using var content = new MultipartFormDataContent();
+            if (image is not null)
+            {
+                var fileContent = new ByteArrayContent(image);
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(contentType ?? "application/octet-stream");
+                content.Add(fileContent, "File", "avatar");
+            }
+
+            var response = await httpClient.PutAsync($"/internal/identity/users/{userId}/avatar", content, ct);
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadFromJsonAsync<UpdateUserAvatarResult>(ct);
+            return result ?? throw new InvalidOperationException("update-avatar returned an empty response body.");
+        }
+
+        public async Task<UserAvatarDto?> GetAvatarAsync(int userId, CancellationToken ct = default)
+        {
+            var response = await httpClient.GetAsync($"/internal/identity/users/{userId}/avatar", ct);
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+
+            response.EnsureSuccessStatusCode();
+            var bytes = await response.Content.ReadAsByteArrayAsync(ct);
+            var contentType = response.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
+            return new UserAvatarDto(bytes, contentType);
         }
 
         public async Task<IReadOnlyList<UserListItemDto>> ListUsersAsync(CancellationToken ct = default)
