@@ -1,4 +1,4 @@
-using OCRWeb.Shared.Domain;
+using OrangepuffPortal.Shared.Domain;
 
 namespace OCRWeb.Document.Domain.Entity;
 

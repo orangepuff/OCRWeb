@@ -1,6 +1,6 @@
 using FastEndpoints;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using OCRWeb.Document.Application.Commands.CropPdf;
 
 namespace OCRWeb.Document.Api.Endpoints.PdfFiles;
@@ -25,7 +25,7 @@ public class CropPdfEndpoint(IMediator mediator)
     public override void Configure()
     {
         Post("/pdf-files/{id}/crop");
-        AuthSchemes(JwtBearerDefaults.AuthenticationScheme);
+        AuthSchemes(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 
     public override async Task HandleAsync(CropPdfEndpointRequest req, CancellationToken ct)

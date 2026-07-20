@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using OCRWeb.Shared.Infrastructure.Design;
+using OrangepuffPortal.Shared.Infrastructure.Design;
 
 namespace OCRWeb.OCR.Infrastructure;
 

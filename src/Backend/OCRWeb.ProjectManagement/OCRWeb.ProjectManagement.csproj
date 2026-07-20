@@ -1,7 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\OCRWeb.Shared\OCRWeb.Shared.csproj" />
+    <PackageReference Include="OrangepuffPortal.Shared" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\OCRWeb.ProjectManagement.Contract\OCRWeb.ProjectManagement.Contract.csproj" />
   </ItemGroup>
 

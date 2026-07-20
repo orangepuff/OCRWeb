@@ -1,6 +1,6 @@
 using FastEndpoints;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using OCRWeb.Document.Application.Commands.UploadPdf;
 
@@ -22,7 +22,7 @@ public class UploadPdfEndpoint(IMediator mediator)
     {
         Post("/pdf-files");
         AllowFileUploads();
-        AuthSchemes(JwtBearerDefaults.AuthenticationScheme);
+        AuthSchemes(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 
     public override async Task HandleAsync(UploadPdfEndpointRequest req, CancellationToken ct)
