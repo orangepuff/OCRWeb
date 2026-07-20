@@ -13,10 +13,10 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="MediatR" />
+    <PackageReference Include="OrangepuffPortal.Shared" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OCRWeb.Shared\OCRWeb.Shared.csproj" />
     <ProjectReference Include="..\OCRWeb.Document.Contract\OCRWeb.Document.Contract.csproj" />
     <ProjectReference Include="..\OCRWeb.Pdf.Contract\OCRWeb.Pdf.Contract.csproj" />
   </ItemGroup>

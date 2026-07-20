@@ -271,3 +271,27 @@ Initial Recorded Versions
   To: NuGet PackageReference 1.0.1
   Reason: Give OCRWeb.Bff its own diagnostics logging (line logs + transaction spans to DiagnosticLogs) and, specifically, outbound X-Correlation-ID propagation on its OCRWeb.API HttpClient (IIdentityApiClient) so a request can be traced across both services instead of just within OCRWeb.API
   Updated By: Claude
+
+- Date: 2026-07-20
+  Area: Backend
+  Item: OrangepuffPortal.Host / OrangepuffPortal.Shared (OCRWeb.API, OCRWeb.Document, OCRWeb.ProjectManagement, OCRWeb.OCR)
+  From: N/A
+  To: NuGet PackageReference 1.0.0
+  Reason: OCRWeb.API now consumes the OrangepuffPortal.Host SDK (extracted from OCRWeb's own former Identity/Bff/Shared code) instead of maintaining its own copy of that auth surface; OrangepuffPortal.Shared replaces OCRWeb.Shared as the DDD-primitives dependency for every business module
+  Updated By: Claude
+
+- Date: 2026-07-20
+  Area: Backend
+  Item: OCRWeb.Identity / OCRWeb.Identity.Contract / OCRWeb.Bff / OCRWeb.Shared projects
+  From: In-repo class libraries
+  To: Removed
+  Reason: Superseded by the OrangepuffPortal.Host package. Collapses OCRWeb from two processes (API + Bff, talking over a hand-rolled RS256 "internal token" JWT hop) into a single process, matching the OrangepuffPortal.SampleHost pattern
+  Updated By: Claude
+
+- Date: 2026-07-20
+  Area: Backend
+  Item: Microsoft.AspNetCore.Authentication.JwtBearer, System.IdentityModel.Tokens.Jwt, Microsoft.Extensions.Identity.Core, Microsoft.Extensions.Options.ConfigurationExtensions, Microsoft.AspNetCore.Authentication.Google
+  From: NuGet PackageReference (various)
+  To: Removed
+  Reason: Only used by the internal-token JWT scheme and the now-deleted OCRWeb.Identity/OCRWeb.Bff projects; Google OAuth now comes transitively via the OrangepuffPortal.Host package
+  Updated By: Claude

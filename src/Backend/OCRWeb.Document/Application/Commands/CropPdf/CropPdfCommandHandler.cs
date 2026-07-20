@@ -4,7 +4,7 @@ using OCRWeb.Document.Domain.Entity;
 using OCRWeb.Document.Domain.Enums;
 using OCRWeb.Document.Domain.Repositories;
 using OCRWeb.Document.Domain.ValueObjects;
-using OCRWeb.Shared.Auditing;
+using OrangepuffPortal.Shared.Auditing;
 
 namespace OCRWeb.Document.Application.Commands.CropPdf;
 

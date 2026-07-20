@@ -1,6 +1,6 @@
 using OCRWeb.Document.Domain.Enums;
 using OCRWeb.Document.Domain.ValueObjects;
-using OCRWeb.Shared.Domain;
+using OrangepuffPortal.Shared.Domain;
 
 namespace OCRWeb.Document.Domain.Entity;
 

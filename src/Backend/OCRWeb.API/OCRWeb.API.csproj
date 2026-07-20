@@ -8,19 +8,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="FastEndpoints" />
     <PackageReference Include="Orangepuff.Diagnostics.Abstractions" />
     <PackageReference Include="Orangepuff.Diagnostics.NLog" />
     <PackageReference Include="Orangepuff.Diagnostics.AspNetCore" />
+    <PackageReference Include="OrangepuffPortal.Host" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\OCRWeb.ProjectManagement\OCRWeb.ProjectManagement.csproj" />
     <ProjectReference Include="..\OCRWeb.Document\OCRWeb.Document.csproj" />
     <ProjectReference Include="..\OCRWeb.Document.Api\OCRWeb.Document.Api.csproj" />
-    <ProjectReference Include="..\OCRWeb.Identity\OCRWeb.Identity.csproj" />
     <ProjectReference Include="..\OCRWeb.OCR\OCRWeb.OCR.csproj" />
     <ProjectReference Include="..\OCRWeb.Pdf\OCRWeb.Pdf.csproj" />
   </ItemGroup>

@@ -20,12 +20,12 @@ export class AuthService {
   }
 
   login(returnUrl: string): void {
-    // Absolute URL to the Bff's real origin, not a relative path through the dev-server proxy.
+    // Absolute URL to the API host's real origin, not a relative path through the dev-server proxy.
     // /bff/login sets an OAuth correlation cookie that must round-trip back on /signin-google,
-    // and Google redirects straight to that path on the Bff's own origin — if /bff/login itself
+    // and Google redirects straight to that path on the host's own origin — if /bff/login itself
     // went through the proxy (localhost:4200), the cookie would be scoped to the wrong origin
     // and the correlation check on the way back would fail.
-    const bffBaseUrl = 'https://localhost:7100';
+    const bffBaseUrl = 'https://localhost:7101';
     window.location.href = `${bffBaseUrl}/bff/login?returnUrl=${encodeURIComponent(returnUrl)}`;
   }
 
