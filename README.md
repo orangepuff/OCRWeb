@@ -6,7 +6,7 @@ Docker Compose is part of the solution (`docker-compose.dcproj` in `OCRWeb.slnx`
 so you can start the whole stack from Visual Studio by setting **docker-compose**
 as the startup project and pressing F5, or from the command line below.
 
-Run the API + BFF:
+Run the API (single host — also serves the `/bff/*` auth routes via the `OrangepuffPortal.Host` package):
 
 ```powershell
 docker compose up -d --build
@@ -14,9 +14,9 @@ docker compose up -d --build
 
 Services:
 
-- BFF: http://localhost:5100 or https://localhost:7100
 - API: http://localhost:5101 or https://localhost:7101
 - API OpenAPI: http://localhost:5101/openapi/v1.json
+- `/bff/login`, `/bff/logout`, `/bff/me`, `/bff/admin/*` are served from the same API host/port
 
 ### Frontend (Angular)
 
@@ -34,9 +34,11 @@ docker compose --profile frontend up -d --build
 ### SQL Server
 
 SQL Server is **not** managed by this compose file — it is expected to be running
-as a permanent, external instance. The API reads its connection string from
-`src/Backend/OCRWeb.API/appsettings.Development.json` (key `ConnectionStrings:OCRWeb`);
-update the host, database, or credentials there.
+as a permanent, external instance. The API reads its connection strings from
+`src/Backend/OCRWeb.API/appsettings.Development.json`: `ConnectionStrings:OCRWeb`
+(Document/OCR's own modules) and `ConnectionStrings:Portal` (required by the
+`OrangepuffPortal.Identity` package) — both should point at the same database,
+just different schemas; update the host, database, or credentials there.
 
 From inside the containers the host machine's SQL Server is reachable via
 `host.docker.internal` (the API service has a `host-gateway` mapping), e.g.:
@@ -78,7 +80,7 @@ sqlcmd -S localhost,1433 -U sa -P "Your_strong_password123!" -C -Q "IF DB_ID('OC
 the `sa` login to be enabled — configure this in SSMS under *Server Properties →
 Security* if needed.)
 
-HTTPS in Docker uses `certs/ocrweb-devcert.pfx`, mounted into the API and BFF containers.
+HTTPS in Docker uses `certs/ocrweb-devcert.pfx`, mounted into the API container.
 Regenerate it if needed:
 
 ```powershell
