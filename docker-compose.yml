@@ -13,14 +13,14 @@ services:
       ASPNETCORE_ENVIRONMENT: "Development"
       ASPNETCORE_URLS: "http://+:8080;https://+:8081"
       ASPNETCORE_Kestrel__Certificates__Default__Path: "/https/ocrweb-devcert.pfx"
-      ASPNETCORE_Kestrel__Certificates__Default__Password: "Your_dev_cert_password123!"
+      ASPNETCORE_Kestrel__Certificates__Default__Password: "${DEV_CERT_PASSWORD}"
       # Google OAuth client — values come from .env (git-ignored). See
       # docs/Authentication/prepare-for-dev.docx §6.
       Authentication__Google__ClientId: "${GOOGLE_CLIENT_ID}"
       Authentication__Google__ClientSecret: "${GOOGLE_CLIENT_SECRET}"
     ports:
-      - "5101:8080"
-      - "7101:8081"
+      - "5201:8080"
+      - "7201:8081"
     volumes:
       - ./certs:/https:ro
       # Data Protection keys, so auth cookies survive container recreation instead of
@@ -48,7 +48,7 @@ services:
       # Angular talks only to the /bff/* routes, all served by the single api container now.
       BFF_BASE_URL: "http://api:8080"
     ports:
-      - "4200:80"
+      - "4300:80"
     depends_on:
       api:
         condition: service_started

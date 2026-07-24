@@ -55,7 +55,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-// No UseHttpsRedirection(): the frontend always calls the HTTPS port (7101) directly (both
+// No UseHttpsRedirection(): the frontend always calls the HTTPS port (7201) directly (both
 // ng serve's proxy and the hardcoded /bff/login redirect origin), so nothing relies on an
 // HTTP->HTTPS redirect here.
 

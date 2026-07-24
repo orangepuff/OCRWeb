@@ -5,7 +5,19 @@
       "name": "frontend",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "start", "--prefix", "src/Frontend/OCRWeb.Frontend"],
-      "port": 4200
+      "port": 4300
+    },
+    {
+      "name": "mydashboard",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["C:\\MyDashboard\\dashboard-server.js"],
+      "port": 9000
+    },
+    {
+      "name": "orangepuffportal-sample-frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start", "--prefix", "D:\\orangepuffportal\\samples\\OrangepuffPortal.SampleHost.Frontend", "--", "--port", "5698"],
+      "port": 5698
     }
   ]
 }
