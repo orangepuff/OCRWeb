@@ -30,12 +30,13 @@ services:
       - "host.docker.internal:host-gateway"
 
   # ---------------------------------------------------------------------------
-  # Frontend (Angular) — placeholder, not yet scaffolded.
-  # src/Frontend/OCRWeb.Frontend currently holds only a README, so this service
-  # is guarded by the "frontend" profile and is skipped by a plain
-  # `docker compose up`. Once the Angular app is scaffolded and its Dockerfile
-  # added, remove the `profiles:` line (or run `docker compose --profile frontend up`)
-  # to bring it up together with the rest of the stack.
+  # Frontend (Angular portal shell) — scaffolded via @orangepuff/portal-frontend +
+  # @orangepuff/portal-frontend-shared (see src/Frontend/OCRWeb.Frontend), but it still
+  # has no Dockerfile, so this service is guarded by the "frontend" profile and is
+  # skipped by a plain `docker compose up`. Run it locally with `ng serve` instead
+  # (`.claude/launch.json`'s "frontend" config). Once a Dockerfile is added, remove the
+  # `profiles:` line (or run `docker compose --profile frontend up`) to bring it up
+  # together with the rest of the stack.
   # ---------------------------------------------------------------------------
   frontend:
     image: ocrweb-frontend
