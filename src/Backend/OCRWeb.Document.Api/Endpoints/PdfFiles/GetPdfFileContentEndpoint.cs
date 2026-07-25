@@ -37,6 +37,10 @@ public class GetPdfFileContentEndpoint(IMediator mediator)
         contentDisposition.SetHttpFileName(content.FileName);
         HttpContext.Response.Headers.ContentDisposition = contentDisposition.ToString();
         HttpContext.Response.ContentType = content.ContentType;
+
+        // Set explicitly so the response isn't chunked - without it the browser has no
+        // total size to report download progress against.
+        HttpContext.Response.ContentLength = content.Content.Length;
         await HttpContext.Response.Body.WriteAsync(content.Content, ct);
     }
 }
