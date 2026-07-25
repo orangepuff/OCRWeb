@@ -2,6 +2,7 @@ import { DatePipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Button, ConfirmDialog, TextInput } from '@orangepuff/portal-frontend-shared';
 import { I18nService } from '../../i18n/i18n.service';
@@ -18,6 +19,7 @@ export class ProjectList implements OnInit {
   private readonly projectService = inject(ProjectService);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
+  private readonly snackBar = inject(MatSnackBar);
 
   protected readonly i18n = inject(I18nService);
   protected readonly projects = signal<ProjectListItem[]>([]);
@@ -53,6 +55,7 @@ export class ProjectList implements OnInit {
       next: (updated) => {
         this.projects.update((list) => list.map((p) => (p.id === updated.id ? updated : p)));
         this.editingId.set(null);
+        this.snackBar.open(this.i18n.messages().project.updateSuccess, undefined, { duration: 3000 });
       },
       error: () => this.errorText.set(this.i18n.messages().project.updateError)
     });
@@ -77,7 +80,10 @@ export class ProjectList implements OnInit {
 
   private deleteProject(project: ProjectListItem): void {
     this.projectService.delete(project.id).subscribe({
-      next: () => this.projects.update((list) => list.filter((p) => p.id !== project.id)),
+      next: () => {
+        this.projects.update((list) => list.filter((p) => p.id !== project.id));
+        this.snackBar.open(this.i18n.messages().project.deleteSuccess, undefined, { duration: 3000 });
+      },
       error: () => this.errorText.set(this.i18n.messages().project.deleteError)
     });
   }

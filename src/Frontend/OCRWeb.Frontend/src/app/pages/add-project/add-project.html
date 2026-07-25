@@ -18,7 +18,7 @@
   }
 
   <lib-button
-    [label]="i18n.labels().project.createButton"
+    [label]="submitting() ? i18n.labels().project.creatingButton : i18n.labels().project.createButton"
     variant="primary"
     type="submit"
     [disabled]="form.invalid || submitting()"

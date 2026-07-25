@@ -12,6 +12,7 @@ export const labels = {
     projectName: 'Project Name',
     uploadPdf: 'Upload PDF',
     createButton: 'Create Project',
+    creatingButton: 'Creating…',
     columnName: 'Name',
     columnCreated: 'Created',
     columnActions: 'Actions',

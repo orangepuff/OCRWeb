@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Button, TextInput } from '@orangepuff/portal-frontend-shared';
 import { I18nService } from '../../i18n/i18n.service';
@@ -16,6 +17,7 @@ export class AddProject {
   private readonly projectService = inject(ProjectService);
   private readonly pdfService = inject(PdfService);
   private readonly router = inject(Router);
+  private readonly snackBar = inject(MatSnackBar);
 
   protected readonly i18n = inject(I18nService);
   protected readonly form = new FormGroup({
@@ -47,7 +49,10 @@ export class AddProject {
     this.projectService.create(this.form.controls.name.value).subscribe({
       next: ({ id }) => {
         this.pdfService.upload(id, file).subscribe({
-          next: () => this.router.navigate(['/home']),
+          next: () => {
+            this.snackBar.open(this.i18n.messages().project.createSuccess, undefined, { duration: 3000 });
+            this.router.navigate(['/home']);
+          },
           error: () => {
             this.submitting.set(false);
             this.errorText.set(this.i18n.messages().project.uploadError);
