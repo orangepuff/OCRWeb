@@ -5,12 +5,12 @@ using OCRWeb.ProjectManagement.Application.Commands.CreateProject;
 
 namespace OCRWeb.ProjectManagement.Api.Endpoints.CreateProject;
 
-/// <summary>POST /projects — create a new project owned by the current user.</summary>
+/// <summary>POST /api/projects — create a new project owned by the current user.</summary>
 public class CreateProjectEndpoint(IMediator mediator) : Endpoint<CreateProjectRequest, CreateProjectResponse>
 {
     public override void Configure()
     {
-        Post("/projects");
+        Post("/api/projects");
         AuthSchemes(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 

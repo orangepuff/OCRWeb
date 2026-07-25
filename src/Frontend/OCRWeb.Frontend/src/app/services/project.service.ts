@@ -8,18 +8,18 @@ export class ProjectService {
   private readonly http = inject(HttpClient);
 
   list(): Observable<ProjectListItem[]> {
-    return this.http.get<ProjectListItem[]>('/projects');
+    return this.http.get<ProjectListItem[]>('/api/projects');
   }
 
   create(name: string): Observable<{ id: string }> {
-    return this.http.post<{ id: string }>('/projects', { name });
+    return this.http.post<{ id: string }>('/api/projects', { name });
   }
 
   update(id: string, name: string): Observable<ProjectListItem> {
-    return this.http.put<ProjectListItem>(`/projects/${id}`, { name });
+    return this.http.put<ProjectListItem>(`/api/projects/${id}`, { name });
   }
 
   delete(id: string): Observable<void> {
-    return this.http.delete<void>(`/projects/${id}`);
+    return this.http.delete<void>(`/api/projects/${id}`);
   }
 }

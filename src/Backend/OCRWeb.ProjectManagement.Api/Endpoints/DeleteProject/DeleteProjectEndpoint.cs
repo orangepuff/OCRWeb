@@ -5,12 +5,12 @@ using OCRWeb.ProjectManagement.Application.Commands.DeleteProject;
 
 namespace OCRWeb.ProjectManagement.Api.Endpoints.DeleteProject;
 
-/// <summary>DELETE /projects/{Id} — delete a project owned by the current user.</summary>
+/// <summary>DELETE /api/projects/{Id} — delete a project owned by the current user.</summary>
 public class DeleteProjectEndpoint(IMediator mediator) : Endpoint<DeleteProjectRequest, EmptyResponse>
 {
     public override void Configure()
     {
-        Delete("/projects/{Id}");
+        Delete("/api/projects/{Id}");
         AuthSchemes(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 

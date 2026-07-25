@@ -6,12 +6,12 @@ using OCRWeb.ProjectManagement.Contract;
 
 namespace OCRWeb.ProjectManagement.Api.Endpoints.UpdateProject;
 
-/// <summary>PUT /projects/{Id} — rename a project owned by the current user.</summary>
+/// <summary>PUT /api/projects/{Id} — rename a project owned by the current user.</summary>
 public class UpdateProjectEndpoint(IMediator mediator) : Endpoint<UpdateProjectRequest, ProjectListItemDto>
 {
     public override void Configure()
     {
-        Put("/projects/{Id}");
+        Put("/api/projects/{Id}");
         AuthSchemes(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 

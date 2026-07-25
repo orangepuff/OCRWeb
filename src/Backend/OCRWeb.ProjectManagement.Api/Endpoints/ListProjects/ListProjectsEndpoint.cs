@@ -6,12 +6,12 @@ using OCRWeb.ProjectManagement.Contract;
 
 namespace OCRWeb.ProjectManagement.Api.Endpoints.ListProjects;
 
-/// <summary>GET /projects — list the current user's own projects.</summary>
+/// <summary>GET /api/projects — list the current user's own projects.</summary>
 public class ListProjectsEndpoint(IMediator mediator) : EndpointWithoutRequest<IReadOnlyList<ProjectListItemDto>>
 {
     public override void Configure()
     {
-        Get("/projects");
+        Get("/api/projects");
         AuthSchemes(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 
