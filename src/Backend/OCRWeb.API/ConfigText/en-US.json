@@ -1,0 +1,8 @@
+[
+  { "sModule": "OCRWeb.Common", "sTextCode": "save", "sTextType": "lbl", "sText": "Save" },
+  { "sModule": "OCRWeb.Common", "sTextCode": "cancel", "sTextType": "lbl", "sText": "Cancel" },
+  { "sModule": "OCRWeb.Common", "sTextCode": "add", "sTextType": "lbl", "sText": "Add" },
+  { "sModule": "OCRWeb.Common", "sTextCode": "edit", "sTextType": "lbl", "sText": "Edit" },
+  { "sModule": "OCRWeb.Common", "sTextCode": "delete", "sTextType": "lbl", "sText": "Delete" },
+  { "sModule": "OCRWeb.Common", "sTextCode": "back", "sTextType": "lbl", "sText": "Back" }
+]

@@ -120,3 +120,28 @@ statements need no changes — only `PackageReference`/`PackageVersion` entries 
 `DiagnosticLog`'s own repo publishes new versions via a GitHub Actions workflow
 (`.github/workflows/publish.yml`) using NuGet Trusted Publishing (OIDC, no stored API key): pushing a
 branch named `Release/vX.Y.Z` packs and publishes that exact version automatically.
+
+### Shared UI text (external dependency, planned)
+
+Label/message strings for all portal frontends (currently hardcoded per-app, e.g. this repo's
+`src/Frontend/OCRWeb.Frontend/src/app/i18n/*`) are planned to move into a single `ConfigTextDefinition`
+table owned by the **`orangepuffportal`** repo (schema + EF Core migration live there, alongside
+`identity`), not in this repo — same externalization pattern as Identity and `DiagnosticLog`. Columns:
+`iId`, `sModule` (owning app/module, e.g. `OCRWeb.ProjectManagement`), `sTextCode`, `sCultureCode`,
+`sTextType` (`msg`/`lbl`), `sText`, the standard audit columns, and `sNote`. Unique key is
+`(sModule, sTextCode, sCultureCode, sTextType)`.
+
+Each OCRWeb module ships its own default text as an embedded JSON file (e.g.
+`OCRWeb.ProjectManagement.Api/ConfigText/en-US.json`), and `OCRWeb.API` pushes all of them into the
+shared table at startup via an `IConfigTextWriter` exposed by the `orangepuffportal` package (in-process
+call, no HTTP hop) — a manual step alongside `DocumentDbContext`'s migration, not part of
+`MigratePortalModulesAsync()`.
+
+Seeding is **insert-only by default**: a row already present in the table is left untouched, so values
+edited directly in the database survive later deploys. To intentionally push an updated value, set
+`"btReplace": true` on that JSON entry, deploy once, then set it back to `false` — `btReplace` is a
+seed-file-only flag, never persisted as a DB column.
+
+Every seed entry is written as **two rows**: one at `sCultureCode = "*"` (fallback) and one at the
+entry's actual culture (currently always `en-US`, the only JSON file that exists so far). A lookup for a
+requested culture with no matching row falls back to `sCultureCode = "*"`.
