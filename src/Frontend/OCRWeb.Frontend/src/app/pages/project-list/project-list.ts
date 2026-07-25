@@ -6,7 +6,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Button, ConfirmDialog, TextInput } from '@orangepuff/portal-frontend-shared';
 import { I18nService } from '../../i18n/i18n.service';
+import { PdfFileListItem } from '../../models/pdf-file-list-item';
 import { ProjectListItem } from '../../models/project-list-item';
+import { PdfService } from '../../services/pdf.service';
 import { ProjectService } from '../../services/project.service';
 
 @Component({
@@ -17,6 +19,7 @@ import { ProjectService } from '../../services/project.service';
 })
 export class ProjectList implements OnInit {
   private readonly projectService = inject(ProjectService);
+  private readonly pdfService = inject(PdfService);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
@@ -25,6 +28,7 @@ export class ProjectList implements OnInit {
   protected readonly projects = signal<ProjectListItem[]>([]);
   protected readonly loaded = signal(false);
   protected readonly errorText = signal<string | null>(null);
+  protected readonly pdfFilesByProject = signal<Record<string, PdfFileListItem[]>>({});
 
   protected readonly editingId = signal<string | null>(null);
   protected readonly editControl = new FormControl('', { nonNullable: true, validators: [Validators.required] });
@@ -35,6 +39,14 @@ export class ProjectList implements OnInit {
 
   protected addProject(): void {
     this.router.navigate(['/projects/add']);
+  }
+
+  protected pdfFilesFor(projectId: string): PdfFileListItem[] {
+    return this.pdfFilesByProject()[projectId] ?? [];
+  }
+
+  protected pdfContentUrl(id: string): string {
+    return this.pdfService.contentUrl(id);
   }
 
   protected startEdit(project: ProjectListItem): void {
@@ -92,6 +104,12 @@ export class ProjectList implements OnInit {
     this.projectService.list().subscribe((projects) => {
       this.projects.set(projects);
       this.loaded.set(true);
+
+      for (const project of projects) {
+        this.pdfService.list(project.id).subscribe((files) => {
+          this.pdfFilesByProject.update((byProject) => ({ ...byProject, [project.id]: files }));
+        });
+      }
     });
   }
 }

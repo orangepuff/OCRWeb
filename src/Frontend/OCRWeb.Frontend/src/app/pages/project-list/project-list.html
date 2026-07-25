@@ -17,6 +17,7 @@
           <tr>
             <th>{{ i18n.labels().project.columnName }}</th>
             <th>{{ i18n.labels().project.columnCreated }}</th>
+            <th>{{ i18n.labels().project.columnFile }}</th>
             <th class="project-list__actions-col">{{ i18n.labels().project.columnActions }}</th>
           </tr>
         </thead>
@@ -24,7 +25,7 @@
           @for (project of projects(); track project.id) {
             <tr>
               @if (editingId() === project.id) {
-                <td colspan="2">
+                <td colspan="3">
                   <lib-text-input
                     [control]="editControl"
                     [label]="i18n.labels().project.projectName"
@@ -38,6 +39,13 @@
               } @else {
                 <td>{{ project.name }}</td>
                 <td>{{ project.insertedTime | date: 'medium' }}</td>
+                <td>
+                  @for (file of pdfFilesFor(project.id); track file.id) {
+                    <a [href]="pdfContentUrl(file.id)" target="_blank" rel="noopener">{{ file.fileName }}</a>
+                  } @empty {
+                    {{ i18n.labels().project.noFile }}
+                  }
+                </td>
                 <td class="project-list__actions-col">
                   <lib-button [label]="i18n.labels().common.edit" (clicked)="startEdit(project)" />
                   <lib-button [label]="i18n.labels().common.delete" (clicked)="confirmDelete(project)" />

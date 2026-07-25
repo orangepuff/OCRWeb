@@ -1,4 +1,6 @@
 <form class="add-project" [formGroup]="form" (ngSubmit)="submit()">
+  <lib-button [label]="i18n.labels().common.back" (clicked)="back()" />
+
   <h1>{{ i18n.labels().project.addProject }}</h1>
 
   <lib-text-input

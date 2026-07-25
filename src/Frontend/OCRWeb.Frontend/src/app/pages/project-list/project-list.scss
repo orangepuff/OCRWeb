@@ -44,6 +44,11 @@
   tbody tr:hover {
     background: var(--mat-sys-surface-container);
   }
+
+  a {
+    display: block;
+    color: var(--mat-sys-primary);
+  }
 }
 
 .project-list__actions-col {

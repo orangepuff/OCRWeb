@@ -28,6 +28,10 @@ export class AddProject {
   protected readonly submitting = signal(false);
   protected readonly errorText = signal<string | null>(null);
 
+  protected back(): void {
+    this.router.navigate(['/home']);
+  }
+
   protected onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.selectedFile.set(input.files?.[0] ?? null);

@@ -4,7 +4,8 @@ export const labels = {
     cancel: 'Cancel',
     add: 'Add',
     edit: 'Edit',
-    delete: 'Delete'
+    delete: 'Delete',
+    back: 'Back'
   },
   project: {
     pageTitle: 'My Projects',
@@ -15,7 +16,9 @@ export const labels = {
     creatingButton: 'Creating…',
     columnName: 'Name',
     columnCreated: 'Created',
+    columnFile: 'File',
     columnActions: 'Actions',
+    noFile: 'No file',
     deleteConfirmTitle: 'Delete project',
     deleteConfirmMessage: 'This will permanently delete the project. This cannot be undone.'
   }
