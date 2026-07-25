@@ -21,7 +21,10 @@ export const labels = {
     columnFile: 'File',
     columnActions: 'Actions',
     noFile: 'No file',
+    uploadButton: 'Upload',
     deleteConfirmTitle: 'Delete project',
-    deleteConfirmMessage: 'This will permanently delete the project. This cannot be undone.'
+    deleteConfirmMessage: 'This will permanently delete the project. This cannot be undone.',
+    deleteFileConfirmTitle: 'Delete file',
+    deleteFileConfirmMessage: 'This will permanently delete the PDF file. This cannot be undone.'
   }
 } as const;

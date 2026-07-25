@@ -21,6 +21,10 @@ export class PdfService {
     return this.http.get<PdfFileListItem[]>('/api/pdf-files', { params: { projectId } });
   }
 
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`/api/pdf-files/${id}`);
+  }
+
   contentUrl(id: string): string {
     return `/api/pdf-files/${id}/content`;
   }

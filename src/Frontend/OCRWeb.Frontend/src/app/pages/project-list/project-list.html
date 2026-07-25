@@ -26,12 +26,37 @@
             @for (project of projects(); track project.id) {
               <tr>
                 @if (editingId() === project.id) {
-                  <td colspan="3">
+                  <td colspan="2">
                     <lib-text-input
                       [control]="editControl"
                       [label]="i18n.labels().project.projectName"
                       [errorText]="i18n.messages().project.nameRequired"
                     />
+                  </td>
+                  <td>
+                    @if (pdfFilesFor(project.id).length > 0) {
+                      @for (file of pdfFilesFor(project.id); track file.id) {
+                        <a [href]="pdfContentUrl(file.id)" target="_blank" rel="noopener">{{ file.fileName }}</a>
+                        <lib-button
+                          [label]="i18n.labels().common.delete"
+                          [disabled]="fileBusy()"
+                          (clicked)="confirmDeleteFile(file)"
+                        />
+                      }
+                    } @else {
+                      <input
+                        type="file"
+                        class="project-list__file-input"
+                        accept="application/pdf"
+                        [disabled]="fileBusy()"
+                        (change)="onEditFileSelected($event)"
+                      />
+                      <lib-button
+                        [label]="i18n.labels().project.uploadButton"
+                        [disabled]="!editSelectedFile() || fileBusy()"
+                        (clicked)="uploadEditFile(project)"
+                      />
+                    }
                   </td>
                   <td class="project-list__actions-col">
                     <lib-button [label]="i18n.labels().common.save" variant="primary" (clicked)="saveEdit(project)" />

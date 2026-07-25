@@ -9,6 +9,10 @@ export const messages = {
     updateSuccess: 'Project updated',
     updateError: 'Failed to rename project',
     deleteSuccess: 'Project deleted',
-    deleteError: 'Failed to delete project'
+    deleteError: 'Failed to delete project',
+    fileUploadSuccess: 'File uploaded',
+    fileUploadError: 'Failed to upload file',
+    fileDeleteSuccess: 'File deleted',
+    fileDeleteError: 'Failed to delete file'
   }
 } as const;

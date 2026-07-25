@@ -12,6 +12,8 @@
   color: var(--mat-sys-on-surface-variant);
 }
 
+// TODO: replace with the shared lib-file-input once @orangepuff/portal-frontend-shared 1.0.5
+// (containing it) is published — this duplicates that component's styling in the meantime.
 .add-project__file-input {
   font-family: inherit;
   font-size: 0.875rem;
@@ -31,6 +33,14 @@
     &:hover {
       background: var(--mat-sys-secondary-container);
       filter: brightness(0.95);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.5;
+
+    &::file-selector-button {
+      cursor: not-allowed;
     }
   }
 }

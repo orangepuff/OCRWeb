@@ -1,4 +1,5 @@
 import { DatePipe } from '@angular/common';
+import { HttpEventType } from '@angular/common/http';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -32,6 +33,8 @@ export class ProjectList implements OnInit {
 
   protected readonly editingId = signal<string | null>(null);
   protected readonly editControl = new FormControl('', { nonNullable: true, validators: [Validators.required] });
+  protected readonly editSelectedFile = signal<File | null>(null);
+  protected readonly fileBusy = signal(false);
 
   ngOnInit(): void {
     this.loadProjects();
@@ -52,10 +55,78 @@ export class ProjectList implements OnInit {
   protected startEdit(project: ProjectListItem): void {
     this.editingId.set(project.id);
     this.editControl.setValue(project.name);
+    this.editSelectedFile.set(null);
   }
 
   protected cancelEdit(): void {
     this.editingId.set(null);
+    this.editSelectedFile.set(null);
+  }
+
+  protected onEditFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.editSelectedFile.set(input.files?.[0] ?? null);
+  }
+
+  protected uploadEditFile(project: ProjectListItem): void {
+    const file = this.editSelectedFile();
+    if (!file) {
+      return;
+    }
+
+    this.fileBusy.set(true);
+    this.pdfService.upload(project.id, file).subscribe({
+      next: (event) => {
+        if (event.type === HttpEventType.Response) {
+          this.fileBusy.set(false);
+          this.editSelectedFile.set(null);
+          this.refreshPdfFiles(project.id);
+          this.snackBar.open(this.i18n.messages().project.fileUploadSuccess, undefined, { duration: 3000 });
+        }
+      },
+      error: () => {
+        this.fileBusy.set(false);
+        this.errorText.set(this.i18n.messages().project.fileUploadError);
+      }
+    });
+  }
+
+  protected confirmDeleteFile(file: PdfFileListItem): void {
+    const ref = this.dialog.open(ConfirmDialog, {
+      data: {
+        title: this.i18n.labels().project.deleteFileConfirmTitle,
+        message: this.i18n.labels().project.deleteFileConfirmMessage,
+        confirmLabel: this.i18n.labels().common.delete,
+        cancelLabel: this.i18n.labels().common.cancel
+      }
+    });
+
+    ref.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.deleteFile(file);
+      }
+    });
+  }
+
+  private deleteFile(file: PdfFileListItem): void {
+    this.fileBusy.set(true);
+    this.pdfService.delete(file.id).subscribe({
+      next: () => {
+        this.fileBusy.set(false);
+        this.refreshPdfFiles(file.projectId);
+        this.snackBar.open(this.i18n.messages().project.fileDeleteSuccess, undefined, { duration: 3000 });
+      },
+      error: () => {
+        this.fileBusy.set(false);
+        this.errorText.set(this.i18n.messages().project.fileDeleteError);
+      }
+    });
+  }
+
+  private refreshPdfFiles(projectId: string): void {
+    this.pdfService.list(projectId).subscribe((files) => {
+      this.pdfFilesByProject.update((byProject) => ({ ...byProject, [projectId]: files }));
+    });
   }
 
   protected saveEdit(project: ProjectListItem): void {
