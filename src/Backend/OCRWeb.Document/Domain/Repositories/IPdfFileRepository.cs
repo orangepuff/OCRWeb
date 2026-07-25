@@ -14,5 +14,6 @@ public interface IPdfFileRepository
     Task<IReadOnlyList<PdfFile>> ListByProjectAsync(Guid projectId, CancellationToken ct = default);
 
     Task AddAsync(PdfFile file, CancellationToken ct = default);
+    void Remove(PdfFile file);
     Task SaveChangesAsync(CancellationToken ct = default);
 }
