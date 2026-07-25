@@ -118,7 +118,7 @@ export class CropPdf implements OnInit {
           return;
         }
         this.sourceFile.set(file);
-        this.loadPdf(file.id);
+        this.loadPdf(file.id, file.sizeBytes);
       },
       error: (err: unknown) => {
         this.loadError.set(true);
@@ -130,10 +130,13 @@ export class CropPdf implements OnInit {
     this.pageControl.valueChanges.subscribe((pageNo) => this.renderPage(pageNo));
   }
 
-  private async loadPdf(fileId: string): Promise<void> {
+  private async loadPdf(fileId: string, sizeBytes: number): Promise<void> {
     try {
       this.loadingStep.set(this.i18n.labels().project.downloadingPdf);
-      this.downloadProgress.set(null);
+      // Seed the total from the list metadata we already have - on a fast/local
+      // download the browser may never fire a progress event before completion,
+      // so waiting on event.total for the total would leave nothing to show at all.
+      this.downloadProgress.set({ loaded: 0, total: sizeBytes > 0 ? sizeBytes : null });
       const bytes = await firstValueFrom(
         this.http
           .get(this.pdfService.contentUrl(fileId), {
@@ -144,7 +147,7 @@ export class CropPdf implements OnInit {
           .pipe(
             tap((event) => {
               if (event.type === HttpEventType.DownloadProgress) {
-                this.downloadProgress.set({ loaded: event.loaded, total: event.total ?? null });
+                this.downloadProgress.update((prev) => ({ loaded: event.loaded, total: event.total ?? prev?.total ?? null }));
               }
             }),
             filter((event): event is HttpResponse<ArrayBuffer> => event.type === HttpEventType.Response),
