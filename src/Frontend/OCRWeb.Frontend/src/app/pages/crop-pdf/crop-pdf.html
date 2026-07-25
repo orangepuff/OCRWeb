@@ -9,6 +9,9 @@
     <div class="crop-pdf__loading">
       <mat-spinner diameter="32" />
       <p class="crop-pdf__loading-text">{{ loadingStep() }}</p>
+      @if (downloadProgressText(); as progress) {
+        <p class="crop-pdf__loading-progress">{{ progress }}</p>
+      }
     </div>
   }
 
@@ -57,7 +60,7 @@
     }
 
     <div class="crop-pdf__actions">
-      <lib-button [label]="i18n.labels().common.cancel" [disabled]="submitting()" (clicked)="cancel()" />
+      <lib-button [label]="i18n.labels().common.back" [disabled]="submitting()" (clicked)="cancel()" />
       <lib-button [label]="i18n.labels().project.cropButton" variant="primary" [disabled]="!canCrop()" (clicked)="confirmCrop()" />
     </div>
   }

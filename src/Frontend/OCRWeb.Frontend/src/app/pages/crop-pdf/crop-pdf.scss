@@ -21,10 +21,21 @@
   margin: 0;
 }
 
+.crop-pdf__loading-progress {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.75rem;
+  margin: 0;
+}
+
 .crop-pdf__page-indicator {
   font-size: 0.8rem;
   color: var(--mat-sys-on-surface-variant);
   margin: 0;
+}
+
+lib-slider {
+  // Default M3 track color is barely visible against the page background.
+  --mat-slider-inactive-track-color: var(--mat-sys-outline);
 }
 
 .crop-pdf__canvas-wrap {
@@ -34,6 +45,10 @@
 
   canvas {
     display: block;
+    max-width: 100%;
+    max-height: 60vh;
+    width: auto;
+    height: auto;
     border: 1px solid var(--mat-sys-outline-variant);
   }
 }

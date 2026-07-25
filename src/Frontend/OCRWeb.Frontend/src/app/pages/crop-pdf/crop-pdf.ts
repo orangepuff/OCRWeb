@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpEventType, HttpResponse } from '@angular/common/http';
 import { Component, ElementRef, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -7,7 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Button, Slider } from '@orangepuff/portal-frontend-shared';
 import * as pdfjsLib from 'pdfjs-dist';
 import type { PDFDocumentProxy } from 'pdfjs-dist';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, filter, map, tap } from 'rxjs';
 import { I18nService } from '../../i18n/i18n.service';
 import { PdfFileListItem } from '../../models/pdf-file-list-item';
 import { PdfService } from '../../services/pdf.service';
@@ -24,6 +24,22 @@ interface CanvasRect {
 interface PageSizePts {
   width: number;
   height: number;
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) {
+    return `${bytes} B`;
+  }
+
+  const units = ['KB', 'MB', 'GB'];
+  let value = bytes / 1024;
+  let unitIndex = 0;
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex++;
+  }
+
+  return `${value.toFixed(1)} ${units[unitIndex]}`;
 }
 
 /**
@@ -57,6 +73,21 @@ export class CropPdf implements OnInit {
   protected readonly submitting = signal(false);
   protected readonly errorText = signal<string | null>(null);
   protected readonly loadingStep = signal('');
+  protected readonly downloadProgress = signal<{ loaded: number; total: number | null } | null>(null);
+  protected readonly downloadProgressText = computed(() => {
+    const progress = this.downloadProgress();
+    if (!progress) {
+      return null;
+    }
+
+    const loaded = formatBytes(progress.loaded);
+    if (progress.total === null) {
+      return loaded;
+    }
+
+    const percent = Math.round((progress.loaded / progress.total) * 100);
+    return `${loaded} / ${formatBytes(progress.total)} (${percent}%)`;
+  });
 
   protected readonly sourceFile = signal<PdfFileListItem | null>(null);
   protected readonly totalPages = signal(1);
@@ -102,9 +133,25 @@ export class CropPdf implements OnInit {
   private async loadPdf(fileId: string): Promise<void> {
     try {
       this.loadingStep.set(this.i18n.labels().project.downloadingPdf);
+      this.downloadProgress.set(null);
       const bytes = await firstValueFrom(
-        this.http.get(this.pdfService.contentUrl(fileId), { responseType: 'arraybuffer' })
+        this.http
+          .get(this.pdfService.contentUrl(fileId), {
+            responseType: 'arraybuffer',
+            reportProgress: true,
+            observe: 'events'
+          })
+          .pipe(
+            tap((event) => {
+              if (event.type === HttpEventType.DownloadProgress) {
+                this.downloadProgress.set({ loaded: event.loaded, total: event.total ?? null });
+              }
+            }),
+            filter((event): event is HttpResponse<ArrayBuffer> => event.type === HttpEventType.Response),
+            map((event) => event.body!)
+          )
       );
+      this.downloadProgress.set(null);
       this.loadingStep.set(this.i18n.labels().project.renderingPreview);
       this.pdfDocument = await pdfjsLib.getDocument({ data: new Uint8Array(bytes) }).promise;
       this.totalPages.set(this.pdfDocument.numPages);
