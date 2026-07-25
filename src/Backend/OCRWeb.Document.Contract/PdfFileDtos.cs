@@ -27,8 +27,8 @@ public record PdfFileDetailDto(
     int? UpdatedUserId,
     DateTime? UpdatedTime);
 
-/// <summary>Binary payload for download/streaming.</summary>
-public record PdfFileContentDto(byte[] Content, string ContentType, string FileName);
+/// <summary>Streamed binary payload for download/streaming. Caller must dispose Content.</summary>
+public record PdfFileContentDto(Stream Content, string ContentType, string FileName, long SizeBytes);
 
 /// <summary>Request body for cropping an existing PDF into a new derived file.</summary>
 public record CropPdfRequest(int PageNo, int CropX, int CropY, int Width, int Height, string? FileName);

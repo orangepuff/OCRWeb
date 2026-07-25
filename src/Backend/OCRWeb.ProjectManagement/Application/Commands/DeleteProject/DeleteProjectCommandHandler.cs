@@ -1,11 +1,11 @@
 using MediatR;
+using OCRWeb.ProjectManagement.Contract;
 using OCRWeb.ProjectManagement.Domain.Repositories;
 using OrangepuffPortal.Shared.Auditing;
 
 namespace OCRWeb.ProjectManagement.Application.Commands.DeleteProject;
 
-public class DeleteProjectCommandHandler(IProjectRepository repository, ICurrentUser currentUser)
-    : IRequestHandler<DeleteProjectCommand>
+public class DeleteProjectCommandHandler(IProjectRepository repository, ICurrentUser currentUser, IPublisher publisher) : IRequestHandler<DeleteProjectCommand>
 {
     public async Task Handle(DeleteProjectCommand request, CancellationToken cancellationToken)
     {
@@ -17,5 +17,8 @@ public class DeleteProjectCommandHandler(IProjectRepository repository, ICurrent
 
         repository.Remove(project);
         await repository.SaveChangesAsync(cancellationToken);
+
+        // Lets other contexts (e.g. Document) tear down their own project-scoped data, without this module knowing anything about who's listening.
+        await publisher.Publish(new ProjectDeletedNotification(project.Id), cancellationToken);
     }
 }

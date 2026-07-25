@@ -1,7 +1,5 @@
 using MediatR;
 using OCRWeb.Pdf.Contract;
-using OCRWeb.Document.Domain.Entity;
-using OCRWeb.Document.Domain.Enums;
 using OCRWeb.Document.Domain.Repositories;
 using OCRWeb.Document.Domain.ValueObjects;
 using OrangepuffPortal.Shared.Auditing;
@@ -23,20 +21,13 @@ public class CropPdfCommandHandler(
 
         var now = DateTime.UtcNow;
         var properties = new FileProperties(request.PageNo, request.CropX, request.CropY, request.Width, request.Height);
-        var name = string.IsNullOrWhiteSpace(request.FileName) ? $"cropped-{source.FileName}" : request.FileName!;
+        var name = string.IsNullOrWhiteSpace(request.FileName) ? source.FileName : request.FileName!;
 
-        var derived = PdfFile.CreateDerived(
-            source.ProjectId, name, source.ContentType, croppedBytes,
-            PdfFileType.Cropped, properties, currentUser.UserId, now);
-
-        await repository.AddAsync(derived, cancellationToken);
+        // Crop replaces the source file's own content rather than creating a separate derived
+        // file - there's only ever one current file per project, and cropping just updates it.
+        source.ApplyCrop(croppedBytes, name, properties, currentUser.UserId, now);
         await repository.SaveChangesAsync(cancellationToken);
 
-        // Replace: only remove the source once the derived file is safely persisted, so a
-        // failure here leaves both files rather than losing the source with nothing to show for it.
-        repository.Remove(source);
-        await repository.SaveChangesAsync(cancellationToken);
-
-        return derived.Id;
+        return source.Id;
     }
 }

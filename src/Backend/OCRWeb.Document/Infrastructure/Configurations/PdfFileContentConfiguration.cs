@@ -5,17 +5,22 @@ using OCRWeb.Document.Domain.Entity;
 namespace OCRWeb.Document.Infrastructure.Configurations;
 
 /// <summary>
-/// Maps <see cref="PdfFileContent"/> to [docproc].[PDFFileContents].
-/// PdfFileId is both PK and FK (1:1 with PDFFiles). binContent is VARBINARY(MAX).
+/// Maps <see cref="PdfFileContent"/> to [docproc].[FileContents].
+/// The table's PK is a technical identity column (iId) not modeled on the domain entity -
+/// nothing in the domain needs it, the aggregate is always addressed via FileId. iFileId is a
+/// unique FK to [docproc].[Files] instead, preserving the 1:1 relationship. binContent is VARBINARY(MAX).
 /// </summary>
 public class PdfFileContentConfiguration : IEntityTypeConfiguration<PdfFileContent>
 {
     public void Configure(EntityTypeBuilder<PdfFileContent> builder)
     {
-        builder.ToTable("PDFFileContents");
+        builder.ToTable("FileContents");
 
-        builder.HasKey(x => x.PdfFileId);
-        builder.Property(x => x.PdfFileId).HasColumnName("PdfFileId").ValueGeneratedNever();
+        builder.Property<int>("Id").HasColumnName("iId").ValueGeneratedOnAdd();
+        builder.HasKey("Id");
+
+        builder.Property(x => x.FileId).HasColumnName("iFileId");
+        builder.HasIndex(x => x.FileId).IsUnique();
 
         builder.Property(x => x.Content).HasColumnName("binContent").IsRequired();
 

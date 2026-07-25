@@ -13,7 +13,7 @@ public class ListPdfFilesQueryHandler(IPdfFileRepository repository)
         var files = await repository.ListByProjectAsync(request.ProjectId, cancellationToken);
         return files
             .Select(f => new PdfFileListItemDto(
-                f.Id, f.ProjectId, f.FileName, f.ContentType, f.SizeBytes, f.FileType.ToString(), f.InsertedTime))
+                f.Id, f.ParentId, f.FileName, f.ContentType, f.SizeBytes, f.FileType.ToString(), f.InsertedTime))
             .ToList();
     }
 }

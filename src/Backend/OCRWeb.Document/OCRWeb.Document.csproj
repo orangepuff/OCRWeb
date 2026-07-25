@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+    <PackageReference Include="Microsoft.Data.SqlClient" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -19,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\OCRWeb.Document.Contract\OCRWeb.Document.Contract.csproj" />
     <ProjectReference Include="..\OCRWeb.Pdf.Contract\OCRWeb.Pdf.Contract.csproj" />
+    <ProjectReference Include="..\OCRWeb.ProjectManagement.Contract\OCRWeb.ProjectManagement.Contract.csproj" />
   </ItemGroup>
 
 </Project>

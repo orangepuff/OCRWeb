@@ -9,9 +9,18 @@ public class GetPdfFileContentQueryHandler(IPdfFileRepository repository)
 {
     public async Task<PdfFileContentDto?> Handle(GetPdfFileContentQuery request, CancellationToken cancellationToken)
     {
-        var file = await repository.GetWithContentAsync(request.Id, cancellationToken);
-        return file is null
-            ? null
-            : new PdfFileContentDto(file.Content.Content, file.ContentType, file.FileName);
+        var file = await repository.GetByIdAsync(request.Id, cancellationToken);
+        if (file is null)
+        {
+            return null;
+        }
+
+        var stream = await repository.OpenContentStreamAsync(request.Id, cancellationToken);
+        if (stream is null)
+        {
+            return null;
+        }
+
+        return new PdfFileContentDto(stream, file.ContentType, file.FileName, file.SizeBytes);
     }
 }

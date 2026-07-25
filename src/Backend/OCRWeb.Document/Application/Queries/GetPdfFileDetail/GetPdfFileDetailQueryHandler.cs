@@ -18,7 +18,7 @@ public class GetPdfFileDetailQueryHandler(IPdfFileRepository repository)
             : new FilePropertiesDto(f.Properties.PageNo, f.Properties.CropX, f.Properties.CropY, f.Properties.Width, f.Properties.Height);
 
         return new PdfFileDetailDto(
-            f.Id, f.ProjectId, f.FileName, f.ContentType, f.SizeBytes, f.FileType.ToString(), props,
+            f.Id, f.ParentId, f.FileName, f.ContentType, f.SizeBytes, f.FileType.ToString(), props,
             f.InsertedUserId, f.InsertedTime, f.UpdatedUserId, f.UpdatedTime);
     }
 }

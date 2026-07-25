@@ -1,5 +1,7 @@
+using MediatR;
 using Moq;
 using OCRWeb.ProjectManagement.Application.Commands.DeleteProject;
+using OCRWeb.ProjectManagement.Contract;
 using OCRWeb.ProjectManagement.Domain.Entity;
 using OCRWeb.ProjectManagement.Domain.Repositories;
 using OrangepuffPortal.Shared.Auditing;
@@ -19,11 +21,16 @@ public class DeleteProjectCommandHandlerTests
         var currentUser = new Mock<ICurrentUser>();
         currentUser.SetupGet(u => u.UserId).Returns(7);
 
-        var handler = new DeleteProjectCommandHandler(repo.Object, currentUser.Object);
+        var publisher = new Mock<IPublisher>();
+
+        var handler = new DeleteProjectCommandHandler(repo.Object, currentUser.Object, publisher.Object);
         await handler.Handle(new DeleteProjectCommand(project.Id), CancellationToken.None);
 
         repo.Verify(r => r.Remove(project), Times.Once);
         repo.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        publisher.Verify(
+            p => p.Publish(It.Is<ProjectDeletedNotification>(n => n.ProjectId == project.Id), It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     [Fact]
@@ -32,7 +39,7 @@ public class DeleteProjectCommandHandlerTests
         var repo = new Mock<IProjectRepository>();
         repo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync((Project?)null);
 
-        var handler = new DeleteProjectCommandHandler(repo.Object, Mock.Of<ICurrentUser>());
+        var handler = new DeleteProjectCommandHandler(repo.Object, Mock.Of<ICurrentUser>(), Mock.Of<IPublisher>());
 
         await Assert.ThrowsAsync<KeyNotFoundException>(() =>
             handler.Handle(new DeleteProjectCommand(Guid.NewGuid()), CancellationToken.None));
@@ -49,7 +56,7 @@ public class DeleteProjectCommandHandlerTests
         var currentUser = new Mock<ICurrentUser>();
         currentUser.SetupGet(u => u.UserId).Returns(2);
 
-        var handler = new DeleteProjectCommandHandler(repo.Object, currentUser.Object);
+        var handler = new DeleteProjectCommandHandler(repo.Object, currentUser.Object, Mock.Of<IPublisher>());
 
         await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
             handler.Handle(new DeleteProjectCommand(project.Id), CancellationToken.None));

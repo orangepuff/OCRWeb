@@ -30,6 +30,8 @@ public class GetPdfFileContentEndpoint(IMediator mediator)
             return;
         }
 
+        await using var stream = content.Content;
+
         // Send.BytesAsync always forces Content-Disposition: attachment when given a filename,
         // which pops the browser's Save dialog instead of rendering the PDF in a new tab. Set the
         // headers ourselves with "inline" so clicking the link opens the built-in PDF viewer.
@@ -40,7 +42,11 @@ public class GetPdfFileContentEndpoint(IMediator mediator)
 
         // Set explicitly so the response isn't chunked - without it the browser has no
         // total size to report download progress against.
-        HttpContext.Response.ContentLength = content.Content.Length;
-        await HttpContext.Response.Body.WriteAsync(content.Content, ct);
+        HttpContext.Response.ContentLength = content.SizeBytes;
+
+        // Streamed straight from the DB reader to the response body - bytes start flowing
+        // to the client as soon as they're read off the wire, instead of only after the
+        // entire blob has been buffered into memory.
+        await stream.CopyToAsync(HttpContext.Response.Body, ct);
     }
 }

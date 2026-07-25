@@ -18,6 +18,7 @@ public class PdfFileTests
         Assert.Null(file.Properties);
         Assert.Equal(Content.LongLength, file.SizeBytes);
         Assert.NotNull(file.Content);
+        Assert.True(file.IsActive);
         Assert.Equal(1, file.InsertedUserId);
         Assert.Equal(now, file.InsertedTime);
     }
@@ -39,44 +40,34 @@ public class PdfFileTests
     }
 
     [Fact]
-    public void CreateDerived_requires_properties()
-    {
-        Assert.Throws<ArgumentNullException>(() =>
-            PdfFile.CreateDerived(Guid.NewGuid(), "c.pdf", "application/pdf", Content,
-                PdfFileType.Cropped, properties: null!, 1, DateTime.UtcNow));
-    }
-
-    [Fact]
-    public void CreateDerived_rejects_original_type()
+    public void ApplyCrop_updates_content_size_name_properties_type_and_audit()
     {
         var props = new FileProperties(1, 0, 0, 10, 10);
-        Assert.Throws<ArgumentException>(() =>
-            PdfFile.CreateDerived(Guid.NewGuid(), "c.pdf", "application/pdf", Content,
-                PdfFileType.Original, props, 1, DateTime.UtcNow));
-    }
-
-    [Fact]
-    public void ApplyCrop_updates_content_size_properties_and_audit()
-    {
-        var props = new FileProperties(1, 0, 0, 10, 10);
-        var file = PdfFile.CreateDerived(Guid.NewGuid(), "c.pdf", "application/pdf", Content,
-            PdfFileType.Cropped, props, 1, DateTime.UtcNow);
+        var file = PdfFile.CreateOriginal(Guid.NewGuid(), "o.pdf", "application/pdf", Content, 1, DateTime.UtcNow);
 
         var later = DateTime.UtcNow.AddMinutes(1);
-        file.ApplyCrop([9, 9, 9], new FileProperties(2, 5, 5, 20, 20), userId: 2, later);
+        file.ApplyCrop([9, 9, 9], "cropped.pdf", props, userId: 2, later);
 
         Assert.Equal(3, file.SizeBytes);
+        Assert.Equal("cropped.pdf", file.FileName);
+        Assert.Equal(PdfFileType.Cropped, file.FileType);
         Assert.Equal(2, file.UpdatedUserId);
         Assert.Equal(later, file.UpdatedTime);
-        Assert.Equal(2, file.Properties!.PageNo);
+        Assert.Equal(1, file.Properties!.PageNo);
     }
 
     [Fact]
-    public void ApplyCrop_on_original_throws()
+    public void ApplyCrop_can_be_applied_again_to_an_already_cropped_file()
     {
         var file = PdfFile.CreateOriginal(Guid.NewGuid(), "o.pdf", "application/pdf", Content, 1, DateTime.UtcNow);
-        Assert.Throws<InvalidOperationException>(() =>
-            file.ApplyCrop([1], new FileProperties(1, 0, 0, 10, 10), 1, DateTime.UtcNow));
+        file.ApplyCrop([9, 9, 9], "cropped.pdf", new FileProperties(1, 0, 0, 10, 10), 1, DateTime.UtcNow);
+
+        var later = DateTime.UtcNow.AddMinutes(1);
+        file.ApplyCrop([1], "cropped-again.pdf", new FileProperties(2, 5, 5, 20, 20), 2, later);
+
+        Assert.Equal(1, file.SizeBytes);
+        Assert.Equal("cropped-again.pdf", file.FileName);
+        Assert.Equal(2, file.Properties!.PageNo);
     }
 
     [Theory]

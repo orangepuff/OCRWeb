@@ -5,56 +5,47 @@ using OrangepuffPortal.Shared.Domain;
 namespace OCRWeb.Document.Domain.Entity;
 
 /// <summary>
-/// Aggregate root for a stored PDF (metadata). Maps to [docproc].[PDFFiles].
+/// Aggregate root for a stored PDF (metadata). Maps to [docproc].[Files].
 /// Holds its binary content as a 1:1 child (<see cref="PdfFileContent"/>).
-/// Cross-context references (ProjectId) are by id only.
+/// Cross-context references (ParentId) are by id only - the id happens to be a project id
+/// today, but this context doesn't model "Project" as a concept of its own.
 /// </summary>
 public class PdfFile : AuditableEntity
 {
     public Guid Id { get; private set; }
-    public Guid ProjectId { get; private set; }
+    public Guid ParentId { get; private set; }
     public string FileName { get; private set; } = string.Empty;
     public string ContentType { get; private set; } = string.Empty;
     public long SizeBytes { get; private set; }
     public FileChecksum Checksum { get; private set; } = null!;
     public PdfFileType FileType { get; private set; }
     public FileProperties? Properties { get; private set; }
+    public bool IsActive { get; private set; } = true;
     public PdfFileContent Content { get; private set; } = null!;
 
     private PdfFile() { } // EF
 
     /// <summary>Create the original uploaded PDF.</summary>
     public static PdfFile CreateOriginal(
-        Guid projectId, string fileName, string contentType, byte[] content, int userId, DateTime utcNow)
+        Guid parentId, string fileName, string contentType, byte[] content, int userId, DateTime utcNow)
     {
-        var file = NewMetadata(projectId, fileName, contentType, content, PdfFileType.Original, properties: null, userId, utcNow);
+        var file = NewMetadata(parentId, fileName, contentType, content, PdfFileType.Original, properties: null, userId, utcNow);
         file.Content = new PdfFileContent(file.Id, content, userId, utcNow);
         return file;
     }
 
-    /// <summary>Create a derived PDF (Cropped/Section) produced from an original.</summary>
-    public static PdfFile CreateDerived(
-        Guid projectId, string fileName, string contentType, byte[] content,
-        PdfFileType fileType, FileProperties properties, int userId, DateTime utcNow)
+    /// <summary>
+    /// Replace this file's content in place - used by crop, which always mutates the
+    /// existing file rather than creating a separate derived one.
+    /// </summary>
+    public void ApplyCrop(byte[] newContent, string fileName, FileProperties properties, int userId, DateTime utcNow)
     {
-        if (fileType == PdfFileType.Original)
-            throw new ArgumentException("Use CreateOriginal for original files.", nameof(fileType));
-        ArgumentNullException.ThrowIfNull(properties);
-
-        var file = NewMetadata(projectId, fileName, contentType, content, fileType, properties, userId, utcNow);
-        file.Content = new PdfFileContent(file.Id, content, userId, utcNow);
-        return file;
-    }
-
-    /// <summary>Re-crop an existing derived file: new binary + updated crop parameters.</summary>
-    public void ApplyCrop(byte[] newContent, FileProperties properties, int userId, DateTime utcNow)
-    {
-        if (FileType == PdfFileType.Original)
-            throw new InvalidOperationException("Cannot crop the original file in place; create a derived file instead.");
         ArgumentNullException.ThrowIfNull(newContent);
         ArgumentNullException.ThrowIfNull(properties);
 
+        FileName = SanitizeFileName(fileName);
         Properties = properties;
+        FileType = PdfFileType.Cropped;
         SizeBytes = newContent.LongLength;
         Checksum = FileChecksum.Compute(newContent);
         MarkUpdated(userId, utcNow);
@@ -62,7 +53,7 @@ public class PdfFile : AuditableEntity
     }
 
     private static PdfFile NewMetadata(
-        Guid projectId, string fileName, string contentType, byte[] content,
+        Guid parentId, string fileName, string contentType, byte[] content,
         PdfFileType fileType, FileProperties? properties, int userId, DateTime utcNow)
     {
         ArgumentNullException.ThrowIfNull(content);
@@ -71,13 +62,14 @@ public class PdfFile : AuditableEntity
         var file = new PdfFile
         {
             Id = Guid.NewGuid(),
-            ProjectId = projectId,
+            ParentId = parentId,
             FileName = SanitizeFileName(fileName),
             ContentType = string.IsNullOrWhiteSpace(contentType) ? "application/pdf" : contentType,
             SizeBytes = content.LongLength,
             Checksum = FileChecksum.Compute(content),
             FileType = fileType,
-            Properties = properties
+            Properties = properties,
+            IsActive = true
         };
         file.MarkInserted(userId, utcNow);
         return file;
