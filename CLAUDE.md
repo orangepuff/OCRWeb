@@ -56,8 +56,8 @@ docker compose --profile frontend up -d --build   # + Angular (needs a Dockerfil
 docker compose down
 ```
 
-- API: http://localhost:5101 / https://localhost:7101 (OpenAPI at `/openapi/v1.json`; also serves `/bff/login`, `/bff/logout`, `/bff/me`, `/bff/admin/*`)
-- Frontend (via `ng serve` in `src/Frontend/OCRWeb.Frontend`): https://localhost:4200
+- API: http://localhost:5201 / https://localhost:7201 (OpenAPI at `/openapi/v1.json`; also serves `/bff/login`, `/bff/logout`, `/bff/me`, `/bff/admin/*`)
+- Frontend (via `ng serve` in `src/Frontend/OCRWeb.Frontend`): https://localhost:4300
 
 SQL Server setup (external instance, must already exist — the app never creates the database):
 
@@ -75,7 +75,9 @@ dotnet dev-certs https -ep .\certs\ocrweb-devcert.pfx -p "Your_dev_cert_password
 
 EF Core migrations run automatically on API startup **only** when `DoMigration: true` in appsettings (applies to all modules at once — every registered `IPortalModule` via `OrangepuffPortal.Host`'s `MigratePortalModulesAsync()`, plus `OCRWeb.Document`'s own DbContext migrated manually since it isn't an `IPortalModule`; the flag is off by default in `appsettings.json`, on in `appsettings.Development.json`). Migrations create schema/tables, never the database itself.
 
-Frontend (Angular 22 + Angular Material, standalone components + signals) is scaffolded and has working cookie-based auth via the API's `/bff/*` routes: `src/Frontend/OCRWeb.Frontend/src/app` has `auth/` (`AuthService` hitting `/bff/me`, `/bff/login`, `/bff/logout`; `authGuard` route guard), `landing/`, `home/` (guarded), `auth-error/`, and `header/`. Runs via `ng serve` (not yet in Docker — no Dockerfile at `src/Frontend/OCRWeb.Frontend/Dockerfile` yet, so the `frontend` compose profile isn't usable). `src/Frontend/OCRWeb.Frontend.Shared` is still an untouched `ng generate library` stub, not wired into anything.
+**Frontend auth/shell UI is no longer in-repo either**, mirroring the backend: `src/Frontend/OCRWeb.Frontend` is a thin Angular 22 + Angular Material shell that bootstraps `PortalShell` from the `@orangepuff/portal-frontend` npm package (`src/main.ts`), wired up via `providePortalShell({ appName, bffOrigin })` and `PORTAL_SHELL_ROUTES` in `src/app/app.config.ts`/`app.routes.ts` — landing/login, the post-login iframe shell, avatar/settings, and admin user/security-rule management all come from that package (and its own dependency, `@orangepuff/portal-frontend-shared`, which supplies `IdentityService`, `Avatar`, etc.). There is no more local `OCRWeb.Frontend.Shared` project — the npm package replaces it, same as `OrangepuffPortal.Host` replaced the old in-repo `OCRWeb.Identity`/`OCRWeb.Bff`. `bodyAppUrl` (the shell's iframe target for an OCR-specific body app) is intentionally unset for now — that Angular app doesn't exist yet. Runs via `ng serve` (not yet in Docker — no Dockerfile at `src/Frontend/OCRWeb.Frontend/Dockerfile` yet, so the `frontend` compose profile isn't usable).
+
+`@orangepuff/portal-frontend@1.0.2`'s published `peerDependencies` still pin `@orangepuff/portal-frontend-shared` to the stale pre-release range `^0.0.1` instead of `^1.0.2` — an upstream packaging bug in the `orangepuffportal` repo's publish step. `src/Frontend/OCRWeb.Frontend/package.json` works around it with an `overrides` entry pinning the nested peer to the root `@orangepuff/portal-frontend-shared` version; drop that override once the upstream package.json is fixed and republished.
 
 ## Architecture
 
@@ -94,8 +96,7 @@ Persistence is a **single SQL Server database** (`OCRWeb`), one schema + one EF 
 | `OCRWeb.Pdf` (+ `.Contract`) | none | cross-cutting technical library: PDF manipulation via PDFsharp behind an `IPdfManipulator` port |
 | `OCRWeb.OCR` (+ `.Contract`) | none | future context — page extraction, job queue, recognition, indexing are out of scope for now |
 | `OCRWeb.API` | none of its own | web host / composition root; FastEndpoints → MediatR; runs migrations + admin seeding on startup when `DoMigration` is true (via `OrangepuffPortal.Host`'s `MigratePortalModulesAsync()` for Identity, plus a manual `DocumentDbContext` migrate call); also hosts the `/bff/*` routes and real cookie/Google-OAuth auth via `OrangepuffPortal.Host` — `ICurrentUser`/`CurrentUser` come from that package now, no longer a local stub |
-| `OCRWeb.Frontend` | — | Partial Implemented — Angular 22 + Angular Material scaffolded, cookie-based auth via the API's `/bff/*` routes (login/logout/session guard) working; admin UI for user/permission management not yet built |
-| `OCRWeb.Frontend.Shared` | — | Scaffold — untouched `ng generate library` stub, not referenced by `OCRWeb.Frontend` yet |
+| `OCRWeb.Frontend` | — | Partial Implemented — Angular 22 + Angular Material shell consuming `@orangepuff/portal-frontend`/`@orangepuff/portal-frontend-shared` (npm); login/logout/session, avatar, and admin user/security-rule management all come from the package. No OCR-specific body app (`bodyAppUrl`) built yet, so `Home` renders the placeholder |
 
 `identity` schema (owns `Users`) is now created/migrated by the `OrangepuffPortal.Identity` package, not an in-repo project — see the `orangepuffportal` repo for its source.
 

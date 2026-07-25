@@ -83,6 +83,11 @@ public class PdfFile : AuditableEntity
         return file;
     }
 
+    // Fixed set rather than Path.GetInvalidFileNameChars(): that API is OS-dependent (Linux only
+    // rejects '\0' and '/'), so sanitizing against it would let ':'/'*'/etc. through when the app
+    // runs in a Linux container even though they're invalid on Windows, where names get downloaded to.
+    private static readonly char[] InvalidFileNameChars = ['"', '<', '>', ':', '|', '?', '*', '\\', '/'];
+
     /// <summary>Basic display-name sanitation (plan calls for strong name handling).</summary>
     private static string SanitizeFileName(string fileName)
     {
@@ -90,7 +95,7 @@ public class PdfFile : AuditableEntity
             throw new ArgumentException("File name is required.", nameof(fileName));
 
         var cleaned = fileName.Trim();
-        foreach (var c in Path.GetInvalidFileNameChars())
+        foreach (var c in InvalidFileNameChars)
             cleaned = cleaned.Replace(c, '_');
 
         return cleaned.Length > 255 ? cleaned[..255] : cleaned;
