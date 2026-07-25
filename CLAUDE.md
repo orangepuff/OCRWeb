@@ -4,13 +4,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Keep these docs in sync
 
-Two files are the source of truth for project history and stay updated whenever this repo changes:
-
-- **`development-plan.docx`** — architecture and per-project status (Implemented / Partial Implemented / Scaffold / Planned). Whenever a structural or architectural change is made (new module, new bounded context, schema/DbContext change, status change, dependency-direction change, etc.), update the relevant section of this document.
-- **`ChangeLogs.txt`** — one entry per dependency/version add/upgrade/downgrade/removal, using the template already in the file (Date, Area, Item, From, To, Reason, Updated By).
-
-Both docs currently describe some projects with names/status that differ slightly from what exists in `src/` (e.g. the plan's "OCRWeb.DocumentProcessing" and "OCRWeb.Contract" correspond to the actual `OCRWeb.Document*` and `*.Contract` projects). Reconcile naming as you touch each area rather than assuming the docx is fully current.
-
 - **`docs/`** — whenever a new feature is implemented, add a design/reference doc for it here (a Markdown design doc, plus a `.sql` file if the feature owns database objects — see the `diagnostics-logging-design.md` + `diagnostics-logs-schema.sql` pair in the separate `DiagnosticLog` repo for the style to follow). Do this as part of implementing the feature, not as an afterthought.
 
 ## Commit messages

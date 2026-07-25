@@ -1,6 +1,6 @@
 # OCRWeb — Product Overview
 
-> Source of truth for product scope. Architecture/implementation status lives in `development-plan.docx`; this file is about *what* the product does and for *whom*, not *how* it's built.
+> Source of truth for product scope — *what* the product does and for *whom*, not *how* it's built.
 
 ## 1. What OCRWeb is
 
@@ -10,7 +10,7 @@ Today's build covers the **document intake and project workflow**. The OCR pipel
 
 ## 2. Core use cases
 
-These two flows define the current phase (from `development-plan.docx` §8):
+These two flows define the current phase:
 
 **Use Case 1 — New project from a PDF**
 A user uploads a PDF. The original file is stored. A project record is created to hold it (project lifecycle itself is being built — see `OCRWeb.ProjectManagement` in [Section 3](#3-feature-scope-by-area)).
@@ -20,7 +20,7 @@ A user lists a project's files, views file detail, streams/downloads the origina
 
 ## 3. Feature scope by area
 
-Status values match `development-plan.docx`'s legend: **Implemented** (built + tested), **Partial** (some of the area works), **Scaffold** (project exists, no logic yet), **Planned** (not started).
+Status values used below: **Implemented** (built + tested), **Partial** (some of the area works), **Scaffold** (project exists, no logic yet), **Planned** (not started).
 
 | Area | Status | What it does |
 |---|---|---|
@@ -34,7 +34,7 @@ Status values match `development-plan.docx`'s legend: **Implemented** (built + t
 - OCR pipeline internals (page extraction, job queue, text recognition, search indexing)
 - Anything beyond the two core use cases above (no reporting, billing, multi-tenant admin, etc. currently planned)
 
-## 5. Known open risks (carried from `development-plan.docx` §9)
+## 5. Known open risks
 
 - Large PDF uploads may need streaming and size limits enforced at the Bff/API layers (not yet implemented).
 - Crop coordinate orientation between the frontend and the underlying PDF point system needs to be confirmed once the frontend crop UI exists — see `Design.md`.
@@ -42,7 +42,6 @@ Status values match `development-plan.docx`'s legend: **Implemented** (built + t
 
 ## 6. Related documents
 
-- `development-plan.docx` — architecture and per-project implementation status
 - `docs/Authentication/authentication-design.docx` — Google sign-in design and implementation record
 - `docs/Authentication/prepare-for-dev.docx` — per-machine dev environment setup
 - `Design.md` — frontend UI/UX design (screens, flows, components)
