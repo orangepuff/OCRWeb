@@ -6,7 +6,7 @@ namespace OCRWeb.ProjectManagement.Infrastructure.Repositories;
 
 public class ProjectRepository(ProjectDbContext db) : IProjectRepository
 {
-    public Task<Project?> GetByIdAsync(Guid id, CancellationToken ct = default) =>
+    public Task<Project?> GetByIdAsync(int id, CancellationToken ct = default) =>
         db.Projects.FirstOrDefaultAsync(x => x.Id == id, ct);
 
     public async Task<IReadOnlyList<Project>> ListByOwnerAsync(int ownerUserId, CancellationToken ct = default) =>

@@ -13,7 +13,7 @@ public class CropPdfCommandHandlerTests
     [Fact]
     public async Task Handle_replaces_source_content_in_place()
     {
-        var source = PdfFile.CreateOriginal(Guid.NewGuid(), "orig.pdf", "application/pdf", [1, 2, 3], userId: 1, DateTime.UtcNow);
+        var source = PdfFile.CreateOriginal(1, "orig.pdf", "application/pdf", [1, 2, 3], userId: 1, DateTime.UtcNow);
 
         var repo = new Mock<IPdfFileRepository>();
         repo.Setup(r => r.GetWithContentAsync(source.Id, It.IsAny<CancellationToken>())).ReturnsAsync(source);
@@ -42,7 +42,7 @@ public class CropPdfCommandHandlerTests
     [Fact]
     public async Task Handle_falls_back_to_source_name_when_no_filename_given()
     {
-        var source = PdfFile.CreateOriginal(Guid.NewGuid(), "orig.pdf", "application/pdf", [1, 2, 3], userId: 1, DateTime.UtcNow);
+        var source = PdfFile.CreateOriginal(1, "orig.pdf", "application/pdf", [1, 2, 3], userId: 1, DateTime.UtcNow);
 
         var repo = new Mock<IPdfFileRepository>();
         repo.Setup(r => r.GetWithContentAsync(source.Id, It.IsAny<CancellationToken>())).ReturnsAsync(source);

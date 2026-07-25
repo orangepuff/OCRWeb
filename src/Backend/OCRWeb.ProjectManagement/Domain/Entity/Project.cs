@@ -8,7 +8,7 @@ namespace OCRWeb.ProjectManagement.Domain.Entity;
 /// </summary>
 public class Project : AuditableEntity
 {
-    public Guid Id { get; private set; }
+    public int Id { get; private set; }
     public string Name { get; private set; } = string.Empty;
 
     private Project() { } // EF
@@ -16,7 +16,7 @@ public class Project : AuditableEntity
     /// <summary>Create a new project owned by the given user.</summary>
     public static Project Create(string name, int userId, DateTime utcNow)
     {
-        var project = new Project { Id = Guid.NewGuid(), Name = NormalizeName(name) };
+        var project = new Project { Name = NormalizeName(name) };
         project.MarkInserted(userId, utcNow);
         return project;
     }

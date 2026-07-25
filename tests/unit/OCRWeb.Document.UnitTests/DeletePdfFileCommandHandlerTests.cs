@@ -11,7 +11,7 @@ public class DeletePdfFileCommandHandlerTests
     [Fact]
     public async Task Handle_removes_owned_file()
     {
-        var file = PdfFile.CreateOriginal(Guid.NewGuid(), "doc.pdf", "application/pdf", [1, 2, 3], userId: 7, DateTime.UtcNow);
+        var file = PdfFile.CreateOriginal(1, "doc.pdf", "application/pdf", [1, 2, 3], userId: 7, DateTime.UtcNow);
 
         var repo = new Mock<IPdfFileRepository>();
         repo.Setup(r => r.GetByIdAsync(file.Id, It.IsAny<CancellationToken>())).ReturnsAsync(file);
@@ -41,7 +41,7 @@ public class DeletePdfFileCommandHandlerTests
     [Fact]
     public async Task Handle_file_owned_by_another_user_throws_UnauthorizedAccessException()
     {
-        var file = PdfFile.CreateOriginal(Guid.NewGuid(), "doc.pdf", "application/pdf", [1, 2, 3], userId: 1, DateTime.UtcNow);
+        var file = PdfFile.CreateOriginal(1, "doc.pdf", "application/pdf", [1, 2, 3], userId: 1, DateTime.UtcNow);
 
         var repo = new Mock<IPdfFileRepository>();
         repo.Setup(r => r.GetByIdAsync(file.Id, It.IsAny<CancellationToken>())).ReturnsAsync(file);

@@ -37,12 +37,12 @@ public class DeleteProjectCommandHandlerTests
     public async Task Handle_missing_project_throws_KeyNotFoundException()
     {
         var repo = new Mock<IProjectRepository>();
-        repo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync((Project?)null);
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync((Project?)null);
 
         var handler = new DeleteProjectCommandHandler(repo.Object, Mock.Of<ICurrentUser>(), Mock.Of<IPublisher>());
 
         await Assert.ThrowsAsync<KeyNotFoundException>(() =>
-            handler.Handle(new DeleteProjectCommand(Guid.NewGuid()), CancellationToken.None));
+            handler.Handle(new DeleteProjectCommand(999), CancellationToken.None));
     }
 
     [Fact]

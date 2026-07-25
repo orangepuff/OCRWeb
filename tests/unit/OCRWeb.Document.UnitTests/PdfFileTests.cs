@@ -12,7 +12,7 @@ public class PdfFileTests
     public void CreateOriginal_sets_original_type_and_audit()
     {
         var now = DateTime.UtcNow;
-        var file = PdfFile.CreateOriginal(Guid.NewGuid(), "doc.pdf", "application/pdf", Content, userId: 1, now);
+        var file = PdfFile.CreateOriginal(1, "doc.pdf", "application/pdf", Content, userId: 1, now);
 
         Assert.Equal(PdfFileType.Original, file.FileType);
         Assert.Null(file.Properties);
@@ -26,7 +26,7 @@ public class PdfFileTests
     [Fact]
     public void CreateOriginal_sanitizes_invalid_filename_chars()
     {
-        var file = PdfFile.CreateOriginal(Guid.NewGuid(), "a:b*c.pdf", "application/pdf", Content, 1, DateTime.UtcNow);
+        var file = PdfFile.CreateOriginal(1, "a:b*c.pdf", "application/pdf", Content, 1, DateTime.UtcNow);
 
         Assert.DoesNotContain(':', file.FileName);
         Assert.DoesNotContain('*', file.FileName);
@@ -36,14 +36,14 @@ public class PdfFileTests
     public void CreateOriginal_empty_content_throws()
     {
         Assert.Throws<ArgumentException>(() =>
-            PdfFile.CreateOriginal(Guid.NewGuid(), "doc.pdf", "application/pdf", [], 1, DateTime.UtcNow));
+            PdfFile.CreateOriginal(1, "doc.pdf", "application/pdf", [], 1, DateTime.UtcNow));
     }
 
     [Fact]
     public void ApplyCrop_updates_content_size_name_properties_type_and_audit()
     {
         var props = new FileProperties(1, 0, 0, 10, 10);
-        var file = PdfFile.CreateOriginal(Guid.NewGuid(), "o.pdf", "application/pdf", Content, 1, DateTime.UtcNow);
+        var file = PdfFile.CreateOriginal(1, "o.pdf", "application/pdf", Content, 1, DateTime.UtcNow);
 
         var later = DateTime.UtcNow.AddMinutes(1);
         file.ApplyCrop([9, 9, 9], "cropped.pdf", props, userId: 2, later);
@@ -59,7 +59,7 @@ public class PdfFileTests
     [Fact]
     public void ApplyCrop_can_be_applied_again_to_an_already_cropped_file()
     {
-        var file = PdfFile.CreateOriginal(Guid.NewGuid(), "o.pdf", "application/pdf", Content, 1, DateTime.UtcNow);
+        var file = PdfFile.CreateOriginal(1, "o.pdf", "application/pdf", Content, 1, DateTime.UtcNow);
         file.ApplyCrop([9, 9, 9], "cropped.pdf", new FileProperties(1, 0, 0, 10, 10), 1, DateTime.UtcNow);
 
         var later = DateTime.UtcNow.AddMinutes(1);

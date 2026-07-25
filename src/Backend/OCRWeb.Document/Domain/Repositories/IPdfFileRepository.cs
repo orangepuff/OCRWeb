@@ -17,7 +17,7 @@ public interface IPdfFileRepository
     Task<Stream?> OpenContentStreamAsync(int id, CancellationToken ct = default);
 
     /// <summary>Metadata list for a project (no binary content). Excludes inactive files.</summary>
-    Task<IReadOnlyList<PdfFile>> ListByProjectAsync(Guid projectId, CancellationToken ct = default);
+    Task<IReadOnlyList<PdfFile>> ListByProjectAsync(int projectId, CancellationToken ct = default);
 
     Task AddAsync(PdfFile file, CancellationToken ct = default);
     void Remove(PdfFile file);
@@ -27,5 +27,5 @@ public interface IPdfFileRepository
     /// Hard-deletes every file for a parent (project), active or not - content cascades via the
     /// FK. Used when the parent itself is deleted, which is a full teardown, not a listing query.
     /// </summary>
-    Task<int> RemoveAllByParentIdAsync(Guid parentId, CancellationToken ct = default);
+    Task<int> RemoveAllByParentIdAsync(int parentId, CancellationToken ct = default);
 }

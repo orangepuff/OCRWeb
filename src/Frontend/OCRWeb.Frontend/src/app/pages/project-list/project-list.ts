@@ -27,7 +27,7 @@ export class ProjectList implements OnInit {
   protected readonly projects = signal<ProjectListItem[]>([]);
   protected readonly loaded = signal(false);
   protected readonly errorText = signal<string | null>(null);
-  protected readonly pdfFilesByProject = signal<Record<string, PdfFileListItem[]>>({});
+  protected readonly pdfFilesByProject = signal<Record<number, PdfFileListItem[]>>({});
 
   ngOnInit(): void {
     this.loadProjects();
@@ -37,7 +37,7 @@ export class ProjectList implements OnInit {
     this.router.navigate(['/projects/add']);
   }
 
-  protected pdfFilesFor(projectId: string): PdfFileListItem[] {
+  protected pdfFilesFor(projectId: number): PdfFileListItem[] {
     return this.pdfFilesByProject()[projectId] ?? [];
   }
 

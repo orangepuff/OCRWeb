@@ -39,7 +39,7 @@ export class ProjectForm implements OnInit {
   private readonly snackBar = inject(MatSnackBar);
 
   protected readonly i18n = inject(I18nService);
-  protected readonly projectId = signal<string | null>(null);
+  protected readonly projectId = signal<number | null>(null);
   protected readonly isEditMode = computed(() => this.projectId() !== null);
   protected readonly loaded = signal(false);
 
@@ -56,12 +56,13 @@ export class ProjectForm implements OnInit {
   protected readonly errorText = signal<string | null>(null);
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (!id) {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (!idParam) {
       this.loaded.set(true);
       return;
     }
 
+    const id = Number(idParam);
     this.projectId.set(id);
     this.projectService.getById(id).subscribe({
       next: (project) => {
@@ -153,7 +154,7 @@ export class ProjectForm implements OnInit {
     this.form.disable();
 
     const id = this.projectId();
-    if (id) {
+    if (id !== null) {
       this.saveEdit(id);
     } else {
       this.saveCreate();
@@ -168,7 +169,7 @@ export class ProjectForm implements OnInit {
     });
   }
 
-  private saveEdit(id: string): void {
+  private saveEdit(id: number): void {
     this.projectService.update(id, this.form.controls.name.value).subscribe({
       next: () => {
         const file = this.selectedFile();
@@ -182,7 +183,7 @@ export class ProjectForm implements OnInit {
     });
   }
 
-  private uploadFile(projectId: string, file: File, successMessage: string): void {
+  private uploadFile(projectId: number, file: File, successMessage: string): void {
     this.pdfService.upload(projectId, file).subscribe({
       next: (event) => {
         if (event.type === HttpEventType.UploadProgress && event.total) {

@@ -13,7 +13,7 @@ namespace OCRWeb.Document.Domain.Entity;
 public class PdfFile : AuditableEntity
 {
     public int Id { get; private set; }
-    public Guid ParentId { get; private set; }
+    public int ParentId { get; private set; }
     public string FileName { get; private set; } = string.Empty;
     public string ContentType { get; private set; } = string.Empty;
     public long SizeBytes { get; private set; }
@@ -27,7 +27,7 @@ public class PdfFile : AuditableEntity
 
     /// <summary>Create the original uploaded PDF.</summary>
     public static PdfFile CreateOriginal(
-        Guid parentId, string fileName, string contentType, byte[] content, int userId, DateTime utcNow)
+        int parentId, string fileName, string contentType, byte[] content, int userId, DateTime utcNow)
     {
         var file = NewMetadata(parentId, fileName, contentType, content, PdfFileType.Original, properties: null, userId, utcNow);
         file.Content = new PdfFileContent(content, userId, utcNow);
@@ -53,7 +53,7 @@ public class PdfFile : AuditableEntity
     }
 
     private static PdfFile NewMetadata(
-        Guid parentId, string fileName, string contentType, byte[] content,
+        int parentId, string fileName, string contentType, byte[] content,
         PdfFileType fileType, FileProperties? properties, int userId, DateTime utcNow)
     {
         ArgumentNullException.ThrowIfNull(content);

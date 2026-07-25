@@ -8,9 +8,9 @@ import { PdfFileListItem } from '../models/pdf-file-list-item';
 export class PdfService {
   private readonly http = inject(HttpClient);
 
-  upload(projectId: string, file: File): Observable<HttpEvent<{ id: number }>> {
+  upload(projectId: number, file: File): Observable<HttpEvent<{ id: number }>> {
     const formData = new FormData();
-    formData.append('ProjectId', projectId);
+    formData.append('ProjectId', String(projectId));
     formData.append('File', file);
     return this.http.post<{ id: number }>('/api/pdf-files', formData, {
       reportProgress: true,
@@ -18,7 +18,7 @@ export class PdfService {
     });
   }
 
-  list(projectId: string): Observable<PdfFileListItem[]> {
+  list(projectId: number): Observable<PdfFileListItem[]> {
     return this.http.get<PdfFileListItem[]>('/api/pdf-files', { params: { projectId } });
   }
 

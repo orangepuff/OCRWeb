@@ -39,7 +39,7 @@ public class PdfFileRepository(DocumentDbContext db) : IPdfFileRepository
         return new SqlBlobStream(connection, command, reader, reader.GetStream(0));
     }
 
-    public async Task<IReadOnlyList<PdfFile>> ListByProjectAsync(Guid projectId, CancellationToken ct = default) =>
+    public async Task<IReadOnlyList<PdfFile>> ListByProjectAsync(int projectId, CancellationToken ct = default) =>
         await db.PdfFiles
             .Where(x => x.ParentId == projectId && x.IsActive)
             .OrderByDescending(x => x.InsertedTime)
@@ -54,6 +54,6 @@ public class PdfFileRepository(DocumentDbContext db) : IPdfFileRepository
     public Task SaveChangesAsync(CancellationToken ct = default) =>
         db.SaveChangesAsync(ct);
 
-    public Task<int> RemoveAllByParentIdAsync(Guid parentId, CancellationToken ct = default) =>
+    public Task<int> RemoveAllByParentIdAsync(int parentId, CancellationToken ct = default) =>
         db.PdfFiles.Where(x => x.ParentId == parentId).ExecuteDeleteAsync(ct);
 }

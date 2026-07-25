@@ -10,7 +10,7 @@ public class ProjectDeletedNotificationHandlerTests
     [Fact]
     public async Task Handle_removes_all_files_for_the_deleted_project()
     {
-        var projectId = Guid.NewGuid();
+        const int projectId = 42;
         var repo = new Mock<IPdfFileRepository>();
         repo.Setup(r => r.RemoveAllByParentIdAsync(projectId, It.IsAny<CancellationToken>())).ReturnsAsync(2);
 

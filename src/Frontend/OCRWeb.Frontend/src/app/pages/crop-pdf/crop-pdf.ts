@@ -114,12 +114,13 @@ export class CropPdf implements OnInit {
   });
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (!id) {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (!idParam) {
       this.router.navigate(['/home']);
       return;
     }
 
+    const id = Number(idParam);
     this.loadingStep.set(this.i18n.labels().project.loadingFiles);
     this.pdfService.list(id).subscribe({
       next: (files) => {

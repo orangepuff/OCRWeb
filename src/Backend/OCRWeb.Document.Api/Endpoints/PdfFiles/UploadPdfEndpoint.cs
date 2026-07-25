@@ -8,7 +8,7 @@ namespace OCRWeb.Document.Api.Endpoints.PdfFiles;
 
 public class UploadPdfEndpointRequest
 {
-    public Guid ProjectId { get; set; }
+    public int ProjectId { get; set; }
     public IFormFile File { get; set; } = default!;
 }
 

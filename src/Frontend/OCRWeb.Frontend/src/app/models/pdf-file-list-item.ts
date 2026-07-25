@@ -1,6 +1,6 @@
 export interface PdfFileListItem {
   id: number;
-  projectId: string;
+  projectId: number;
   fileName: string;
   contentType: string;
   sizeBytes: number;

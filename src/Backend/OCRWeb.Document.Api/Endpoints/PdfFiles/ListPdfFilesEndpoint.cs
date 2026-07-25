@@ -8,7 +8,7 @@ namespace OCRWeb.Document.Api.Endpoints.PdfFiles;
 
 public class ListPdfFilesEndpointRequest
 {
-    public Guid ProjectId { get; set; }
+    public int ProjectId { get; set; }
 }
 
 /// <summary>GET /api/pdf-files?projectId= — list a project's PDF files (metadata only).</summary>

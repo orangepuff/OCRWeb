@@ -6,9 +6,9 @@ using OrangepuffPortal.Shared.Auditing;
 namespace OCRWeb.ProjectManagement.Application.Commands.CreateProject;
 
 public class CreateProjectCommandHandler(IProjectRepository repository, ICurrentUser currentUser)
-    : IRequestHandler<CreateProjectCommand, Guid>
+    : IRequestHandler<CreateProjectCommand, int>
 {
-    public async Task<Guid> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
+    public async Task<int> Handle(CreateProjectCommand request, CancellationToken cancellationToken)
     {
         var project = Project.Create(request.Name, currentUser.UserId, DateTime.UtcNow);
         await repository.AddAsync(project, cancellationToken);

@@ -10,7 +10,7 @@ public class GetPdfFileContentQueryHandlerTests
     [Fact]
     public async Task Handle_returns_streamed_content_with_metadata()
     {
-        var file = PdfFile.CreateOriginal(Guid.NewGuid(), "orig.pdf", "application/pdf", [1, 2, 3], userId: 1, DateTime.UtcNow);
+        var file = PdfFile.CreateOriginal(1, "orig.pdf", "application/pdf", [1, 2, 3], userId: 1, DateTime.UtcNow);
         using var stream = new MemoryStream([1, 2, 3]);
 
         var repo = new Mock<IPdfFileRepository>();
@@ -43,7 +43,7 @@ public class GetPdfFileContentQueryHandlerTests
     [Fact]
     public async Task Handle_returns_null_when_content_stream_missing()
     {
-        var file = PdfFile.CreateOriginal(Guid.NewGuid(), "orig.pdf", "application/pdf", [1, 2, 3], userId: 1, DateTime.UtcNow);
+        var file = PdfFile.CreateOriginal(1, "orig.pdf", "application/pdf", [1, 2, 3], userId: 1, DateTime.UtcNow);
 
         var repo = new Mock<IPdfFileRepository>();
         repo.Setup(r => r.GetByIdAsync(file.Id, It.IsAny<CancellationToken>())).ReturnsAsync(file);
