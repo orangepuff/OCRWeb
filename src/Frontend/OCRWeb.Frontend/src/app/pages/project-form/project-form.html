@@ -11,9 +11,8 @@
     />
 
     <div class="project-form__file-section">
-      <span class="project-form__file-label">{{ i18n.labels().project.uploadPdf }}</span>
-
       @if (existingFile(); as file) {
+        <span class="project-form__file-label">{{ i18n.labels().project.uploadPdf }}</span>
         <div class="project-form__existing-file">
           <a [href]="pdfContentUrl(file.id)" target="_blank" rel="noopener">{{ file.fileName }}</a>
           <lib-button
