@@ -8,5 +8,10 @@ export const routes: Routes = [
   { path: 'home', component: ProjectList, canActivate: [authGuard] },
   { path: 'projects/add', component: ProjectForm, canActivate: [authGuard] },
   { path: 'projects/:id/edit', component: ProjectForm, canActivate: [authGuard] },
+  {
+    path: 'projects/:id/crop',
+    loadComponent: () => import('./pages/crop-pdf/crop-pdf').then((m) => m.CropPdf),
+    canActivate: [authGuard]
+  },
   { path: '**', redirectTo: 'home' }
 ];

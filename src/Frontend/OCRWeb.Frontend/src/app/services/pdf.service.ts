@@ -1,6 +1,7 @@
 import { HttpClient, HttpEvent } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { CropPdfRequest } from '../models/crop-pdf-request';
 import { PdfFileListItem } from '../models/pdf-file-list-item';
 
 @Injectable({ providedIn: 'root' })
@@ -23,6 +24,10 @@ export class PdfService {
 
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`/api/pdf-files/${id}`);
+  }
+
+  crop(id: string, request: CropPdfRequest): Observable<{ id: string }> {
+    return this.http.post<{ id: string }>(`/api/pdf-files/${id}/crop`, request);
   }
 
   contentUrl(id: string): string {

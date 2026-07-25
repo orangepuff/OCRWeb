@@ -14,6 +14,12 @@ export const messages = {
     fileUploadError: 'Failed to upload file',
     fileDeleteSuccess: 'File deleted',
     fileDeleteError: 'Failed to delete file',
-    loadError: 'Failed to load project'
+    loadError: 'Failed to load project',
+    cropLoadError: 'Failed to load the PDF for cropping',
+    noFileError: 'No PDF file found for this project',
+    selectionRequired: 'Drag on the preview to select a crop area',
+    cropError: 'Failed to crop the PDF',
+    cropSuccess: 'PDF cropped successfully',
+    cropCleanupError: 'The PDF was cropped, but the original file could not be removed. Try again.'
   }
 } as const;

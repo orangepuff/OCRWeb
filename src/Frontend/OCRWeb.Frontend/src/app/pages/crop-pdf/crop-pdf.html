@@ -1,0 +1,59 @@
+@if (loaded()) {
+  <div class="crop-pdf">
+    <lib-button [label]="i18n.labels().common.back" [disabled]="submitting()" (clicked)="cancel()" />
+
+    <h1>{{ i18n.labels().project.cropPdf }}</h1>
+
+    @if (loadError()) {
+      <p class="crop-pdf__error">{{ errorText() }}</p>
+    } @else {
+      <lib-slider [control]="pageControl" [label]="i18n.labels().project.pageLabel" [min]="1" [max]="totalPages()" [step]="1" />
+      <p class="crop-pdf__page-indicator">
+        {{ i18n.labels().project.pageLabel }} {{ pageControl.value }} {{ i18n.labels().project.ofLabel }} {{ totalPages() }}
+      </p>
+
+      <div class="crop-pdf__canvas-wrap">
+        <canvas #pdfCanvas></canvas>
+        <div
+          class="crop-pdf__overlay"
+          (mousedown)="onOverlayMouseDown($event)"
+          (mousemove)="onOverlayMouseMove($event)"
+          (mouseup)="onOverlayMouseUp()"
+          (mouseleave)="onOverlayMouseUp()"
+        >
+          @if (selection(); as sel) {
+            <div
+              class="crop-pdf__selection"
+              [style.left.px]="sel.x"
+              [style.top.px]="sel.y"
+              [style.width.px]="sel.width"
+              [style.height.px]="sel.height"
+            ></div>
+          }
+        </div>
+        @if (pageBusy()) {
+          <div class="crop-pdf__page-loading">
+            <mat-spinner diameter="32" />
+          </div>
+        }
+      </div>
+
+      @if (!canCrop() && selection() === null) {
+        <p class="crop-pdf__hint">{{ i18n.messages().project.selectionRequired }}</p>
+      }
+
+      @if (errorText()) {
+        <p class="crop-pdf__error">{{ errorText() }}</p>
+      }
+
+      <div class="crop-pdf__actions">
+        <lib-button [label]="i18n.labels().common.cancel" [disabled]="submitting()" (clicked)="cancel()" />
+        <lib-button [label]="i18n.labels().project.cropButton" variant="primary" [disabled]="!canCrop()" (clicked)="confirmCrop()" />
+      </div>
+    }
+  </div>
+} @else {
+  <div class="crop-pdf__loading">
+    <mat-spinner diameter="32" />
+  </div>
+}
