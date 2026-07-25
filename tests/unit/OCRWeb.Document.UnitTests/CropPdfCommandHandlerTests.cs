@@ -62,12 +62,12 @@ public class CropPdfCommandHandlerTests
     public async Task Handle_missing_source_throws()
     {
         var repo = new Mock<IPdfFileRepository>();
-        repo.Setup(r => r.GetWithContentAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+        repo.Setup(r => r.GetWithContentAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((PdfFile?)null);
 
         var handler = new CropPdfCommandHandler(repo.Object, Mock.Of<IPdfManipulator>(), Mock.Of<ICurrentUser>());
 
         await Assert.ThrowsAsync<KeyNotFoundException>(() =>
-            handler.Handle(new CropPdfCommand(Guid.NewGuid(), 1, 0, 0, 10, 10, null), CancellationToken.None));
+            handler.Handle(new CropPdfCommand(999, 1, 0, 0, 10, 10, null), CancellationToken.None));
     }
 }

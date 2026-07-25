@@ -41,7 +41,7 @@ export class ProjectList implements OnInit {
     return this.pdfFilesByProject()[projectId] ?? [];
   }
 
-  protected pdfContentUrl(id: string): string {
+  protected pdfContentUrl(id: number): string {
     return this.pdfService.contentUrl(id);
   }
 

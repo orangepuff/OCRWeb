@@ -12,7 +12,7 @@ namespace OCRWeb.Document.Domain.Entity;
 /// </summary>
 public class PdfFile : AuditableEntity
 {
-    public Guid Id { get; private set; }
+    public int Id { get; private set; }
     public Guid ParentId { get; private set; }
     public string FileName { get; private set; } = string.Empty;
     public string ContentType { get; private set; } = string.Empty;
@@ -30,7 +30,7 @@ public class PdfFile : AuditableEntity
         Guid parentId, string fileName, string contentType, byte[] content, int userId, DateTime utcNow)
     {
         var file = NewMetadata(parentId, fileName, contentType, content, PdfFileType.Original, properties: null, userId, utcNow);
-        file.Content = new PdfFileContent(file.Id, content, userId, utcNow);
+        file.Content = new PdfFileContent(content, userId, utcNow);
         return file;
     }
 
@@ -61,7 +61,6 @@ public class PdfFile : AuditableEntity
 
         var file = new PdfFile
         {
-            Id = Guid.NewGuid(),
             ParentId = parentId,
             FileName = SanitizeFileName(fileName),
             ContentType = string.IsNullOrWhiteSpace(contentType) ? "application/pdf" : contentType,

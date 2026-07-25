@@ -9,9 +9,9 @@ namespace OCRWeb.Document.Application.Commands.CropPdf;
 public class CropPdfCommandHandler(
     IPdfFileRepository repository,
     IPdfManipulator manipulator,
-    ICurrentUser currentUser) : IRequestHandler<CropPdfCommand, Guid>
+    ICurrentUser currentUser) : IRequestHandler<CropPdfCommand, int>
 {
-    public async Task<Guid> Handle(CropPdfCommand request, CancellationToken cancellationToken)
+    public async Task<int> Handle(CropPdfCommand request, CancellationToken cancellationToken)
     {
         var source = await repository.GetWithContentAsync(request.SourcePdfFileId, cancellationToken)
             ?? throw new KeyNotFoundException($"PDF file {request.SourcePdfFileId} was not found.");

@@ -143,7 +143,7 @@ export class CropPdf implements OnInit {
     this.pageControl.valueChanges.subscribe((pageNo) => this.renderPage(pageNo));
   }
 
-  private async loadPdf(fileId: string, sizeBytes: number): Promise<void> {
+  private async loadPdf(fileId: number, sizeBytes: number): Promise<void> {
     try {
       this.loadingStep.set(this.i18n.labels().project.downloadingPdf);
       // Seed the total from the list metadata we already have - on a fast/local

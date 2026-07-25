@@ -31,13 +31,13 @@ public class GetPdfFileContentQueryHandlerTests
     public async Task Handle_returns_null_when_metadata_missing()
     {
         var repo = new Mock<IPdfFileRepository>();
-        repo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync((PdfFile?)null);
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync((PdfFile?)null);
 
         var handler = new GetPdfFileContentQueryHandler(repo.Object);
-        var result = await handler.Handle(new GetPdfFileContentQuery(Guid.NewGuid()), CancellationToken.None);
+        var result = await handler.Handle(new GetPdfFileContentQuery(999), CancellationToken.None);
 
         Assert.Null(result);
-        repo.Verify(r => r.OpenContentStreamAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
+        repo.Verify(r => r.OpenContentStreamAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]

@@ -8,24 +8,24 @@ namespace OCRWeb.Document.Infrastructure.Repositories;
 
 public class PdfFileRepository(DocumentDbContext db) : IPdfFileRepository
 {
-    public Task<PdfFile?> GetByIdAsync(Guid id, CancellationToken ct = default) =>
+    public Task<PdfFile?> GetByIdAsync(int id, CancellationToken ct = default) =>
         db.PdfFiles.FirstOrDefaultAsync(x => x.Id == id, ct);
 
-    public Task<PdfFile?> GetWithContentAsync(Guid id, CancellationToken ct = default) =>
+    public Task<PdfFile?> GetWithContentAsync(int id, CancellationToken ct = default) =>
         db.PdfFiles.Include(x => x.Content).FirstOrDefaultAsync(x => x.Id == id, ct);
 
     // Bypasses EF Core on purpose: EF would materialize the whole blob into memory before
     // returning it, so a large file reads as a multi-second stall with zero response bytes
     // sent. SequentialAccess + GetStream() lets bytes flow to the HTTP response as they're
     // read off the wire instead.
-    public async Task<Stream?> OpenContentStreamAsync(Guid id, CancellationToken ct = default)
+    public async Task<Stream?> OpenContentStreamAsync(int id, CancellationToken ct = default)
     {
         var connection = new SqlConnection(db.Database.GetConnectionString());
         await connection.OpenAsync(ct);
 
         var command = connection.CreateCommand();
         command.CommandText = $"SELECT binContent FROM {DocumentDbContext.Schema}.FileContents WHERE iFileId = @id";
-        command.Parameters.Add(new SqlParameter("@id", SqlDbType.UniqueIdentifier) { Value = id });
+        command.Parameters.Add(new SqlParameter("@id", SqlDbType.Int) { Value = id });
 
         var reader = await command.ExecuteReaderAsync(CommandBehavior.SequentialAccess | CommandBehavior.SingleRow, ct);
         if (!await reader.ReadAsync(ct))

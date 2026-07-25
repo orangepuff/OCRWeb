@@ -8,11 +8,11 @@ import { PdfFileListItem } from '../models/pdf-file-list-item';
 export class PdfService {
   private readonly http = inject(HttpClient);
 
-  upload(projectId: string, file: File): Observable<HttpEvent<{ id: string }>> {
+  upload(projectId: string, file: File): Observable<HttpEvent<{ id: number }>> {
     const formData = new FormData();
     formData.append('ProjectId', projectId);
     formData.append('File', file);
-    return this.http.post<{ id: string }>('/api/pdf-files', formData, {
+    return this.http.post<{ id: number }>('/api/pdf-files', formData, {
       reportProgress: true,
       observe: 'events'
     });
@@ -22,15 +22,15 @@ export class PdfService {
     return this.http.get<PdfFileListItem[]>('/api/pdf-files', { params: { projectId } });
   }
 
-  delete(id: string): Observable<void> {
+  delete(id: number): Observable<void> {
     return this.http.delete<void>(`/api/pdf-files/${id}`);
   }
 
-  crop(id: string, request: CropPdfRequest): Observable<{ id: string }> {
-    return this.http.post<{ id: string }>(`/api/pdf-files/${id}/crop`, request);
+  crop(id: number, request: CropPdfRequest): Observable<{ id: number }> {
+    return this.http.post<{ id: number }>(`/api/pdf-files/${id}/crop`, request);
   }
 
-  contentUrl(id: string): string {
+  contentUrl(id: number): string {
     return `/api/pdf-files/${id}/content`;
   }
 }

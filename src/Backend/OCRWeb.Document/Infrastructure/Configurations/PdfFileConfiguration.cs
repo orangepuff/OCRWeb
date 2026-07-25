@@ -16,7 +16,7 @@ public class PdfFileConfiguration : IEntityTypeConfiguration<PdfFile>
         builder.ToTable("Files");
 
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).HasColumnName("iId").ValueGeneratedNever();
+        builder.Property(x => x.Id).HasColumnName("iId").ValueGeneratedOnAdd();
         builder.Property(x => x.ParentId).HasColumnName("iParentId");
 
         builder.Property(x => x.FileName).HasColumnName("sFileName").HasMaxLength(255).IsRequired();

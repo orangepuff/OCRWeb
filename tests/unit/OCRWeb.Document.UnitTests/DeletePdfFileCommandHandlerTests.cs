@@ -30,12 +30,12 @@ public class DeletePdfFileCommandHandlerTests
     public async Task Handle_missing_file_throws_KeyNotFoundException()
     {
         var repo = new Mock<IPdfFileRepository>();
-        repo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync((PdfFile?)null);
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync((PdfFile?)null);
 
         var handler = new DeletePdfFileCommandHandler(repo.Object, Mock.Of<ICurrentUser>());
 
         await Assert.ThrowsAsync<KeyNotFoundException>(() =>
-            handler.Handle(new DeletePdfFileCommand(Guid.NewGuid()), CancellationToken.None));
+            handler.Handle(new DeletePdfFileCommand(999), CancellationToken.None));
     }
 
     [Fact]

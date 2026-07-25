@@ -8,7 +8,7 @@ namespace OCRWeb.Document.Api.Endpoints.PdfFiles;
 
 public class GetPdfFileContentEndpointRequest
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 }
 
 /// <summary>GET /api/pdf-files/{id}/content — stream a PDF's binary content.</summary>

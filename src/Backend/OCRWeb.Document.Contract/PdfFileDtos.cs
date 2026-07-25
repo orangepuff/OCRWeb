@@ -2,7 +2,7 @@ namespace OCRWeb.Document.Contract;
 
 /// <summary>Lightweight list item — metadata only, safe to return for many files.</summary>
 public record PdfFileListItemDto(
-    Guid Id,
+    int Id,
     Guid ProjectId,
     string FileName,
     string ContentType,
@@ -15,7 +15,7 @@ public record FilePropertiesDto(int PageNo, int CropX, int CropY, int Width, int
 
 /// <summary>Full metadata for a single file (still no binary content).</summary>
 public record PdfFileDetailDto(
-    Guid Id,
+    int Id,
     Guid ProjectId,
     string FileName,
     string ContentType,

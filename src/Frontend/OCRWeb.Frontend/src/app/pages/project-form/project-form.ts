@@ -82,7 +82,7 @@ export class ProjectForm implements OnInit {
     this.router.navigate(['/home']);
   }
 
-  protected pdfContentUrl(id: string): string {
+  protected pdfContentUrl(id: number): string {
     return this.pdfService.contentUrl(id);
   }
 

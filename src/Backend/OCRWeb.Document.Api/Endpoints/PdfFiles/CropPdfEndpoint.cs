@@ -7,7 +7,7 @@ namespace OCRWeb.Document.Api.Endpoints.PdfFiles;
 
 public class CropPdfEndpointRequest
 {
-    public Guid Id { get; set; }         // source PDF file id (route)
+    public int Id { get; set; }          // source PDF file id (route)
     public int PageNo { get; set; }
     public int CropX { get; set; }
     public int CropY { get; set; }
@@ -16,7 +16,7 @@ public class CropPdfEndpointRequest
     public string? FileName { get; set; }
 }
 
-public record CropPdfEndpointResponse(Guid Id);
+public record CropPdfEndpointResponse(int Id);
 
 /// <summary>POST /api/pdf-files/{id}/crop — crop a PDF's content in place, replacing what was stored.</summary>
 public class CropPdfEndpoint(IMediator mediator)
