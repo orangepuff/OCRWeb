@@ -33,6 +33,16 @@
   margin: 0;
 }
 
+.crop-pdf__page-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+
+  lib-slider {
+    flex: 1;
+  }
+}
+
 lib-slider {
   // Default M3 track color is barely visible against the page background.
   --mat-slider-inactive-track-color: var(--mat-sys-outline);
@@ -89,10 +99,4 @@ lib-slider {
   color: var(--mat-sys-error);
   font-size: 0.75rem;
   margin: 0;
-}
-
-.crop-pdf__actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
 }
