@@ -10,5 +10,6 @@ public interface IProjectRepository
     Task<IReadOnlyList<Project>> ListByOwnerAsync(int ownerUserId, CancellationToken ct = default);
 
     Task AddAsync(Project project, CancellationToken ct = default);
+    void Remove(Project project);
     Task SaveChangesAsync(CancellationToken ct = default);
 }
