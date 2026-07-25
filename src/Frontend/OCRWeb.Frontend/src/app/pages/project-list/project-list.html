@@ -44,12 +44,11 @@
                         />
                       }
                     } @else {
-                      <input
-                        type="file"
-                        class="project-list__file-input"
+                      <lib-file-input
+                        [label]="i18n.labels().project.uploadPdf"
                         accept="application/pdf"
                         [disabled]="fileBusy()"
-                        (change)="onEditFileSelected($event)"
+                        (fileSelected)="onEditFileSelected($event)"
                       />
                       <lib-button
                         [label]="i18n.labels().project.uploadButton"
@@ -73,8 +72,11 @@
                     }
                   </td>
                   <td class="project-list__actions-col">
-                    <lib-button [label]="i18n.labels().common.edit" (clicked)="startEdit(project)" />
-                    <lib-button [label]="i18n.labels().common.delete" (clicked)="confirmDelete(project)" />
+                    <lib-menu
+                      [ariaLabel]="i18n.labels().project.rowActionsAriaLabel"
+                      [items]="rowMenuItems()"
+                      (itemSelected)="onRowMenuAction($event, project)"
+                    />
                   </td>
                 }
               </tr>

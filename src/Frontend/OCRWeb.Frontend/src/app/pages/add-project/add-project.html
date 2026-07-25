@@ -9,14 +9,11 @@
     [errorText]="i18n.messages().project.nameRequired"
   />
 
-  <label class="add-project__file-label" for="pdfFile">{{ i18n.labels().project.uploadPdf }}</label>
-  <input
-    id="pdfFile"
-    class="add-project__file-input"
-    type="file"
+  <lib-file-input
+    [label]="i18n.labels().project.uploadPdf"
     accept="application/pdf"
     [disabled]="submitting()"
-    (change)="onFileSelected($event)"
+    (fileSelected)="onFileSelected($event)"
   />
   @if (fileTouched() && !selectedFile()) {
     <p class="add-project__error">{{ i18n.messages().project.pdfRequired }}</p>

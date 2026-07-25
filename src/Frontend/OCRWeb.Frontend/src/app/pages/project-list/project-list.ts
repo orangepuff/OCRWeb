@@ -5,7 +5,7 @@ import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { Button, ConfirmDialog, TextInput } from '@orangepuff/portal-frontend-shared';
+import { Button, ConfirmDialog, FileInput, Menu, MenuItem, TextInput } from '@orangepuff/portal-frontend-shared';
 import { I18nService } from '../../i18n/i18n.service';
 import { PdfFileListItem } from '../../models/pdf-file-list-item';
 import { ProjectListItem } from '../../models/project-list-item';
@@ -14,7 +14,7 @@ import { ProjectService } from '../../services/project.service';
 
 @Component({
   selector: 'app-project-list',
-  imports: [ReactiveFormsModule, DatePipe, Button, TextInput],
+  imports: [ReactiveFormsModule, DatePipe, Button, TextInput, FileInput, Menu],
   templateUrl: './project-list.html',
   styleUrl: './project-list.scss'
 })
@@ -52,6 +52,21 @@ export class ProjectList implements OnInit {
     return this.pdfService.contentUrl(id);
   }
 
+  protected rowMenuItems(): MenuItem[] {
+    return [
+      { id: 'edit', label: this.i18n.labels().common.edit },
+      { id: 'delete', label: this.i18n.labels().common.delete }
+    ];
+  }
+
+  protected onRowMenuAction(itemId: string, project: ProjectListItem): void {
+    if (itemId === 'edit') {
+      this.startEdit(project);
+    } else if (itemId === 'delete') {
+      this.confirmDelete(project);
+    }
+  }
+
   protected startEdit(project: ProjectListItem): void {
     this.editingId.set(project.id);
     this.editControl.setValue(project.name);
@@ -63,9 +78,8 @@ export class ProjectList implements OnInit {
     this.editSelectedFile.set(null);
   }
 
-  protected onEditFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.editSelectedFile.set(input.files?.[0] ?? null);
+  protected onEditFileSelected(file: File | null): void {
+    this.editSelectedFile.set(file);
   }
 
   protected uploadEditFile(project: ProjectListItem): void {

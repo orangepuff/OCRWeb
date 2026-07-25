@@ -20,6 +20,7 @@ export const labels = {
     columnCreated: 'Created',
     columnFile: 'File',
     columnActions: 'Actions',
+    rowActionsAriaLabel: 'Project actions',
     noFile: 'No file',
     uploadButton: 'Upload',
     deleteConfirmTitle: 'Delete project',

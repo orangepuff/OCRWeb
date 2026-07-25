@@ -5,14 +5,14 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { Button, TextInput } from '@orangepuff/portal-frontend-shared';
+import { Button, FileInput, TextInput } from '@orangepuff/portal-frontend-shared';
 import { I18nService } from '../../i18n/i18n.service';
 import { PdfService } from '../../services/pdf.service';
 import { ProjectService } from '../../services/project.service';
 
 @Component({
   selector: 'app-add-project',
-  imports: [ReactiveFormsModule, MatProgressSpinnerModule, MatProgressBarModule, Button, TextInput],
+  imports: [ReactiveFormsModule, MatProgressSpinnerModule, MatProgressBarModule, Button, TextInput, FileInput],
   templateUrl: './add-project.html',
   styleUrl: './add-project.scss'
 })
@@ -36,9 +36,8 @@ export class AddProject {
     this.router.navigate(['/home']);
   }
 
-  protected onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.selectedFile.set(input.files?.[0] ?? null);
+  protected onFileSelected(file: File | null): void {
+    this.selectedFile.set(file);
     this.fileTouched.set(true);
   }
 

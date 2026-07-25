@@ -71,34 +71,7 @@
 
 .project-list__actions-col {
   display: flex;
+  align-items: center;
   gap: 8px;
   white-space: nowrap;
-}
-
-// TODO: replace with the shared lib-file-input once @orangepuff/portal-frontend-shared 1.0.5
-// (containing it) is published — this duplicates that component's styling in the meantime.
-.project-list__file-input {
-  font-family: inherit;
-  font-size: 0.875rem;
-
-  &::file-selector-button {
-    font-family: inherit;
-    font-size: 0.875rem;
-    font-weight: 500;
-    padding: 8px 16px;
-    margin-right: 12px;
-    border: none;
-    border-radius: 20px;
-    background: var(--mat-sys-secondary-container);
-    color: var(--mat-sys-on-secondary-container);
-    cursor: pointer;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-
-    &::file-selector-button {
-      cursor: not-allowed;
-    }
-  }
 }
