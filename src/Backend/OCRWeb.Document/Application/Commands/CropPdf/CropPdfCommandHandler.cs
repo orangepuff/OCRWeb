@@ -31,6 +31,12 @@ public class CropPdfCommandHandler(
 
         await repository.AddAsync(derived, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
+
+        // Replace: only remove the source once the derived file is safely persisted, so a
+        // failure here leaves both files rather than losing the source with nothing to show for it.
+        repository.Remove(source);
+        await repository.SaveChangesAsync(cancellationToken);
+
         return derived.Id;
     }
 }
