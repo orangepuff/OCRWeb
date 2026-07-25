@@ -13,6 +13,7 @@ export const messages = {
     fileUploadSuccess: 'File uploaded',
     fileUploadError: 'Failed to upload file',
     fileDeleteSuccess: 'File deleted',
-    fileDeleteError: 'Failed to delete file'
+    fileDeleteError: 'Failed to delete file',
+    loadError: 'Failed to load project'
   }
 } as const;
