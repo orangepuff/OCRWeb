@@ -11,13 +11,13 @@ public class GetPdfFileDetailEndpointRequest
     public Guid Id { get; set; }
 }
 
-/// <summary>GET /pdf-files/{id} — full metadata for one PDF file.</summary>
+/// <summary>GET /api/pdf-files/{id} — full metadata for one PDF file.</summary>
 public class GetPdfFileDetailEndpoint(IMediator mediator)
     : Endpoint<GetPdfFileDetailEndpointRequest, PdfFileDetailDto>
 {
     public override void Configure()
     {
-        Get("/pdf-files/{id}");
+        Get("/api/pdf-files/{id}");
         AuthSchemes(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 

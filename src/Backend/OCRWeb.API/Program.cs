@@ -1,19 +1,31 @@
 using Diagnostics.AspNetCore.DependencyInjection;
 using Diagnostics.NLog.DependencyInjection;
 using FastEndpoints;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using OCRWeb.Document.Api;
 using OCRWeb.Document.Infrastructure;
 using OCRWeb.OCR.Infrastructure;
 using OCRWeb.Pdf;
+using OCRWeb.ProjectManagement.Api;
+using OCRWeb.ProjectManagement.Infrastructure;
 using OrangepuffPortal.Host;
 using System.Reflection;
 
+const long MaxUploadBytes = 1024L * 1024 * 1024; // 1 GB — covers large scanned PDF documents.
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Kestrel's default MaxRequestBodySize (~28.6 MB) silently rejects anything bigger, which is far
+// too small for scanned PDF uploads. FormOptions.MultipartBodyLengthLimit gates IFormFile binding
+// specifically and needs raising too (its own default is 128 MB).
+builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = MaxUploadBytes);
+builder.Services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = MaxUploadBytes);
 
 // Web / API surface. Endpoints live in the per-module *.Api assemblies; point discovery at them.
 builder.Services.AddOpenApi();
-builder.Services.AddFastEndpoints(o => o.Assemblies = [typeof(DocumentApiMarker).Assembly, Assembly.GetExecutingAssembly()]);
+builder.Services.AddFastEndpoints(o => o.Assemblies =
+    [typeof(DocumentApiMarker).Assembly, typeof(ProjectManagementApiMarker).Assembly, Assembly.GetExecutingAssembly()]);
 
 // Shared PDF engine (technical adapter behind IPdfManipulator, consumed by the modules).
 builder.Services.AddPdfEngine();
@@ -37,17 +49,19 @@ builder.Services.AddOrangepuffPortal(builder.Configuration);
 // Modules (each registers its own DbContext, repositories, and MediatR handlers).
 builder.Services.AddDocument(builder.Configuration);
 builder.Services.AddOcr(builder.Configuration);
+builder.Services.AddProjectManagement(builder.Configuration);
 
 var app = builder.Build();
 
 // Migrations + seed for every OrangepuffPortal module (Identity), gated by DoMigration.
 await app.MigratePortalModulesAsync();
 
-// Document isn't an IPortalModule, so it still migrates manually here.
+// Document/ProjectManagement aren't IPortalModules, so they still migrate manually here.
 if (builder.Configuration.GetValue<bool>("DoMigration"))
 {
     using var scope = app.Services.CreateScope();
     await scope.ServiceProvider.GetRequiredService<DocumentDbContext>().Database.MigrateAsync();
+    await scope.ServiceProvider.GetRequiredService<ProjectDbContext>().Database.MigrateAsync();
 }
 
 if (app.Environment.IsDevelopment())

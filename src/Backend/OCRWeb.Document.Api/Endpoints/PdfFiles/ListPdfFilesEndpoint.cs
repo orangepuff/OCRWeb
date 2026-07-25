@@ -11,13 +11,13 @@ public class ListPdfFilesEndpointRequest
     public Guid ProjectId { get; set; }
 }
 
-/// <summary>GET /pdf-files?projectId= — list a project's PDF files (metadata only).</summary>
+/// <summary>GET /api/pdf-files?projectId= — list a project's PDF files (metadata only).</summary>
 public class ListPdfFilesEndpoint(IMediator mediator)
     : Endpoint<ListPdfFilesEndpointRequest, IReadOnlyList<PdfFileListItemDto>>
 {
     public override void Configure()
     {
-        Get("/pdf-files");
+        Get("/api/pdf-files");
         AuthSchemes(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 

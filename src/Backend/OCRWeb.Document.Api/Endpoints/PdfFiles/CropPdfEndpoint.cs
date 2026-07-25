@@ -18,13 +18,13 @@ public class CropPdfEndpointRequest
 
 public record CropPdfEndpointResponse(Guid Id);
 
-/// <summary>POST /pdf-files/{id}/crop — crop a source PDF into a new derived file.</summary>
+/// <summary>POST /api/pdf-files/{id}/crop — crop a source PDF into a new derived file, replacing the source.</summary>
 public class CropPdfEndpoint(IMediator mediator)
     : Endpoint<CropPdfEndpointRequest, CropPdfEndpointResponse>
 {
     public override void Configure()
     {
-        Post("/pdf-files/{id}/crop");
+        Post("/api/pdf-files/{id}/crop");
         AuthSchemes(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 

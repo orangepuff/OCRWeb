@@ -1,0 +1,59 @@
+@if (loaded()) {
+  <form class="project-form" [formGroup]="form" (ngSubmit)="submit()">
+    <lib-button [label]="i18n.labels().common.back" [disabled]="submitting()" (clicked)="back()" />
+
+    <h1>{{ isEditMode() ? i18n.labels().project.editProject : i18n.labels().project.addProject }}</h1>
+
+    <lib-text-input
+      [control]="form.controls.name"
+      [label]="i18n.labels().project.projectName"
+      [errorText]="i18n.messages().project.nameRequired"
+    />
+
+    <div class="project-form__file-section">
+      @if (existingFile(); as file) {
+        <span class="project-form__file-label">{{ i18n.labels().project.uploadPdf }}</span>
+        <div class="project-form__existing-file">
+          <a [href]="pdfContentUrl(file.id)" target="_blank" rel="noopener">{{ file.fileName }}</a>
+          <lib-button
+            [label]="i18n.labels().common.delete"
+            [disabled]="fileBusy() || submitting()"
+            (clicked)="confirmDeleteExistingFile()"
+          />
+        </div>
+      } @else {
+        <lib-file-input
+          [label]="i18n.labels().project.uploadPdf"
+          accept="application/pdf"
+          [disabled]="submitting()"
+          (fileSelected)="onFileSelected($event)"
+        />
+        @if (!isEditMode() && fileTouched() && !selectedFile()) {
+          <p class="project-form__error">{{ i18n.messages().project.pdfRequired }}</p>
+        }
+      }
+    </div>
+
+    @if (errorText()) {
+      <p class="project-form__error">{{ errorText() }}</p>
+    }
+
+    @if (submitting()) {
+      <div class="project-form__progress">
+        @if (uploadProgress() === null) {
+          <mat-spinner diameter="24" />
+          <span>{{ isEditMode() ? i18n.labels().project.savingProject : i18n.labels().project.creatingProject }}</span>
+        } @else {
+          <mat-progress-bar mode="determinate" [value]="uploadProgress()" />
+          <span>{{ i18n.labels().project.uploadingPdf }} {{ uploadProgress() }}%</span>
+        }
+      </div>
+    }
+
+    <lib-button [label]="submitLabel()" variant="primary" type="submit" [disabled]="!canSubmit()" />
+  </form>
+} @else {
+  <div class="project-form__loading">
+    <mat-spinner diameter="32" />
+  </div>
+}

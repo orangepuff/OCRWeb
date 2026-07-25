@@ -1,0 +1,51 @@
+<div class="project-list">
+  <div class="project-list__header">
+    <h1>{{ i18n.labels().project.pageTitle }}</h1>
+    <lib-button [label]="i18n.labels().project.addProject" variant="primary" (clicked)="addProject()" />
+  </div>
+
+  @if (errorText()) {
+    <p class="project-list__error">{{ errorText() }}</p>
+  }
+
+  @if (loaded()) {
+    @if (projects().length === 0) {
+      <p class="project-list__empty">{{ i18n.messages().project.empty }}</p>
+    } @else {
+      <div class="project-list__table-wrapper">
+        <table class="project-list__table">
+          <thead>
+            <tr>
+              <th>{{ i18n.labels().project.columnName }}</th>
+              <th>{{ i18n.labels().project.columnCreated }}</th>
+              <th>{{ i18n.labels().project.columnFile }}</th>
+              <th class="project-list__actions-col">{{ i18n.labels().project.columnActions }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (project of projects(); track project.id) {
+              <tr>
+                <td>{{ project.name }}</td>
+                <td>{{ project.insertedTime | date: 'medium' }}</td>
+                <td>
+                  @for (file of pdfFilesFor(project.id); track file.id) {
+                    <a [href]="pdfContentUrl(file.id)" target="_blank" rel="noopener">{{ file.fileName }}</a>
+                  } @empty {
+                    {{ i18n.labels().project.noFile }}
+                  }
+                </td>
+                <td class="project-list__actions-col">
+                  <lib-menu
+                    [ariaLabel]="i18n.labels().project.rowActionsAriaLabel"
+                    [items]="rowMenuItems(project)"
+                    (itemSelected)="onRowMenuAction($event, project)"
+                  />
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>

@@ -1,0 +1,53 @@
+.project-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.project-form__loading {
+  display: flex;
+  justify-content: center;
+  padding: 48px;
+}
+
+.project-form__file-label {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--mat-sys-on-surface-variant);
+  margin-bottom: 4px;
+}
+
+.project-form__existing-file {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  a {
+    color: var(--mat-sys-primary);
+  }
+}
+
+.project-form__error {
+  color: var(--mat-sys-error);
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+.project-form__progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  mat-progress-bar {
+    flex: 1;
+  }
+
+  span {
+    font-size: 0.8rem;
+    color: var(--mat-sys-on-surface-variant);
+    white-space: nowrap;
+  }
+}

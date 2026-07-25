@@ -1,6 +1,7 @@
 using FastEndpoints;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Net.Http.Headers;
 using OCRWeb.Document.Application.Queries.GetPdfFileContent;
 
 namespace OCRWeb.Document.Api.Endpoints.PdfFiles;
@@ -10,13 +11,13 @@ public class GetPdfFileContentEndpointRequest
     public Guid Id { get; set; }
 }
 
-/// <summary>GET /pdf-files/{id}/content — stream a PDF's binary content.</summary>
+/// <summary>GET /api/pdf-files/{id}/content — stream a PDF's binary content.</summary>
 public class GetPdfFileContentEndpoint(IMediator mediator)
     : Endpoint<GetPdfFileContentEndpointRequest>
 {
     public override void Configure()
     {
-        Get("/pdf-files/{id}/content");
+        Get("/api/pdf-files/{id}/content");
         AuthSchemes(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 
@@ -29,6 +30,17 @@ public class GetPdfFileContentEndpoint(IMediator mediator)
             return;
         }
 
-        await Send.BytesAsync(content.Content, content.FileName, content.ContentType, cancellation: ct);
+        // Send.BytesAsync always forces Content-Disposition: attachment when given a filename,
+        // which pops the browser's Save dialog instead of rendering the PDF in a new tab. Set the
+        // headers ourselves with "inline" so clicking the link opens the built-in PDF viewer.
+        var contentDisposition = new ContentDispositionHeaderValue("inline");
+        contentDisposition.SetHttpFileName(content.FileName);
+        HttpContext.Response.Headers.ContentDisposition = contentDisposition.ToString();
+        HttpContext.Response.ContentType = content.ContentType;
+
+        // Set explicitly so the response isn't chunked - without it the browser has no
+        // total size to report download progress against.
+        HttpContext.Response.ContentLength = content.Content.Length;
+        await HttpContext.Response.Body.WriteAsync(content.Content, ct);
     }
 }

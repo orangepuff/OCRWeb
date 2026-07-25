@@ -1,0 +1,102 @@
+.crop-pdf {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.crop-pdf__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px;
+}
+
+.crop-pdf__loading-text {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.crop-pdf__loading-progress {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+.crop-pdf__page-indicator {
+  font-size: 0.8rem;
+  color: var(--mat-sys-on-surface-variant);
+  margin: 0;
+}
+
+.crop-pdf__page-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+
+  lib-slider {
+    flex: 1;
+  }
+}
+
+lib-slider {
+  // Default M3 track color is barely visible against the page background.
+  --mat-slider-inactive-track-color: var(--mat-sys-outline);
+}
+
+.crop-pdf__canvas-wrap {
+  position: relative;
+  display: inline-block;
+  align-self: center;
+
+  canvas {
+    display: block;
+    max-width: 100%;
+    max-height: 60vh;
+    width: auto;
+    height: auto;
+    border: 1px solid var(--mat-sys-outline-variant);
+  }
+}
+
+.crop-pdf__canvas-wrap--hidden {
+  display: none;
+}
+
+.crop-pdf__overlay {
+  position: absolute;
+  inset: 0;
+  cursor: crosshair;
+}
+
+.crop-pdf__selection {
+  position: absolute;
+  border: 2px solid var(--mat-sys-primary);
+  background: color-mix(in srgb, var(--mat-sys-primary) 20%, transparent);
+  pointer-events: none;
+}
+
+.crop-pdf__page-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--mat-sys-surface) 70%, transparent);
+}
+
+.crop-pdf__hint {
+  font-size: 0.8rem;
+  color: var(--mat-sys-on-surface-variant);
+  margin: 0;
+}
+
+.crop-pdf__error {
+  color: var(--mat-sys-error);
+  font-size: 0.75rem;
+  margin: 0;
+}

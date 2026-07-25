@@ -21,6 +21,9 @@ public class PdfFileRepository(DocumentDbContext db) : IPdfFileRepository
     public async Task AddAsync(PdfFile file, CancellationToken ct = default) =>
         await db.PdfFiles.AddAsync(file, ct);
 
+    public void Remove(PdfFile file) =>
+        db.PdfFiles.Remove(file);
+
     public Task SaveChangesAsync(CancellationToken ct = default) =>
         db.SaveChangesAsync(ct);
 }
