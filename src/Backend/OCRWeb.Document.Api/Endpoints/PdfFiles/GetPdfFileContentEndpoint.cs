@@ -10,13 +10,13 @@ public class GetPdfFileContentEndpointRequest
     public Guid Id { get; set; }
 }
 
-/// <summary>GET /pdf-files/{id}/content — stream a PDF's binary content.</summary>
+/// <summary>GET /api/pdf-files/{id}/content — stream a PDF's binary content.</summary>
 public class GetPdfFileContentEndpoint(IMediator mediator)
     : Endpoint<GetPdfFileContentEndpointRequest>
 {
     public override void Configure()
     {
-        Get("/pdf-files/{id}/content");
+        Get("/api/pdf-files/{id}/content");
         AuthSchemes(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 

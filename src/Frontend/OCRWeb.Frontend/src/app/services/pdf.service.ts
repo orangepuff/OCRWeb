@@ -10,6 +10,6 @@ export class PdfService {
     const formData = new FormData();
     formData.append('ProjectId', projectId);
     formData.append('File', file);
-    return this.http.post<{ id: string }>('/pdf-files', formData);
+    return this.http.post<{ id: string }>('/api/pdf-files', formData);
   }
 }

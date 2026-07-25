@@ -14,13 +14,13 @@ public class UploadPdfEndpointRequest
 
 public record UploadPdfEndpointResponse(Guid Id);
 
-/// <summary>POST /pdf-files — upload an original PDF (multipart form).</summary>
+/// <summary>POST /api/pdf-files — upload an original PDF (multipart form).</summary>
 public class UploadPdfEndpoint(IMediator mediator)
     : Endpoint<UploadPdfEndpointRequest, UploadPdfEndpointResponse>
 {
     public override void Configure()
     {
-        Post("/pdf-files");
+        Post("/api/pdf-files");
         AllowFileUploads();
         AuthSchemes(CookieAuthenticationDefaults.AuthenticationScheme);
     }

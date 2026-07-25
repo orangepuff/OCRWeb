@@ -4,12 +4,7 @@
     "secure": false,
     "changeOrigin": true
   },
-  "/api/projects": {
-    "target": "https://localhost:7201",
-    "secure": false,
-    "changeOrigin": true
-  },
-  "/pdf-files": {
+  "/api": {
     "target": "https://localhost:7201",
     "secure": false,
     "changeOrigin": true
