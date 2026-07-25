@@ -19,7 +19,6 @@ export const messages = {
     noFileError: 'No PDF file found for this project',
     selectionRequired: 'Drag on the preview to select a crop area',
     cropError: 'Failed to crop the PDF',
-    cropSuccess: 'PDF cropped successfully',
-    cropCleanupError: 'The PDF was cropped, but the original file could not be removed. Try again.'
+    cropSuccess: 'PDF cropped successfully'
   }
 } as const;

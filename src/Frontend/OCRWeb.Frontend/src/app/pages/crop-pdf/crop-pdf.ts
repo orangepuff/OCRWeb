@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, ElementRef, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -29,8 +29,7 @@ interface PageSizePts {
 /**
  * Renders a project's PDF page-by-page (via pdf.js) and lets the user drag a crop
  * rectangle over the current page. Confirming replaces the project's file: the
- * backend's crop endpoint always creates a NEW derived file, so "replace" here means
- * crop then delete the original — no dedicated backend replace endpoint exists.
+ * backend's crop endpoint persists the cropped file and removes the source itself.
  */
 @Component({
   selector: 'app-crop-pdf',
@@ -88,9 +87,9 @@ export class CropPdf implements OnInit {
         this.sourceFile.set(file);
         this.loadPdf(file.id);
       },
-      error: () => {
+      error: (err: unknown) => {
         this.loadError.set(true);
-        this.errorText.set(this.i18n.messages().project.cropLoadError);
+        this.errorText.set(this.describeLoadError(err));
         this.loaded.set(true);
       }
     });
@@ -108,11 +107,24 @@ export class CropPdf implements OnInit {
       this.pageControl.setValue(1, { emitEvent: false });
       await this.renderPage(1);
       this.loaded.set(true);
-    } catch {
+    } catch (err) {
       this.loadError.set(true);
-      this.errorText.set(this.i18n.messages().project.cropLoadError);
+      this.errorText.set(this.describeLoadError(err));
       this.loaded.set(true);
     }
+  }
+
+  // Surfaces the underlying HTTP status or exception message alongside the generic
+  // message, since a bare "failed to load" gives the user nothing to act on or report.
+  private describeLoadError(err: unknown): string {
+    const base = this.i18n.messages().project.cropLoadError;
+    const detail =
+      err instanceof HttpErrorResponse
+        ? `${err.status} ${err.statusText}`.trim()
+        : err instanceof Error
+          ? err.message
+          : undefined;
+    return detail ? `${base}: ${detail}` : base;
   }
 
   private async renderPage(pageNo: number): Promise<void> {
@@ -204,29 +216,15 @@ export class CropPdf implements OnInit {
         fileName: file.fileName
       })
       .subscribe({
-        next: ({ id: newFileId }) => this.deleteOldFile(file.id, newFileId),
+        next: () => {
+          this.snackBar.open(this.i18n.messages().project.cropSuccess, undefined, { duration: 3000 });
+          this.router.navigate(['/home']);
+        },
         error: () => {
           this.submitting.set(false);
           this.errorText.set(this.i18n.messages().project.cropError);
         }
       });
-  }
-
-  private deleteOldFile(oldId: string, _newFileId: string): void {
-    this.pdfService.delete(oldId).subscribe({
-      next: () => {
-        this.snackBar.open(this.i18n.messages().project.cropSuccess, undefined, { duration: 3000 });
-        this.router.navigate(['/home']);
-      },
-      error: () => {
-        // Crop succeeded but deleting the original failed — the project now has two
-        // files. Stay here with a persistent error rather than navigating away and
-        // hiding the inconsistency; ProjectForm only ever shows files[0], so this page
-        // is currently the only place a user could notice/retry.
-        this.submitting.set(false);
-        this.errorText.set(this.i18n.messages().project.cropCleanupError);
-      }
-    });
   }
 
   protected cancel(): void {
