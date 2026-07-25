@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OCRWeb.ProjectManagement\OCRWeb.ProjectManagement.csproj" />
+    <ProjectReference Include="..\OCRWeb.ProjectManagement.Api\OCRWeb.ProjectManagement.Api.csproj" />
     <ProjectReference Include="..\OCRWeb.Document\OCRWeb.Document.csproj" />
     <ProjectReference Include="..\OCRWeb.Document.Api\OCRWeb.Document.Api.csproj" />
     <ProjectReference Include="..\OCRWeb.OCR\OCRWeb.OCR.csproj" />

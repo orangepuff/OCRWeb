@@ -17,6 +17,7 @@
     <Project Path="src/Backend/OCRWeb.Pdf/OCRWeb.Pdf.csproj" />
     <Project Path="src/Backend/OCRWeb.Pdf.Contract/OCRWeb.Pdf.Contract.csproj" />
     <Project Path="src/Backend/OCRWeb.ProjectManagement/OCRWeb.ProjectManagement.csproj" />
+    <Project Path="src/Backend/OCRWeb.ProjectManagement.Api/OCRWeb.ProjectManagement.Api.csproj" />
     <Project Path="src/Backend/OCRWeb.ProjectManagement.Contract/OCRWeb.ProjectManagement.Contract.csproj" />
   </Folder>
   <Folder Name="/tests/" />
