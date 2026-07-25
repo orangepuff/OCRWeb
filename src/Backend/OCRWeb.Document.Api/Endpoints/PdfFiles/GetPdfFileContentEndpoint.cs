@@ -1,6 +1,7 @@
 using FastEndpoints;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Net.Http.Headers;
 using OCRWeb.Document.Application.Queries.GetPdfFileContent;
 
 namespace OCRWeb.Document.Api.Endpoints.PdfFiles;
@@ -29,6 +30,13 @@ public class GetPdfFileContentEndpoint(IMediator mediator)
             return;
         }
 
-        await Send.BytesAsync(content.Content, content.FileName, content.ContentType, cancellation: ct);
+        // Send.BytesAsync always forces Content-Disposition: attachment when given a filename,
+        // which pops the browser's Save dialog instead of rendering the PDF in a new tab. Set the
+        // headers ourselves with "inline" so clicking the link opens the built-in PDF viewer.
+        var contentDisposition = new ContentDispositionHeaderValue("inline");
+        contentDisposition.SetHttpFileName(content.FileName);
+        HttpContext.Response.Headers.ContentDisposition = contentDisposition.ToString();
+        HttpContext.Response.ContentType = content.ContentType;
+        await HttpContext.Response.Body.WriteAsync(content.Content, ct);
     }
 }
