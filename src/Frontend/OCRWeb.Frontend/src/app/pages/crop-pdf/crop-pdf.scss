@@ -9,8 +9,16 @@
 
 .crop-pdf__loading {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
   padding: 48px;
+}
+
+.crop-pdf__loading-text {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.85rem;
+  margin: 0;
 }
 
 .crop-pdf__page-indicator {
@@ -28,6 +36,10 @@
     display: block;
     border: 1px solid var(--mat-sys-outline-variant);
   }
+}
+
+.crop-pdf__canvas-wrap--hidden {
+  display: none;
 }
 
 .crop-pdf__overlay {

@@ -56,6 +56,7 @@ export class CropPdf implements OnInit {
   protected readonly pageBusy = signal(false);
   protected readonly submitting = signal(false);
   protected readonly errorText = signal<string | null>(null);
+  protected readonly loadingStep = signal('');
 
   protected readonly sourceFile = signal<PdfFileListItem | null>(null);
   protected readonly totalPages = signal(1);
@@ -75,6 +76,7 @@ export class CropPdf implements OnInit {
       return;
     }
 
+    this.loadingStep.set(this.i18n.labels().project.loadingFiles);
     this.pdfService.list(id).subscribe({
       next: (files) => {
         const file = files[0] ?? null;
@@ -99,9 +101,11 @@ export class CropPdf implements OnInit {
 
   private async loadPdf(fileId: string): Promise<void> {
     try {
+      this.loadingStep.set(this.i18n.labels().project.downloadingPdf);
       const bytes = await firstValueFrom(
         this.http.get(this.pdfService.contentUrl(fileId), { responseType: 'arraybuffer' })
       );
+      this.loadingStep.set(this.i18n.labels().project.renderingPreview);
       this.pdfDocument = await pdfjsLib.getDocument({ data: new Uint8Array(bytes) }).promise;
       this.totalPages.set(this.pdfDocument.numPages);
       this.pageControl.setValue(1, { emitEvent: false });
