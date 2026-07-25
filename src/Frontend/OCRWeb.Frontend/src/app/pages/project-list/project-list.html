@@ -12,49 +12,51 @@
     @if (projects().length === 0) {
       <p class="project-list__empty">{{ i18n.messages().project.empty }}</p>
     } @else {
-      <table class="project-list__table">
-        <thead>
-          <tr>
-            <th>{{ i18n.labels().project.columnName }}</th>
-            <th>{{ i18n.labels().project.columnCreated }}</th>
-            <th>{{ i18n.labels().project.columnFile }}</th>
-            <th class="project-list__actions-col">{{ i18n.labels().project.columnActions }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (project of projects(); track project.id) {
+      <div class="project-list__table-wrapper">
+        <table class="project-list__table">
+          <thead>
             <tr>
-              @if (editingId() === project.id) {
-                <td colspan="3">
-                  <lib-text-input
-                    [control]="editControl"
-                    [label]="i18n.labels().project.projectName"
-                    [errorText]="i18n.messages().project.nameRequired"
-                  />
-                </td>
-                <td class="project-list__actions-col">
-                  <lib-button [label]="i18n.labels().common.save" variant="primary" (clicked)="saveEdit(project)" />
-                  <lib-button [label]="i18n.labels().common.cancel" (clicked)="cancelEdit()" />
-                </td>
-              } @else {
-                <td>{{ project.name }}</td>
-                <td>{{ project.insertedTime | date: 'medium' }}</td>
-                <td>
-                  @for (file of pdfFilesFor(project.id); track file.id) {
-                    <a [href]="pdfContentUrl(file.id)" target="_blank" rel="noopener">{{ file.fileName }}</a>
-                  } @empty {
-                    {{ i18n.labels().project.noFile }}
-                  }
-                </td>
-                <td class="project-list__actions-col">
-                  <lib-button [label]="i18n.labels().common.edit" (clicked)="startEdit(project)" />
-                  <lib-button [label]="i18n.labels().common.delete" (clicked)="confirmDelete(project)" />
-                </td>
-              }
+              <th>{{ i18n.labels().project.columnName }}</th>
+              <th>{{ i18n.labels().project.columnCreated }}</th>
+              <th>{{ i18n.labels().project.columnFile }}</th>
+              <th class="project-list__actions-col">{{ i18n.labels().project.columnActions }}</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (project of projects(); track project.id) {
+              <tr>
+                @if (editingId() === project.id) {
+                  <td colspan="3">
+                    <lib-text-input
+                      [control]="editControl"
+                      [label]="i18n.labels().project.projectName"
+                      [errorText]="i18n.messages().project.nameRequired"
+                    />
+                  </td>
+                  <td class="project-list__actions-col">
+                    <lib-button [label]="i18n.labels().common.save" variant="primary" (clicked)="saveEdit(project)" />
+                    <lib-button [label]="i18n.labels().common.cancel" (clicked)="cancelEdit()" />
+                  </td>
+                } @else {
+                  <td>{{ project.name }}</td>
+                  <td>{{ project.insertedTime | date: 'medium' }}</td>
+                  <td>
+                    @for (file of pdfFilesFor(project.id); track file.id) {
+                      <a [href]="pdfContentUrl(file.id)" target="_blank" rel="noopener">{{ file.fileName }}</a>
+                    } @empty {
+                      {{ i18n.labels().project.noFile }}
+                    }
+                  </td>
+                  <td class="project-list__actions-col">
+                    <lib-button [label]="i18n.labels().common.edit" (clicked)="startEdit(project)" />
+                    <lib-button [label]="i18n.labels().common.delete" (clicked)="confirmDelete(project)" />
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     }
   }
 </div>

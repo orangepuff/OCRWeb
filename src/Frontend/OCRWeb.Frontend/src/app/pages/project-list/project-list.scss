@@ -1,13 +1,21 @@
 .project-list {
+  box-sizing: border-box;
+  width: 100%;
   padding: 24px;
   max-width: 800px;
   margin: 0 auto;
+
+  @media (max-width: 600px) {
+    padding: 12px;
+  }
 }
 
 .project-list__header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   margin-bottom: 16px;
 }
 
@@ -15,12 +23,16 @@
   color: var(--mat-sys-error);
 }
 
+.project-list__table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  background: var(--mat-sys-surface-container-low);
+}
+
 .project-list__table {
   width: 100%;
+  min-width: 560px;
   border-collapse: collapse;
-  background: var(--mat-sys-surface-container-low);
-  border-radius: 12px;
-  overflow: hidden;
 
   th,
   td {
