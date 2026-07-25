@@ -45,16 +45,22 @@ export class ProjectList implements OnInit {
     return this.pdfService.contentUrl(id);
   }
 
-  protected rowMenuItems(): MenuItem[] {
-    return [
-      { id: 'edit', label: this.i18n.labels().common.edit },
-      { id: 'delete', label: this.i18n.labels().common.delete }
-    ];
+  protected rowMenuItems(project: ProjectListItem): MenuItem[] {
+    const items: MenuItem[] = [{ id: 'edit', label: this.i18n.labels().common.edit }];
+
+    if (this.pdfFilesFor(project.id).length > 0) {
+      items.push({ id: 'crop', label: this.i18n.labels().project.cropPdf });
+    }
+
+    items.push({ id: 'delete', label: this.i18n.labels().common.delete });
+    return items;
   }
 
   protected onRowMenuAction(itemId: string, project: ProjectListItem): void {
     if (itemId === 'edit') {
       this.router.navigate(['/projects', project.id, 'edit']);
+    } else if (itemId === 'crop') {
+      this.router.navigate(['/projects', project.id, 'crop']);
     } else if (itemId === 'delete') {
       this.confirmDelete(project);
     }

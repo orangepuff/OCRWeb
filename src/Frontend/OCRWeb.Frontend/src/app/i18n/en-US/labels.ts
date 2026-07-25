@@ -11,6 +11,7 @@ export const labels = {
     pageTitle: 'My Projects',
     addProject: 'Add Project',
     editProject: 'Edit Project',
+    cropPdf: 'Crop PDF',
     projectName: 'Project Name',
     uploadPdf: 'Upload PDF',
     createButton: 'Create Project',

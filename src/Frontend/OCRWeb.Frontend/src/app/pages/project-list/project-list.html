@@ -37,7 +37,7 @@
                 <td class="project-list__actions-col">
                   <lib-menu
                     [ariaLabel]="i18n.labels().project.rowActionsAriaLabel"
-                    [items]="rowMenuItems()"
+                    [items]="rowMenuItems(project)"
                     (itemSelected)="onRowMenuAction($event, project)"
                   />
                 </td>
