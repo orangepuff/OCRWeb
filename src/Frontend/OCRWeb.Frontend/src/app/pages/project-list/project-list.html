@@ -4,15 +4,49 @@
     <lib-button [label]="i18n.labels().project.addProject" variant="primary" (clicked)="addProject()" />
   </div>
 
+  @if (errorText()) {
+    <p class="project-list__error">{{ errorText() }}</p>
+  }
+
   @if (loaded()) {
     @if (projects().length === 0) {
       <p class="project-list__empty">{{ i18n.messages().project.empty }}</p>
     } @else {
-      <ul class="project-list__items">
-        @for (project of projects(); track project.id) {
-          <li>{{ project.name }}</li>
-        }
-      </ul>
+      <table class="project-list__table">
+        <thead>
+          <tr>
+            <th>{{ i18n.labels().project.columnName }}</th>
+            <th>{{ i18n.labels().project.columnCreated }}</th>
+            <th class="project-list__actions-col">{{ i18n.labels().project.columnActions }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (project of projects(); track project.id) {
+            <tr>
+              @if (editingId() === project.id) {
+                <td colspan="2">
+                  <lib-text-input
+                    [control]="editControl"
+                    [label]="i18n.labels().project.projectName"
+                    [errorText]="i18n.messages().project.nameRequired"
+                  />
+                </td>
+                <td class="project-list__actions-col">
+                  <lib-button [label]="i18n.labels().common.save" variant="primary" (clicked)="saveEdit(project)" />
+                  <lib-button [label]="i18n.labels().common.cancel" (clicked)="cancelEdit()" />
+                </td>
+              } @else {
+                <td>{{ project.name }}</td>
+                <td>{{ project.insertedTime | date: 'medium' }}</td>
+                <td class="project-list__actions-col">
+                  <lib-button [label]="i18n.labels().common.edit" (clicked)="startEdit(project)" />
+                  <lib-button [label]="i18n.labels().common.delete" (clicked)="confirmDelete(project)" />
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
     }
   }
 </div>

@@ -14,4 +14,12 @@ export class ProjectService {
   create(name: string): Observable<{ id: string }> {
     return this.http.post<{ id: string }>('/projects', { name });
   }
+
+  update(id: string, name: string): Observable<ProjectListItem> {
+    return this.http.put<ProjectListItem>(`/projects/${id}`, { name });
+  }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`/projects/${id}`);
+  }
 }

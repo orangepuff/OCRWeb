@@ -1,32 +1,91 @@
+import { DatePipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { Button } from '@orangepuff/portal-frontend-shared';
+import { Button, ConfirmDialog, TextInput } from '@orangepuff/portal-frontend-shared';
 import { I18nService } from '../../i18n/i18n.service';
 import { ProjectListItem } from '../../models/project-list-item';
 import { ProjectService } from '../../services/project.service';
 
 @Component({
   selector: 'app-project-list',
-  imports: [Button],
+  imports: [ReactiveFormsModule, DatePipe, Button, TextInput],
   templateUrl: './project-list.html',
   styleUrl: './project-list.scss'
 })
 export class ProjectList implements OnInit {
   private readonly projectService = inject(ProjectService);
   private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
 
   protected readonly i18n = inject(I18nService);
   protected readonly projects = signal<ProjectListItem[]>([]);
   protected readonly loaded = signal(false);
+  protected readonly errorText = signal<string | null>(null);
+
+  protected readonly editingId = signal<string | null>(null);
+  protected readonly editControl = new FormControl('', { nonNullable: true, validators: [Validators.required] });
 
   ngOnInit(): void {
-    this.projectService.list().subscribe((projects) => {
-      this.projects.set(projects);
-      this.loaded.set(true);
-    });
+    this.loadProjects();
   }
 
   protected addProject(): void {
     this.router.navigate(['/projects/add']);
+  }
+
+  protected startEdit(project: ProjectListItem): void {
+    this.editingId.set(project.id);
+    this.editControl.setValue(project.name);
+  }
+
+  protected cancelEdit(): void {
+    this.editingId.set(null);
+  }
+
+  protected saveEdit(project: ProjectListItem): void {
+    if (this.editControl.invalid) {
+      return;
+    }
+
+    this.projectService.update(project.id, this.editControl.value).subscribe({
+      next: (updated) => {
+        this.projects.update((list) => list.map((p) => (p.id === updated.id ? updated : p)));
+        this.editingId.set(null);
+      },
+      error: () => this.errorText.set(this.i18n.messages().project.updateError)
+    });
+  }
+
+  protected confirmDelete(project: ProjectListItem): void {
+    const ref = this.dialog.open(ConfirmDialog, {
+      data: {
+        title: this.i18n.labels().project.deleteConfirmTitle,
+        message: this.i18n.labels().project.deleteConfirmMessage,
+        confirmLabel: this.i18n.labels().common.delete,
+        cancelLabel: this.i18n.labels().common.cancel
+      }
+    });
+
+    ref.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.deleteProject(project);
+      }
+    });
+  }
+
+  private deleteProject(project: ProjectListItem): void {
+    this.projectService.delete(project.id).subscribe({
+      next: () => this.projects.update((list) => list.filter((p) => p.id !== project.id)),
+      error: () => this.errorText.set(this.i18n.messages().project.deleteError)
+    });
+  }
+
+  private loadProjects(): void {
+    this.projectService.list().subscribe((projects) => {
+      this.projects.set(projects);
+      this.loaded.set(true);
+    });
   }
 }
