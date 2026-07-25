@@ -1,5 +1,5 @@
 <form class="add-project" [formGroup]="form" (ngSubmit)="submit()">
-  <lib-button [label]="i18n.labels().common.back" (clicked)="back()" />
+  <lib-button [label]="i18n.labels().common.back" [disabled]="submitting()" (clicked)="back()" />
 
   <h1>{{ i18n.labels().project.addProject }}</h1>
 
@@ -10,13 +10,32 @@
   />
 
   <label class="add-project__file-label" for="pdfFile">{{ i18n.labels().project.uploadPdf }}</label>
-  <input id="pdfFile" class="add-project__file-input" type="file" accept="application/pdf" (change)="onFileSelected($event)" />
+  <input
+    id="pdfFile"
+    class="add-project__file-input"
+    type="file"
+    accept="application/pdf"
+    [disabled]="submitting()"
+    (change)="onFileSelected($event)"
+  />
   @if (fileTouched() && !selectedFile()) {
     <p class="add-project__error">{{ i18n.messages().project.pdfRequired }}</p>
   }
 
   @if (errorText()) {
     <p class="add-project__error">{{ errorText() }}</p>
+  }
+
+  @if (submitting()) {
+    <div class="add-project__progress">
+      @if (uploadProgress() === null) {
+        <mat-spinner diameter="24" />
+        <span>{{ i18n.labels().project.creatingProject }}</span>
+      } @else {
+        <mat-progress-bar mode="determinate" [value]="uploadProgress()" />
+        <span>{{ i18n.labels().project.uploadingPdf }} {{ uploadProgress() }}%</span>
+      }
+    </div>
   }
 
   <lib-button

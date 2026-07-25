@@ -1,6 +1,7 @@
 using Diagnostics.AspNetCore.DependencyInjection;
 using Diagnostics.NLog.DependencyInjection;
 using FastEndpoints;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using OCRWeb.Document.Api;
 using OCRWeb.Document.Infrastructure;
@@ -11,7 +12,15 @@ using OCRWeb.ProjectManagement.Infrastructure;
 using OrangepuffPortal.Host;
 using System.Reflection;
 
+const long MaxUploadBytes = 1024L * 1024 * 1024; // 1 GB — covers large scanned PDF documents.
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Kestrel's default MaxRequestBodySize (~28.6 MB) silently rejects anything bigger, which is far
+// too small for scanned PDF uploads. FormOptions.MultipartBodyLengthLimit gates IFormFile binding
+// specifically and needs raising too (its own default is 128 MB).
+builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = MaxUploadBytes);
+builder.Services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = MaxUploadBytes);
 
 // Web / API surface. Endpoints live in the per-module *.Api assemblies; point discovery at them.
 builder.Services.AddOpenApi();
