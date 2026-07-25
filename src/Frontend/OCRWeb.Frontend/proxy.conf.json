@@ -3,5 +3,15 @@
     "target": "https://localhost:7201",
     "secure": false,
     "changeOrigin": true
+  },
+  "/projects": {
+    "target": "https://localhost:7201",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/pdf-files": {
+    "target": "https://localhost:7201",
+    "secure": false,
+    "changeOrigin": true
   }
 }

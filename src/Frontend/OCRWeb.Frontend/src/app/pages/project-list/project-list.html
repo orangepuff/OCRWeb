@@ -1,0 +1,18 @@
+<div class="project-list">
+  <div class="project-list__header">
+    <h1>{{ i18n.labels().project.pageTitle }}</h1>
+    <lib-button [label]="i18n.labels().project.addProject" variant="primary" (clicked)="addProject()" />
+  </div>
+
+  @if (loaded()) {
+    @if (projects().length === 0) {
+      <p class="project-list__empty">{{ i18n.messages().project.empty }}</p>
+    } @else {
+      <ul class="project-list__items">
+        @for (project of projects(); track project.id) {
+          <li>{{ project.name }}</li>
+        }
+      </ul>
+    }
+  }
+</div>

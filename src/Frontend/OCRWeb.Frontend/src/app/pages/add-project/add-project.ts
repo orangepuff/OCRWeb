@@ -1,0 +1,63 @@
+import { Component, inject, signal } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { Button, TextInput } from '@orangepuff/portal-frontend-shared';
+import { I18nService } from '../../i18n/i18n.service';
+import { PdfService } from '../../services/pdf.service';
+import { ProjectService } from '../../services/project.service';
+
+@Component({
+  selector: 'app-add-project',
+  imports: [ReactiveFormsModule, Button, TextInput],
+  templateUrl: './add-project.html',
+  styleUrl: './add-project.scss'
+})
+export class AddProject {
+  private readonly projectService = inject(ProjectService);
+  private readonly pdfService = inject(PdfService);
+  private readonly router = inject(Router);
+
+  protected readonly i18n = inject(I18nService);
+  protected readonly form = new FormGroup({
+    name: new FormControl('', { nonNullable: true, validators: [Validators.required] })
+  });
+  protected readonly selectedFile = signal<File | null>(null);
+  protected readonly fileTouched = signal(false);
+  protected readonly submitting = signal(false);
+  protected readonly errorText = signal<string | null>(null);
+
+  protected onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.selectedFile.set(input.files?.[0] ?? null);
+    this.fileTouched.set(true);
+  }
+
+  protected submit(): void {
+    this.fileTouched.set(true);
+    this.form.markAllAsTouched();
+
+    const file = this.selectedFile();
+    if (this.form.invalid || !file) {
+      return;
+    }
+
+    this.submitting.set(true);
+    this.errorText.set(null);
+
+    this.projectService.create(this.form.controls.name.value).subscribe({
+      next: ({ id }) => {
+        this.pdfService.upload(id, file).subscribe({
+          next: () => this.router.navigate(['/home']),
+          error: () => {
+            this.submitting.set(false);
+            this.errorText.set(this.i18n.messages().project.uploadError);
+          }
+        });
+      },
+      error: () => {
+        this.submitting.set(false);
+        this.errorText.set(this.i18n.messages().project.createError);
+      }
+    });
+  }
+}
