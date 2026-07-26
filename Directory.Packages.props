@@ -25,11 +25,9 @@
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="NLog" Version="5.5.0" />
     <PackageVersion Include="NLog.Extensions.Logging" Version="5.5.0" />
-    <!-- 1.1.0 is pending: orangepuffportal's ConfigText module is built and tested locally but not
-         yet published (see docs/config-text-consumption.md) — restore will fail until it is. -->
-    <PackageVersion Include="OrangepuffPortal.Host" Version="1.1.0" />
-    <PackageVersion Include="OrangepuffPortal.Shared" Version="1.1.0" />
-    <PackageVersion Include="OrangepuffPortal.ConfigText.Contract" Version="1.1.0" />
+    <PackageVersion Include="OrangepuffPortal.Host" Version="1.0.6" />
+    <PackageVersion Include="OrangepuffPortal.Shared" Version="1.0.6" />
+    <PackageVersion Include="OrangepuffPortal.ConfigText.Contract" Version="1.0.6" />
     <PackageVersion Include="PdfSharp" Version="6.1.1" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />

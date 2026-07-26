@@ -76,13 +76,8 @@ container that `AddOrangepuffPortal()` wires up already has it registered. Gated
 flag as the rest of the migrate/seed block, since it is the same category of "only touch schema/seed data
 when explicitly enabled" concern.
 
-## Current blocker: not wired up yet
+## Package version
 
-`IConfigTextWriter`/`IConfigTextReader` ship in a **new** NuGet package,
-`OrangepuffPortal.ConfigText.Contract`, from the `orangepuffportal` repo. That package has not been published
-to nuget.org yet (`orangepuffportal`'s `Directory.Packages.props` still only defines `OrangepuffPortal.Host`
-and `OrangepuffPortal.Shared` at `1.0.3`). Until a new version is released (pushing a `Release/vX.Y.Z` branch
-in that repo, which is a real published-package action requiring explicit sign-off, not something done as a
-side effect of this doc), OCRWeb cannot add a `PackageReference` to it and this feature cannot build
-end-to-end. The seed JSON files and the loader/startup-wiring code are written ahead of that so the OCRWeb
-side is ready the moment a version exists.
+`IConfigTextWriter`/`IConfigTextReader` ship in `OrangepuffPortal.ConfigText.Contract`, published from the
+`orangepuffportal` repo alongside `OrangepuffPortal.Host`/`.Shared`. OCRWeb consumes all three at `1.0.6`,
+the first version with the ConfigText module included (see `orangepuffportal`'s `Release/v1.0.6` branch).
