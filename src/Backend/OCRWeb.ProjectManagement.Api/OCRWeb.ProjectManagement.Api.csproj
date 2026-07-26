@@ -17,6 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="ConfigText\en-US.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\OCRWeb.ProjectManagement\OCRWeb.ProjectManagement.csproj" />
     <ProjectReference Include="..\OCRWeb.ProjectManagement.Contract\OCRWeb.ProjectManagement.Contract.csproj" />
   </ItemGroup>

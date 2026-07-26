@@ -1,5 +1,5 @@
 export interface ProjectListItem {
-  id: string;
+  id: number;
   name: string;
   insertedTime: string;
 }

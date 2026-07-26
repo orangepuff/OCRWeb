@@ -30,12 +30,12 @@ public class GetProjectQueryHandlerTests
     public async Task Handle_missing_project_throws_KeyNotFoundException()
     {
         var repo = new Mock<IProjectRepository>();
-        repo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync((Project?)null);
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync((Project?)null);
 
         var handler = new GetProjectQueryHandler(repo.Object, Mock.Of<ICurrentUser>());
 
         await Assert.ThrowsAsync<KeyNotFoundException>(() =>
-            handler.Handle(new GetProjectQuery(Guid.NewGuid()), CancellationToken.None));
+            handler.Handle(new GetProjectQuery(999), CancellationToken.None));
     }
 
     [Fact]

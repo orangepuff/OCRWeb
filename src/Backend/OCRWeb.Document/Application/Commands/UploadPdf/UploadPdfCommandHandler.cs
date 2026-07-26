@@ -6,9 +6,9 @@ using OrangepuffPortal.Shared.Auditing;
 namespace OCRWeb.Document.Application.Commands.UploadPdf;
 
 public class UploadPdfCommandHandler(IPdfFileRepository repository, ICurrentUser currentUser)
-    : IRequestHandler<UploadPdfCommand, Guid>
+    : IRequestHandler<UploadPdfCommand, int>
 {
-    public async Task<Guid> Handle(UploadPdfCommand request, CancellationToken cancellationToken)
+    public async Task<int> Handle(UploadPdfCommand request, CancellationToken cancellationToken)
     {
         var now = DateTime.UtcNow;
         var file = PdfFile.CreateOriginal(

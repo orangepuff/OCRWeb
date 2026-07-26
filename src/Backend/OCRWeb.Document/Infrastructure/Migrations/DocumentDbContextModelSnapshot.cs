@@ -25,9 +25,12 @@ namespace OCRWeb.Document.Infrastructure.Migrations
 
             modelBuilder.Entity("OCRWeb.Document.Domain.Entity.PdfFile", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("Id");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("iId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<byte[]>("Checksum")
                         .IsRequired()
@@ -61,9 +64,15 @@ namespace OCRWeb.Document.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasColumnName("iInsertedUserId");
 
-                    b.Property<Guid>("ProjectId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("ProjectId");
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("btActive");
+
+                    b.Property<int>("ParentId")
+                        .HasColumnType("int")
+                        .HasColumnName("iParentId");
 
                     b.Property<long>("SizeBytes")
                         .HasColumnType("bigint")
@@ -79,19 +88,26 @@ namespace OCRWeb.Document.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PDFFiles", "docproc");
+                    b.ToTable("Files", "docproc");
                 });
 
             modelBuilder.Entity("OCRWeb.Document.Domain.Entity.PdfFileContent", b =>
                 {
-                    b.Property<Guid>("PdfFileId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("PdfFileId");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("iId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<byte[]>("Content")
                         .IsRequired()
                         .HasColumnType("varbinary(max)")
                         .HasColumnName("binContent");
+
+                    b.Property<int>("FileId")
+                        .HasColumnType("int")
+                        .HasColumnName("iFileId");
 
                     b.Property<DateTime>("InsertedTime")
                         .HasColumnType("datetime2(3)")
@@ -109,16 +125,19 @@ namespace OCRWeb.Document.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasColumnName("iUpdatedUserId");
 
-                    b.HasKey("PdfFileId");
+                    b.HasKey("Id");
 
-                    b.ToTable("PDFFileContents", "docproc");
+                    b.HasIndex("FileId")
+                        .IsUnique();
+
+                    b.ToTable("FileContents", "docproc");
                 });
 
             modelBuilder.Entity("OCRWeb.Document.Domain.Entity.PdfFile", b =>
                 {
                     b.OwnsOne("OCRWeb.Document.Domain.ValueObjects.FileProperties", "Properties", b1 =>
                         {
-                            b1.Property<Guid>("PdfFileId");
+                            b1.Property<int>("PdfFileId");
 
                             b1.Property<int>("CropX");
 
@@ -132,7 +151,7 @@ namespace OCRWeb.Document.Infrastructure.Migrations
 
                             b1.HasKey("PdfFileId");
 
-                            b1.ToTable("PDFFiles", "docproc");
+                            b1.ToTable("Files", "docproc");
 
                             b1
                                 .ToJson("sFileProperties")
@@ -149,7 +168,7 @@ namespace OCRWeb.Document.Infrastructure.Migrations
                 {
                     b.HasOne("OCRWeb.Document.Domain.Entity.PdfFile", null)
                         .WithOne("Content")
-                        .HasForeignKey("OCRWeb.Document.Domain.Entity.PdfFileContent", "PdfFileId")
+                        .HasForeignKey("OCRWeb.Document.Domain.Entity.PdfFileContent", "FileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -25,9 +25,12 @@ namespace OCRWeb.ProjectManagement.Infrastructure.Migrations
 
             modelBuilder.Entity("OCRWeb.ProjectManagement.Domain.Entity.Project", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
                         .HasColumnName("Id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("InsertedTime")
                         .HasColumnType("datetime2(3)")

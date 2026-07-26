@@ -37,13 +37,21 @@
       (mouseleave)="onOverlayMouseUp()"
     >
       @if (selection(); as sel) {
-        <div
-          class="crop-pdf__selection"
-          [style.left.px]="sel.x"
-          [style.top.px]="sel.y"
-          [style.width.px]="sel.width"
-          [style.height.px]="sel.height"
-        ></div>
+        @if (toDisplayRect(sel); as d) {
+          <div
+            class="crop-pdf__selection"
+            [style.left.px]="d.x"
+            [style.top.px]="d.y"
+            [style.width.px]="d.width"
+            [style.height.px]="d.height"
+            (mousedown)="onSelectionMouseDown($event)"
+          >
+            <div class="crop-pdf__handle crop-pdf__handle--nw" (mousedown)="onHandleMouseDown('nw', $event)"></div>
+            <div class="crop-pdf__handle crop-pdf__handle--ne" (mousedown)="onHandleMouseDown('ne', $event)"></div>
+            <div class="crop-pdf__handle crop-pdf__handle--sw" (mousedown)="onHandleMouseDown('sw', $event)"></div>
+            <div class="crop-pdf__handle crop-pdf__handle--se" (mousedown)="onHandleMouseDown('se', $event)"></div>
+          </div>
+        }
       }
     </div>
     @if (pageBusy()) {

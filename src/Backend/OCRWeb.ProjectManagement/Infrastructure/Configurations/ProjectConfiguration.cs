@@ -15,7 +15,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.ToTable("Projects");
 
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).HasColumnName("Id").ValueGeneratedNever();
+        builder.Property(x => x.Id).HasColumnName("Id").ValueGeneratedOnAdd();
 
         builder.Property(x => x.Name).HasColumnName("sName").HasMaxLength(200).IsRequired();
 

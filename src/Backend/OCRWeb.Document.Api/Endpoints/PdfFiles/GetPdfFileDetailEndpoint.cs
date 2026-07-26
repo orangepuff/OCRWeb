@@ -8,7 +8,7 @@ namespace OCRWeb.Document.Api.Endpoints.PdfFiles;
 
 public class GetPdfFileDetailEndpointRequest
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 }
 
 /// <summary>GET /api/pdf-files/{id} — full metadata for one PDF file.</summary>

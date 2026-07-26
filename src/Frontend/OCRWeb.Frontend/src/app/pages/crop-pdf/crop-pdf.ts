@@ -21,6 +21,12 @@ interface CanvasRect {
   height: number;
 }
 
+type ResizeHandle = 'nw' | 'ne' | 'sw' | 'se';
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
+}
+
 interface PageSizePts {
   width: number;
   height: number;
@@ -65,7 +71,14 @@ export class CropPdf implements OnInit {
 
   private readonly renderScale = 1.5; // canvas pixels per PDF point
   private pdfDocument: PDFDocumentProxy | null = null;
+
+  // Drag state, all in canvas-internal-pixel space (see toCanvasPoint):
+  // - draw: dragStart is the corner the drag started from, the other corner follows the mouse.
+  // - resize: dragStart is the fixed opposite corner (the handle's anchor).
+  // - move: dragStart is the mouse position at drag start; selectionAtDragStart is the rect to offset from.
+  private dragMode: 'draw' | 'move' | 'resize' | null = null;
   private dragStart: { x: number; y: number } | null = null;
+  private selectionAtDragStart: CanvasRect | null = null;
 
   protected readonly loaded = signal(false);
   protected readonly loadError = signal(false);
@@ -101,12 +114,13 @@ export class CropPdf implements OnInit {
   });
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (!id) {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (!idParam) {
       this.router.navigate(['/home']);
       return;
     }
 
+    const id = Number(idParam);
     this.loadingStep.set(this.i18n.labels().project.loadingFiles);
     this.pdfService.list(id).subscribe({
       next: (files) => {
@@ -130,7 +144,7 @@ export class CropPdf implements OnInit {
     this.pageControl.valueChanges.subscribe((pageNo) => this.renderPage(pageNo));
   }
 
-  private async loadPdf(fileId: string, sizeBytes: number): Promise<void> {
+  private async loadPdf(fileId: number, sizeBytes: number): Promise<void> {
     try {
       this.loadingStep.set(this.i18n.labels().project.downloadingPdf);
       // Seed the total from the list metadata we already have - on a fast/local
@@ -204,19 +218,62 @@ export class CropPdf implements OnInit {
     this.pageBusy.set(false);
   }
 
+  // Starts a brand-new selection, discarding any previous one. Only fires from the empty
+  // overlay background - onSelectionMouseDown/onHandleMouseDown stop propagation so clicking
+  // the existing box or its handles doesn't also land here.
   protected onOverlayMouseDown(event: MouseEvent): void {
     const p = this.toCanvasPoint(event);
+    this.dragMode = 'draw';
     this.dragStart = p;
     this.selection.set({ x: p.x, y: p.y, width: 0, height: 0 });
   }
 
-  protected onOverlayMouseMove(event: MouseEvent): void {
-    if (!this.dragStart) {
+  // Drags the existing selection as a whole, keeping its size fixed.
+  protected onSelectionMouseDown(event: MouseEvent): void {
+    event.stopPropagation();
+    const sel = this.selection();
+    if (!sel) {
       return;
     }
 
-    const p = this.toCanvasPoint(event);
+    this.dragMode = 'move';
+    this.dragStart = this.toCanvasPoint(event);
+    this.selectionAtDragStart = { ...sel };
+  }
+
+  // Resizes from one corner, keeping the opposite corner (the anchor) fixed in place.
+  protected onHandleMouseDown(handle: ResizeHandle, event: MouseEvent): void {
+    event.stopPropagation();
+    const sel = this.selection();
+    if (!sel) {
+      return;
+    }
+
+    this.dragMode = 'resize';
+    this.dragStart = {
+      x: handle === 'nw' || handle === 'sw' ? sel.x + sel.width : sel.x,
+      y: handle === 'nw' || handle === 'ne' ? sel.y + sel.height : sel.y
+    };
+  }
+
+  protected onOverlayMouseMove(event: MouseEvent): void {
+    if (!this.dragMode || !this.dragStart) {
+      return;
+    }
+
     const canvas = this.canvasRef().nativeElement;
+    const p = this.toCanvasPoint(event);
+
+    if (this.dragMode === 'move' && this.selectionAtDragStart) {
+      const start = this.selectionAtDragStart;
+      const x = clamp(start.x + (p.x - this.dragStart.x), 0, canvas.width - start.width);
+      const y = clamp(start.y + (p.y - this.dragStart.y), 0, canvas.height - start.height);
+      this.selection.set({ x, y, width: start.width, height: start.height });
+      return;
+    }
+
+    // draw and resize both define a rect between a fixed anchor point (dragStart) and the
+    // current mouse position, clamped to the canvas bounds.
     const x = Math.max(0, Math.min(this.dragStart.x, p.x));
     const y = Math.max(0, Math.min(this.dragStart.y, p.y));
     const width = Math.min(canvas.width, Math.max(this.dragStart.x, p.x)) - x;
@@ -225,7 +282,9 @@ export class CropPdf implements OnInit {
   }
 
   protected onOverlayMouseUp(): void {
+    this.dragMode = null;
     this.dragStart = null;
+    this.selectionAtDragStart = null;
   }
 
   private toCanvasPoint(event: MouseEvent): { x: number; y: number } {
@@ -236,6 +295,17 @@ export class CropPdf implements OnInit {
       x: (event.clientX - rect.left) * displayScale,
       y: (event.clientY - rect.top) * displayScale
     };
+  }
+
+  // The selection rect is stored in canvas-internal-pixel space (matching toCanvasPoint, and
+  // what confirmCrop's PDF-point math expects). The canvas's on-screen size can be smaller than
+  // that internal resolution (max-height/max-width scale it down), so rendering the overlay box
+  // needs its own conversion back to on-screen CSS pixels - binding sel.x/y/width/height directly
+  // would draw a box scaled to the wrong size and overflowing past the visible page.
+  protected toDisplayRect(sel: CanvasRect): CanvasRect {
+    const canvas = this.canvasRef().nativeElement;
+    const scale = canvas.width > 0 ? canvas.getBoundingClientRect().width / canvas.width : 1;
+    return { x: sel.x * scale, y: sel.y * scale, width: sel.width * scale, height: sel.height * scale };
   }
 
   protected confirmCrop(): void {

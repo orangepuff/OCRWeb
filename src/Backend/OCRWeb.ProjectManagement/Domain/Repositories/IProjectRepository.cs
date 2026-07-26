@@ -4,7 +4,7 @@ namespace OCRWeb.ProjectManagement.Domain.Repositories;
 
 public interface IProjectRepository
 {
-    Task<Project?> GetByIdAsync(Guid id, CancellationToken ct = default);
+    Task<Project?> GetByIdAsync(int id, CancellationToken ct = default);
 
     /// <summary>Projects owned (created) by the given user, newest first.</summary>
     Task<IReadOnlyList<Project>> ListByOwnerAsync(int ownerUserId, CancellationToken ct = default);

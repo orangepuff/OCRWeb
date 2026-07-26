@@ -8,11 +8,11 @@ namespace OCRWeb.Document.Api.Endpoints.PdfFiles;
 
 public class UploadPdfEndpointRequest
 {
-    public Guid ProjectId { get; set; }
+    public int ProjectId { get; set; }
     public IFormFile File { get; set; } = default!;
 }
 
-public record UploadPdfEndpointResponse(Guid Id);
+public record UploadPdfEndpointResponse(int Id);
 
 /// <summary>POST /api/pdf-files — upload an original PDF (multipart form).</summary>
 public class UploadPdfEndpoint(IMediator mediator)

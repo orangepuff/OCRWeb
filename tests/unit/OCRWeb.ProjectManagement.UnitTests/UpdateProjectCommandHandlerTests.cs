@@ -31,12 +31,12 @@ public class UpdateProjectCommandHandlerTests
     public async Task Handle_missing_project_throws_KeyNotFoundException()
     {
         var repo = new Mock<IProjectRepository>();
-        repo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync((Project?)null);
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync((Project?)null);
 
         var handler = new UpdateProjectCommandHandler(repo.Object, Mock.Of<ICurrentUser>());
 
         await Assert.ThrowsAsync<KeyNotFoundException>(() =>
-            handler.Handle(new UpdateProjectCommand(Guid.NewGuid(), "New Name"), CancellationToken.None));
+            handler.Handle(new UpdateProjectCommand(999, "New Name"), CancellationToken.None));
     }
 
     [Fact]

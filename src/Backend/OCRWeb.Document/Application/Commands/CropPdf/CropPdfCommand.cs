@@ -2,12 +2,12 @@ using MediatR;
 
 namespace OCRWeb.Document.Application.Commands.CropPdf;
 
-/// <summary>Crop a source PDF into a new derived (Cropped) file; returns the new file id.</summary>
+/// <summary>Crop a source PDF's content in place; returns the same file's (now Cropped) id.</summary>
 public record CropPdfCommand(
-    Guid SourcePdfFileId,
+    int SourcePdfFileId,
     int PageNo,
     int CropX,
     int CropY,
     int Width,
     int Height,
-    string? FileName) : IRequest<Guid>;
+    string? FileName) : IRequest<int>;

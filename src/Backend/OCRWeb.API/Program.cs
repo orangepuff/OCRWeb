@@ -3,12 +3,14 @@ using Diagnostics.NLog.DependencyInjection;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
+using OCRWeb.API.ConfigText;
 using OCRWeb.Document.Api;
 using OCRWeb.Document.Infrastructure;
 using OCRWeb.OCR.Infrastructure;
 using OCRWeb.Pdf;
 using OCRWeb.ProjectManagement.Api;
 using OCRWeb.ProjectManagement.Infrastructure;
+using OrangepuffPortal.ConfigText.Contract.Interfaces;
 using OrangepuffPortal.Host;
 using System.Reflection;
 
@@ -62,6 +64,12 @@ if (builder.Configuration.GetValue<bool>("DoMigration"))
     using var scope = app.Services.CreateScope();
     await scope.ServiceProvider.GetRequiredService<DocumentDbContext>().Database.MigrateAsync();
     await scope.ServiceProvider.GetRequiredService<ProjectDbContext>().Database.MigrateAsync();
+
+    // Push every module's own default label/message text into the shared ConfigTextDefinition
+    // table (owned by orangepuffportal). In-process call, insert-only unless a seed entry sets
+    // btReplace — see docs/config-text-consumption.md.
+    var configTextWriter = scope.ServiceProvider.GetRequiredService<IConfigTextWriter>();
+    await configTextWriter.UpsertManyAsync("en-US", ConfigTextSeed.LoadAll("en-US"));
 }
 
 if (app.Environment.IsDevelopment())

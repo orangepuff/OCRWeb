@@ -1,6 +1,6 @@
 # OCRWeb Frontend — UI/UX Design
 
-> Design/planning doc for `OCRWeb.Frontend` (Angular 22 + Angular Material) — the template shell: auth, header, admin UI, and the body-content iframe. Companion to `Product.md` (what the eventual body app does), `development-plan.docx` (backend architecture), and `docs/Frontend/body-content-iframe-design.md` (the iframe itself). The auth shell (§5), admin UI, and Landing/Home (§2) are implemented; the body app that will actually do OCR work is a separate, not-yet-built project.
+> Design/planning doc for `OCRWeb.Frontend` (Angular 22 + Angular Material) — the template shell: auth, header, admin UI, and the body-content iframe. Companion to `Product.md` (what the eventual body app does) and `docs/Frontend/body-content-iframe-design.md` (the iframe itself). The auth shell (§5), admin UI, and Landing/Home (§2) are implemented; the body app that will actually do OCR work is a separate, not-yet-built project.
 
 ## 1. Stack & design principles
 
@@ -72,5 +72,4 @@ Full backend design lives in `docs/Authentication/authentication-design.docx` �
 ## 7. Related documents
 
 - `Product.md` — product scope and use cases
-- `development-plan.docx` — backend architecture and status
 - `docs/Authentication/authentication-design.docx` — Google sign-in backend design
