@@ -10,6 +10,7 @@ import type { PDFDocumentProxy } from 'pdfjs-dist';
 import { firstValueFrom, filter, map, tap } from 'rxjs';
 import { I18nService } from '../../i18n/i18n.service';
 import { PdfFileListItem } from '../../models/pdf-file-list-item';
+import { PdfCacheService } from '../../services/pdf-cache.service';
 import { PdfService } from '../../services/pdf.service';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
@@ -62,6 +63,7 @@ function formatBytes(bytes: number): string {
 export class CropPdf implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly pdfService = inject(PdfService);
+  private readonly pdfCache = inject(PdfCacheService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly snackBar = inject(MatSnackBar);
@@ -147,28 +149,19 @@ export class CropPdf implements OnInit {
   private async loadPdf(fileId: number, sizeBytes: number): Promise<void> {
     try {
       this.loadingStep.set(this.i18n.labels().project.downloadingPdf);
-      // Seed the total from the list metadata we already have - on a fast/local
-      // download the browser may never fire a progress event before completion,
-      // so waiting on event.total for the total would leave nothing to show at all.
-      this.downloadProgress.set({ loaded: 0, total: sizeBytes > 0 ? sizeBytes : null });
-      const bytes = await firstValueFrom(
-        this.http
-          .get(this.pdfService.contentUrl(fileId), {
-            responseType: 'arraybuffer',
-            reportProgress: true,
-            observe: 'events'
-          })
-          .pipe(
-            tap((event) => {
-              if (event.type === HttpEventType.DownloadProgress) {
-                this.downloadProgress.update((prev) => ({ loaded: event.loaded, total: event.total ?? prev?.total ?? null }));
-              }
-            }),
-            filter((event): event is HttpResponse<ArrayBuffer> => event.type === HttpEventType.Response),
-            map((event) => event.body!)
-          )
-      );
-      this.downloadProgress.set(null);
+
+      // Large PDFs (100+ MB) routinely exceed the browser's own HTTP disk cache's per-entry
+      // size limit, so relying on Cache-Control/ETag alone still re-downloads the whole file on
+      // every page load - IndexedDB has no comparable cap, hence this separate cache.
+      let bytes = await this.pdfCache.get(fileId);
+      if (!bytes) {
+        bytes = await this.downloadPdf(fileId, sizeBytes);
+        // Cache before handing the buffer to pdf.js - pdf.js posts it to its worker thread and
+        // may transfer (detach) the underlying ArrayBuffer, so caching it afterwards could store
+        // an already-emptied buffer.
+        void this.pdfCache.put(fileId, bytes);
+      }
+
       this.loadingStep.set(this.i18n.labels().project.renderingPreview);
       this.pdfDocument = await pdfjsLib.getDocument({ data: new Uint8Array(bytes) }).promise;
       this.totalPages.set(this.pdfDocument.numPages);
@@ -180,6 +173,32 @@ export class CropPdf implements OnInit {
       this.errorText.set(this.describeLoadError(err));
       this.loaded.set(true);
     }
+  }
+
+  private async downloadPdf(fileId: number, sizeBytes: number): Promise<ArrayBuffer> {
+    // Seed the total from the list metadata we already have - on a fast/local
+    // download the browser may never fire a progress event before completion,
+    // so waiting on event.total for the total would leave nothing to show at all.
+    this.downloadProgress.set({ loaded: 0, total: sizeBytes > 0 ? sizeBytes : null });
+    const bytes = await firstValueFrom(
+      this.http
+        .get(this.pdfService.contentUrl(fileId), {
+          responseType: 'arraybuffer',
+          reportProgress: true,
+          observe: 'events'
+        })
+        .pipe(
+          tap((event) => {
+            if (event.type === HttpEventType.DownloadProgress) {
+              this.downloadProgress.update((prev) => ({ loaded: event.loaded, total: event.total ?? prev?.total ?? null }));
+            }
+          }),
+          filter((event): event is HttpResponse<ArrayBuffer> => event.type === HttpEventType.Response),
+          map((event) => event.body!)
+        )
+    );
+    this.downloadProgress.set(null);
+    return bytes;
   }
 
   // Surfaces the underlying HTTP status or exception message alongside the generic
@@ -355,6 +374,9 @@ export class CropPdf implements OnInit {
       })
       .subscribe({
         next: () => {
+          // The source file id is gone after a successful crop (replaced by a new id) - drop its
+          // cached bytes rather than let them sit unused until they expire on their own.
+          void this.pdfCache.remove(file.id);
           this.snackBar.open(this.i18n.messages().project.cropSuccess, undefined, { duration: 3000 });
           this.router.navigate(['/home']);
         },

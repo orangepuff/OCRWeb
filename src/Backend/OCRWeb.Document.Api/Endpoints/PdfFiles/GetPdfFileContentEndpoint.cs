@@ -1,6 +1,7 @@
 using FastEndpoints;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using OCRWeb.Document.Application.Queries.GetPdfFileContent;
 
@@ -31,6 +32,24 @@ public class GetPdfFileContentEndpoint(IMediator mediator)
         }
 
         await using var stream = content.Content;
+
+        // A file's bytes never change once uploaded (upload/crop always mint a new id rather than
+        // mutating an existing one), so the id alone is a valid ETag - no content hashing needed.
+        // "private" keeps this out of any shared/CDN cache since the content is per-user cookie-
+        // authenticated; max-age bounds how long a browser can serve it without re-checking auth
+        // against the server at all.
+        var etag = $"\"pdf-{req.Id}\"";
+        HttpContext.Response.Headers.ETag = etag;
+        HttpContext.Response.Headers.CacheControl = "private, max-age=3600";
+
+        // Once max-age lapses, the browser revalidates with If-None-Match instead of assuming the
+        // cached copy is stale - answering with 304 here skips re-transferring the (possibly large)
+        // body while still hitting this auth-gated endpoint on every load past the cache window.
+        if (HttpContext.Request.Headers.IfNoneMatch == etag)
+        {
+            HttpContext.Response.StatusCode = StatusCodes.Status304NotModified;
+            return;
+        }
 
         // Send.BytesAsync always forces Content-Disposition: attachment when given a filename,
         // which pops the browser's Save dialog instead of rendering the PDF in a new tab. Set the
