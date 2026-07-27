@@ -122,6 +122,8 @@ export class CropPdf implements OnInit {
     this.submitting() ? this.i18n.labels().project.croppingButton : this.i18n.labels().project.cropButton
   );
 
+  private projectId!: number;
+
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (!idParam) {
@@ -130,6 +132,7 @@ export class CropPdf implements OnInit {
     }
 
     const id = Number(idParam);
+    this.projectId = id;
     this.loadingStep.set(this.i18n.labels().project.loadingFiles);
     this.pdfService.list(id).subscribe({
       next: (files) => {
@@ -399,7 +402,7 @@ export class CropPdf implements OnInit {
           // cached bytes rather than let them sit unused until they expire on their own.
           void this.fileCache.remove(PDF_FILE_CACHE_SCOPE, file.id);
           this.snackBar.open(this.i18n.messages().project.cropSuccess, undefined, { duration: 3000 });
-          this.router.navigate(['/home']);
+          this.router.navigate(['/projects', this.projectId, 'split']);
         },
         error: () => {
           this.submitting.set(false);

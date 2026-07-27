@@ -2,6 +2,23 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Frontend UX conventions
+
+**Async operations (any action that waits for the server):** while waiting —
+- Disable all interactive controls that would re-trigger or conflict with the in-flight request (buttons, inputs, sliders).
+- Change the submit button's label to a present-progressive form (e.g. "Saving…", "Cropping…", "Uploading…").
+- Show a `mat-spinner` (diameter 24) + a short status label in a flex row below the controls (same markup/style as `.project-form__progress` in `project-form.html`).
+
+On success —
+- Show a `MatSnackBar` toast with a brief success message (duration 3000 ms, no action label).
+- Navigate to the logical next page immediately after opening the snack bar.
+
+On error —
+- Re-enable controls (`submitting.set(false)`).
+- Show the error message inline (not as a toast) so the user can read it while fixing their input.
+
+This pattern is already in use on `project-form` and `crop-pdf`; apply it to every new page that has a server-mutating action.
+
 ## Keep these docs in sync
 
 - **`docs/`** — whenever a new feature is implemented, add a design/reference doc for it here (a Markdown design doc, plus a `.sql` file if the feature owns database objects — see the `diagnostics-logging-design.md` + `diagnostics-logs-schema.sql` pair in the separate `DiagnosticLog` repo for the style to follow). Do this as part of implementing the feature, not as an afterthought.

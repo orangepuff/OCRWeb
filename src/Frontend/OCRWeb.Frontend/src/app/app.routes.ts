@@ -13,5 +13,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/crop-pdf/crop-pdf').then((m) => m.CropPdf),
     canActivate: [authGuard]
   },
+  {
+    path: 'projects/:id/split',
+    loadComponent: () => import('./pages/split-pdf/split-pdf').then((m) => m.SplitPdf),
+    canActivate: [authGuard]
+  },
   { path: '**', redirectTo: 'home' }
 ];

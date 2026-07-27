@@ -15,6 +15,7 @@ export const labels = {
     cropButton: 'Crop',
     croppingButton: 'Cropping…',
     croppingPdf: 'Cropping PDF…',
+    splitPdf: 'Split PDF',
     pageLabel: 'Page',
     ofLabel: 'of',
     loadingFiles: 'Loading project files…',

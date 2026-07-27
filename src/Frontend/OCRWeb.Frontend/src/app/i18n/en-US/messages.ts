@@ -19,6 +19,7 @@ export const messages = {
     noFileError: 'No PDF file found for this project',
     selectionRequired: 'Drag on the preview to select a crop area',
     cropError: 'Failed to crop the PDF',
-    cropSuccess: 'PDF cropped successfully'
+    cropSuccess: 'PDF cropped successfully',
+    splitNotImplemented: 'Splitting into sections is not implemented yet.'
   }
 } as const;
