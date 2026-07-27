@@ -14,7 +14,11 @@ The `orangepuffportal` repo ships two independent, separately-versioned artifact
 
 This repo uses **Conventional Commits**: `type(scope): summary`, e.g. `feat(backend): implement DocumentProcessing and Identity modules`, `refactor(backend)!: per-module contract/api projects, shared PDF lib, rename Document`, `docs: add OCR web development plan and changelog`. Common types seen in history: `feat`, `fix`, `refactor`, `docs`, `chore`, `test`. Use `!` after the type/scope and a `BREAKING CHANGE:` footer for breaking changes. After making a change, always suggest a commit message in this format (with an appropriate scope such as `backend`, `frontend`, `docs`, `document`, `identity`, etc.) — don't just describe the change in prose.
 
+**Commit automatically once a unit of work is finished and verified** (build/typecheck passes, and tests if any exist for the change) — don't wait for an explicit "commit"/"commit it" instruction each time. Stage only the files that belong to that unit of work (exclude unrelated pre-existing changes, generated/tooling files like `angular.json`'s CLI analytics flag, and anything containing secrets). This is a standing authorization for this repo specifically — it doesn't extend to `git push`, force operations, or any other repo unless that repo's own `CLAUDE.md` grants the same.
+
 ## Code style
+
+Prefer generic, reusable components/services over narrowly-scoped ones whenever a reasonable generic shape exists — don't default to a single-purpose name/implementation just because only one caller exists today. (Example: a binary-content cache should be a scope-keyed `FileCacheService`, not a `PdfCacheService` hardcoded to one resource type, even before a second caller shows up.) This is a deliberate override of the general "don't design for hypothetical future requirements" instinct — in this repo, generalize proactively when the generic version is no harder to write than the narrow one.
 
 One top-level/public type per file (class, record, interface, enum), filename matching the type name. Private nested helper types (e.g. a small `private sealed class`/`record` used only internally, like `CorrelationContext.State`/`RestoreScope`) are exempt and may stay in the same file as their containing type.
 

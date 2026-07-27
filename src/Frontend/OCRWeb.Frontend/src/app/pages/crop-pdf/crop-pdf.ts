@@ -10,10 +10,14 @@ import type { PDFDocumentProxy } from 'pdfjs-dist';
 import { firstValueFrom, filter, map, tap } from 'rxjs';
 import { I18nService } from '../../i18n/i18n.service';
 import { PdfFileListItem } from '../../models/pdf-file-list-item';
-import { PdfCacheService } from '../../services/pdf-cache.service';
+import { FileCacheService } from '../../services/file-cache.service';
 import { PdfService } from '../../services/pdf.service';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+
+// FileCacheService scope for PdfFile content - keeps its ids from colliding with any other
+// resource type that ends up sharing the same cache store.
+const PDF_FILE_CACHE_SCOPE = 'pdf';
 
 interface CanvasRect {
   x: number;
@@ -63,7 +67,7 @@ function formatBytes(bytes: number): string {
 export class CropPdf implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly pdfService = inject(PdfService);
-  private readonly pdfCache = inject(PdfCacheService);
+  private readonly fileCache = inject(FileCacheService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly snackBar = inject(MatSnackBar);
@@ -153,13 +157,13 @@ export class CropPdf implements OnInit {
       // Large PDFs (100+ MB) routinely exceed the browser's own HTTP disk cache's per-entry
       // size limit, so relying on Cache-Control/ETag alone still re-downloads the whole file on
       // every page load - IndexedDB has no comparable cap, hence this separate cache.
-      let bytes = await this.pdfCache.get(fileId);
+      let bytes = await this.fileCache.get(PDF_FILE_CACHE_SCOPE, fileId);
       if (!bytes) {
         bytes = await this.downloadPdf(fileId, sizeBytes);
         // Cache before handing the buffer to pdf.js - pdf.js posts it to its worker thread and
         // may transfer (detach) the underlying ArrayBuffer, so caching it afterwards could store
         // an already-emptied buffer.
-        void this.pdfCache.put(fileId, bytes);
+        void this.fileCache.put(PDF_FILE_CACHE_SCOPE, fileId, bytes);
       }
 
       this.loadingStep.set(this.i18n.labels().project.renderingPreview);
@@ -376,7 +380,7 @@ export class CropPdf implements OnInit {
         next: () => {
           // The source file id is gone after a successful crop (replaced by a new id) - drop its
           // cached bytes rather than let them sit unused until they expire on their own.
-          void this.pdfCache.remove(file.id);
+          void this.fileCache.remove(PDF_FILE_CACHE_SCOPE, file.id);
           this.snackBar.open(this.i18n.messages().project.cropSuccess, undefined, { duration: 3000 });
           this.router.navigate(['/home']);
         },
