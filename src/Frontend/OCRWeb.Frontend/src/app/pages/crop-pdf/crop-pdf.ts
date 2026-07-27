@@ -201,7 +201,6 @@ export class CropPdf implements OnInit {
     }
 
     this.pageBusy.set(true);
-    this.selection.set(null);
 
     const page = await this.pdfDocument.getPage(pageNo);
     const viewport = page.getViewport({ scale: this.renderScale });
@@ -215,6 +214,21 @@ export class CropPdf implements OnInit {
       width: viewport.width / this.renderScale,
       height: viewport.height / this.renderScale
     });
+
+    // Keep the selection across page changes (e.g. the slider) instead of discarding it -
+    // just re-clamp it in case this page's canvas size differs from the previous one.
+    const sel = this.selection();
+    if (sel) {
+      const width = Math.min(sel.width, canvas.width);
+      const height = Math.min(sel.height, canvas.height);
+      this.selection.set({
+        x: clamp(sel.x, 0, canvas.width - width),
+        y: clamp(sel.y, 0, canvas.height - height),
+        width,
+        height
+      });
+    }
+
     this.pageBusy.set(false);
   }
 
