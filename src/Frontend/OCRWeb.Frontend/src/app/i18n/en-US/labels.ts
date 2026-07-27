@@ -13,6 +13,8 @@ export const labels = {
     editProject: 'Edit Project',
     cropPdf: 'Crop PDF',
     cropButton: 'Crop',
+    croppingButton: 'Cropping…',
+    croppingPdf: 'Cropping PDF…',
     pageLabel: 'Page',
     ofLabel: 'of',
     loadingFiles: 'Loading project files…',

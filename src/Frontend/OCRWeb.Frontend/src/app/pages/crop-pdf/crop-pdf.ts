@@ -118,6 +118,9 @@ export class CropPdf implements OnInit {
     const sel = this.selection();
     return !this.submitting() && !!sel && sel.width >= 5 && sel.height >= 5;
   });
+  protected readonly cropButtonLabel = computed(() =>
+    this.submitting() ? this.i18n.labels().project.croppingButton : this.i18n.labels().project.cropButton
+  );
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');

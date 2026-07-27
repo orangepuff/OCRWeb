@@ -33,6 +33,17 @@
   margin: 0;
 }
 
+.crop-pdf__progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  span {
+    font-size: 0.8rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
 .crop-pdf__page-controls {
   display: flex;
   align-items: flex-end;
