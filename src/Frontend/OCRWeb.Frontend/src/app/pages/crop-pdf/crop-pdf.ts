@@ -1,5 +1,5 @@
 import { HttpClient, HttpErrorResponse, HttpEventType, HttpResponse } from '@angular/common/http';
-import { Component, ElementRef, OnInit, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -240,19 +240,33 @@ export class CropPdf implements OnInit {
 
     // Keep the selection across page changes (e.g. the slider) instead of discarding it -
     // just re-clamp it in case this page's canvas size differs from the previous one.
-    const sel = this.selection();
-    if (sel) {
-      const width = Math.min(sel.width, canvas.width);
-      const height = Math.min(sel.height, canvas.height);
-      this.selection.set({
-        x: clamp(sel.x, 0, canvas.width - width),
-        y: clamp(sel.y, 0, canvas.height - height),
-        width,
-        height
-      });
-    }
+    this.clampSelectionToCanvas();
 
     this.pageBusy.set(false);
+  }
+
+  // toDisplayRect (called from the template) derives the selection box's on-screen size from a
+  // live canvas.getBoundingClientRect() read, so it self-corrects whenever Angular re-renders -
+  // but browser zoom resizes the canvas without changing any signal Angular tracks, so nothing
+  // triggers that re-render on its own. Re-setting the selection signal here (even to the same
+  // canvas-internal-pixel values) is what forces the template to recompute it against the
+  // canvas's new on-screen size.
+  @HostListener('window:resize')
+  protected clampSelectionToCanvas(): void {
+    const sel = this.selection();
+    if (!sel) {
+      return;
+    }
+
+    const canvas = this.canvasRef().nativeElement;
+    const width = Math.min(sel.width, canvas.width);
+    const height = Math.min(sel.height, canvas.height);
+    this.selection.set({
+      x: clamp(sel.x, 0, canvas.width - width),
+      y: clamp(sel.y, 0, canvas.height - height),
+      width,
+      height
+    });
   }
 
   // Starts a brand-new selection, discarding any previous one. Only fires from the empty
