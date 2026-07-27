@@ -236,6 +236,10 @@ export class CropPdf implements OnInit {
     const page = await this.pdfDocument.getPage(pageNo);
     const viewport = page.getViewport({ scale: this.renderScale });
     const canvas = this.canvasRef().nativeElement;
+    // Record the old drawing-buffer size before resizing so we can scale the selection
+    // proportionally to the new page's dimensions rather than just clamping it.
+    const prevWidth = canvas.width;
+    const prevHeight = canvas.height;
     canvas.width = viewport.width;
     canvas.height = viewport.height;
     const ctx = canvas.getContext('2d')!;
@@ -246,9 +250,7 @@ export class CropPdf implements OnInit {
       height: viewport.height / this.renderScale
     });
 
-    // Keep the selection across page changes (e.g. the slider) instead of discarding it -
-    // just re-clamp it in case this page's canvas size differs from the previous one.
-    this.clampSelectionToCanvas();
+    this.rescaleSelectionToCanvas(prevWidth, prevHeight);
 
     this.pageBusy.set(false);
   }
@@ -262,6 +264,27 @@ export class CropPdf implements OnInit {
       y: (canvas.height - h) / 2,
       width: w,
       height: h
+    });
+  }
+
+  // Scales the selection from the canvas's previous drawing-buffer dimensions to the new ones
+  // so its relative position is preserved when switching pages. Falls back to a no-op when
+  // there's no selection or the previous dimensions are 0 (first render, canvas was default-sized).
+  private rescaleSelectionToCanvas(prevWidth: number, prevHeight: number): void {
+    const sel = this.selection();
+    if (!sel || prevWidth === 0 || prevHeight === 0) {
+      return;
+    }
+    const canvas = this.canvasRef().nativeElement;
+    const scaleX = canvas.width / prevWidth;
+    const scaleY = canvas.height / prevHeight;
+    const width = Math.min(sel.width * scaleX, canvas.width);
+    const height = Math.min(sel.height * scaleY, canvas.height);
+    this.selection.set({
+      x: clamp(sel.x * scaleX, 0, canvas.width - width),
+      y: clamp(sel.y * scaleY, 0, canvas.height - height),
+      width,
+      height
     });
   }
 

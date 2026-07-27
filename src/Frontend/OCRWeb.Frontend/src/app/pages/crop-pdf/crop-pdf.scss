@@ -61,21 +61,17 @@ lib-slider {
 
 .crop-pdf__canvas-wrap {
   position: relative;
-  display: inline-block;
-  align-self: center;
 
   canvas {
     display: block;
-    // No max-height here (there used to be a 60vh cap): vh is relative to the CSS viewport, which
-    // shrinks in CSS-px terms as the browser's own zoom level increases (Chrome/Edge keep viewport
-    // height roughly constant in physical pixels, meaning fewer CSS px - and therefore fewer vh -
-    // fit as you zoom in). That shrinking cap fought the zoom's own scaling, so past a certain zoom
-    // level the canvas stopped growing even though everything else on the page kept scaling up.
-    // Capping only by width (relative to the page's own max-width, not the viewport) lets the whole
-    // canvas scale uniformly with browser zoom; an overly tall page just makes the page scroll.
-    max-width: 100%;
-    width: auto;
+    // width: 100% so every page fills the container width uniformly — without it, pages narrower
+    // than the container render at their intrinsic CSS pixel width (= canvas.width attribute),
+    // which varies per page and makes some pages look smaller than others. box-sizing: border-box
+    // keeps the 1px border inside that width so the canvas never overflows the wrap.
+    // height: auto scales proportionally; tall pages just make the page scroll.
+    width: 100%;
     height: auto;
+    box-sizing: border-box;
     border: 1px solid var(--mat-sys-outline-variant);
   }
 }
