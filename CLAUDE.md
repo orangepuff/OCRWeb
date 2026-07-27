@@ -34,6 +34,15 @@ XML doc `<summary>` text should be short and precise: one line per sentence, no 
 
 Every `ILogger` call includes a `LogPrefix` identifying the class and method as the first structured parameter, built from `nameof(...)` so renames stay safe: `private const string LogPrefix = nameof(ProvisionGoogleUserCommandHandler) + "." + nameof(Handle);` for a single-method class (e.g. a MediatR handler's `Handle`), or a local `const string LogPrefix = ...` declared inside each method for classes with more than one. Usage: `logger.LogInformation("{LogPrefix}: did the thing", LogPrefix)`.
 
+Every class that does real work (command/query handlers, admin services, domain-event handlers, cross-module readers, anything under `Infrastructure/`) takes an `ILogger<T>` and logs at the level that matches what happened, not just whichever level a sibling file happened to use:
+
+- **Debug** — routine internal steps worth seeing when diagnosing an issue but not otherwise (a no-op/early-return branch, a raw count read from a repository).
+- **Information** — a mutation succeeded, or a background/notification handler applied something (e.g. "created config X", "backfilled N rows").
+- **Warning** — a request was rejected or skipped for an expected, recoverable reason (duplicate key, not found, a background side effect that failed but the main operation still succeeded — swallow and warn, don't fail the caller).
+- **Error** — an invariant the caller should never have been able to violate was violated anyway (e.g. logging before throwing for a code that doesn't exist).
+
+When adding or fixing a service, check it already has `ILogger` coverage across all its methods — don't assume a class compiling fine without one means it doesn't need it.
+
 ## Commands
 
 Backend (.NET 10, solution file is `OCRWeb.slnx`):
