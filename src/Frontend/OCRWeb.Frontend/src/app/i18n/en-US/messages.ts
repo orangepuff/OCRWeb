@@ -5,6 +5,7 @@ export const messages = {
     createSuccess: 'Project created successfully',
     createError: 'Failed to create project',
     uploadError: 'Project was created, but the PDF failed to upload',
+    uploadErrorOnUpdate: 'Project was updated, but the PDF failed to upload',
     empty: 'You have no projects yet.',
     updateSuccess: 'Project updated',
     updateError: 'Failed to rename project',

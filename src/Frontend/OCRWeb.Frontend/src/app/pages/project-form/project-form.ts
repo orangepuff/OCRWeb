@@ -1,4 +1,4 @@
-import { HttpEventType } from '@angular/common/http';
+import { HttpErrorResponse, HttpEventType } from '@angular/common/http';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -165,7 +165,7 @@ export class ProjectForm implements OnInit {
   private saveCreate(): void {
     const file = this.selectedFile()!;
     this.projectService.create(this.form.controls.name.value).subscribe({
-      next: ({ id }) => this.uploadFile(id, file, this.i18n.messages().project.createSuccess),
+      next: ({ id }) => this.uploadFile(id, file, this.i18n.messages().project.createSuccess, this.i18n.messages().project.uploadError),
       error: () => this.finishError(this.i18n.messages().project.createError)
     });
   }
@@ -175,7 +175,7 @@ export class ProjectForm implements OnInit {
       next: () => {
         const file = this.selectedFile();
         if (file) {
-          this.uploadFile(id, file, this.i18n.messages().project.updateSuccess);
+          this.uploadFile(id, file, this.i18n.messages().project.updateSuccess, this.i18n.messages().project.uploadErrorOnUpdate);
         } else {
           this.finishSuccess(this.i18n.messages().project.updateSuccess);
         }
@@ -184,7 +184,7 @@ export class ProjectForm implements OnInit {
     });
   }
 
-  private uploadFile(projectId: number, file: File, successMessage: string): void {
+  private uploadFile(projectId: number, file: File, successMessage: string, errorMessage: string): void {
     this.pdfService.upload(projectId, file).subscribe({
       next: (event) => {
         if (event.type === HttpEventType.UploadProgress && event.total) {
@@ -193,7 +193,10 @@ export class ProjectForm implements OnInit {
           this.finishSuccess(successMessage);
         }
       },
-      error: () => this.finishError(this.i18n.messages().project.uploadError)
+      error: (err: unknown) => {
+        const detail = err instanceof HttpErrorResponse ? ` (${err.status})` : '';
+        this.finishError(`${errorMessage}${detail}`);
+      }
     });
   }
 
