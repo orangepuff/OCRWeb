@@ -10,7 +10,7 @@ import type { PDFDocumentProxy } from 'pdfjs-dist';
 import { firstValueFrom, filter, map, tap } from 'rxjs';
 import { I18nService } from '../../i18n/i18n.service';
 import { PdfFileListItem } from '../../models/pdf-file-list-item';
-import { SNACK_DURATION_MS } from '../../ui-config';
+import { DEFAULT_CROP_FILL, SNACK_DURATION_MS } from '../../ui-config';
 import { FileCacheService } from '../../services/file-cache.service';
 import { PdfService } from '../../services/pdf.service';
 
@@ -178,6 +178,7 @@ export class CropPdf implements OnInit {
       this.totalPages.set(this.pdfDocument.numPages);
       this.pageControl.setValue(1, { emitEvent: false });
       await this.renderPage(1);
+      this.setDefaultSelection();
       this.loaded.set(true);
     } catch (err) {
       this.loadError.set(true);
@@ -250,6 +251,18 @@ export class CropPdf implements OnInit {
     this.clampSelectionToCanvas();
 
     this.pageBusy.set(false);
+  }
+
+  private setDefaultSelection(): void {
+    const canvas = this.canvasRef().nativeElement;
+    const w = canvas.width * DEFAULT_CROP_FILL;
+    const h = canvas.height * DEFAULT_CROP_FILL;
+    this.selection.set({
+      x: (canvas.width - w) / 2,
+      y: (canvas.height - h) / 2,
+      width: w,
+      height: h
+    });
   }
 
   // toDisplayRect (called from the template) derives the selection box's on-screen size from a
