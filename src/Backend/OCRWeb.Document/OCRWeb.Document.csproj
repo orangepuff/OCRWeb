@@ -15,6 +15,7 @@
     </PackageReference>
     <PackageReference Include="MediatR" />
     <PackageReference Include="OrangepuffPortal.Shared" />
+    <PackageReference Include="OrangepuffPortal.Config.Contract" />
   </ItemGroup>
 
   <ItemGroup>
