@@ -3,6 +3,13 @@
 # src/Backend/OCRWeb.API/appsettings*.json. From inside the containers the host
 # SQL Server is reachable via host.docker.internal.
 services:
+  redis:
+    image: redis:7-alpine
+    container_name: ocrweb-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
   api:
     image: ocrweb-api
     build:
@@ -18,6 +25,7 @@ services:
       # docs/Authentication/prepare-for-dev.docx §6.
       Authentication__Google__ClientId: "${GOOGLE_CLIENT_ID}"
       Authentication__Google__ClientSecret: "${GOOGLE_CLIENT_SECRET}"
+      CacheConfigurations__RedisConfiguration__ConnectionString: "redis:6379"
     ports:
       - "5201:8080"
       - "7201:8081"
@@ -28,6 +36,9 @@ services:
       - ./data-protection-keys/api:/keys
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    depends_on:
+      redis:
+        condition: service_started
 
   # ---------------------------------------------------------------------------
   # Frontend (Angular portal shell) — scaffolded via @orangepuff/portal-frontend +
