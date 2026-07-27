@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Button, ConfirmDialog, Menu, MenuItem } from '@orangepuff/portal-frontend-shared';
+import { SNACK_DURATION_MS } from '../../ui-config';
 import { I18nService } from '../../i18n/i18n.service';
 import { PdfFileListItem } from '../../models/pdf-file-list-item';
 import { ProjectListItem } from '../../models/project-list-item';
@@ -50,6 +51,7 @@ export class ProjectList implements OnInit {
 
     if (this.pdfFilesFor(project.id).length > 0) {
       items.push({ id: 'crop', label: this.i18n.labels().project.cropPdf });
+      items.push({ id: 'split', label: this.i18n.labels().project.splitPdf });
     }
 
     items.push({ id: 'delete', label: this.i18n.labels().common.delete });
@@ -61,6 +63,8 @@ export class ProjectList implements OnInit {
       this.router.navigate(['/projects', project.id, 'edit']);
     } else if (itemId === 'crop') {
       this.router.navigate(['/projects', project.id, 'crop']);
+    } else if (itemId === 'split') {
+      this.router.navigate(['/projects', project.id, 'split']);
     } else if (itemId === 'delete') {
       this.confirmDelete(project);
     }
@@ -87,7 +91,7 @@ export class ProjectList implements OnInit {
     this.projectService.delete(project.id).subscribe({
       next: () => {
         this.projects.update((list) => list.filter((p) => p.id !== project.id));
-        this.snackBar.open(this.i18n.messages().project.deleteSuccess, undefined, { duration: 3000 });
+        this.snackBar.open(this.i18n.messages().project.deleteSuccess, undefined, { duration: SNACK_DURATION_MS });
       },
       error: () => this.errorText.set(this.i18n.messages().project.deleteError)
     });

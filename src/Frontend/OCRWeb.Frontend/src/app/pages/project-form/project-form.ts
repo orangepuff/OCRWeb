@@ -7,6 +7,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Button, ConfirmDialog, FileInput, TextInput } from '@orangepuff/portal-frontend-shared';
+import { SNACK_DURATION_MS } from '../../ui-config';
 import { I18nService } from '../../i18n/i18n.service';
 import { PdfFileListItem } from '../../models/pdf-file-list-item';
 import { PdfService } from '../../services/pdf.service';
@@ -131,7 +132,7 @@ export class ProjectForm implements OnInit {
       next: () => {
         this.fileBusy.set(false);
         this.existingFile.set(null);
-        this.snackBar.open(this.i18n.messages().project.fileDeleteSuccess, undefined, { duration: 3000 });
+        this.snackBar.open(this.i18n.messages().project.fileDeleteSuccess, undefined, { duration: SNACK_DURATION_MS });
       },
       error: () => {
         this.fileBusy.set(false);
@@ -197,7 +198,7 @@ export class ProjectForm implements OnInit {
   }
 
   private finishSuccess(message: string): void {
-    this.snackBar.open(message, undefined, { duration: 3000 });
+    this.snackBar.open(message, undefined, { duration: SNACK_DURATION_MS });
     this.router.navigate(['/home']);
   }
 

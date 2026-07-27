@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Show a `mat-spinner` (diameter 24) + a short status label in a flex row below the controls (same markup/style as `.project-form__progress` in `project-form.html`).
 
 On success —
-- Show a `MatSnackBar` toast with a brief success message (duration 3000 ms, no action label).
+- Show a `MatSnackBar` toast with a brief success message (duration `SNACK_DURATION_MS` from `src/app/ui-config.ts`, no action label).
 - Navigate to the logical next page immediately after opening the snack bar.
 
 On error —

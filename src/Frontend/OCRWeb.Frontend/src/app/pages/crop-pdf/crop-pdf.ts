@@ -10,6 +10,7 @@ import type { PDFDocumentProxy } from 'pdfjs-dist';
 import { firstValueFrom, filter, map, tap } from 'rxjs';
 import { I18nService } from '../../i18n/i18n.service';
 import { PdfFileListItem } from '../../models/pdf-file-list-item';
+import { SNACK_DURATION_MS } from '../../ui-config';
 import { FileCacheService } from '../../services/file-cache.service';
 import { PdfService } from '../../services/pdf.service';
 
@@ -401,7 +402,7 @@ export class CropPdf implements OnInit {
           // The source file id is gone after a successful crop (replaced by a new id) - drop its
           // cached bytes rather than let them sit unused until they expire on their own.
           void this.fileCache.remove(PDF_FILE_CACHE_SCOPE, file.id);
-          this.snackBar.open(this.i18n.messages().project.cropSuccess, undefined, { duration: 3000 });
+          this.snackBar.open(this.i18n.messages().project.cropSuccess, undefined, { duration: SNACK_DURATION_MS });
           this.router.navigate(['/projects', this.projectId, 'split']);
         },
         error: () => {
