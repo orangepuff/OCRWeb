@@ -55,8 +55,14 @@ lib-slider {
 
   canvas {
     display: block;
+    // No max-height here (there used to be a 60vh cap): vh is relative to the CSS viewport, which
+    // shrinks in CSS-px terms as the browser's own zoom level increases (Chrome/Edge keep viewport
+    // height roughly constant in physical pixels, meaning fewer CSS px - and therefore fewer vh -
+    // fit as you zoom in). That shrinking cap fought the zoom's own scaling, so past a certain zoom
+    // level the canvas stopped growing even though everything else on the page kept scaling up.
+    // Capping only by width (relative to the page's own max-width, not the viewport) lets the whole
+    // canvas scale uniformly with browser zoom; an overly tall page just makes the page scroll.
     max-width: 100%;
-    max-height: 60vh;
     width: auto;
     height: auto;
     border: 1px solid var(--mat-sys-outline-variant);
