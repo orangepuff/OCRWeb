@@ -25,9 +25,10 @@ public class PdfFile : AuditableEntity
 
     private PdfFile() { } // EF
 
-    /// <summary>Create the original uploaded PDF.</summary>
-    public static PdfFile CreateOriginal(
-        int parentId, string fileName, string contentType, byte[] content, int userId, DateTime utcNow)
+    /// <summary>
+    /// Create the original uploaded PDF.
+    /// </summary>
+    public static PdfFile CreateOriginal(int parentId, string fileName, string contentType, byte[] content, int userId, DateTime utcNow)
     {
         var file = NewMetadata(parentId, fileName, contentType, content, PdfFileType.Original, properties: null, userId, utcNow);
         file.Content = new PdfFileContent(content, userId, utcNow);
@@ -57,7 +58,10 @@ public class PdfFile : AuditableEntity
         PdfFileType fileType, FileProperties? properties, int userId, DateTime utcNow)
     {
         ArgumentNullException.ThrowIfNull(content);
-        if (content.Length == 0) throw new ArgumentException("Content is empty.", nameof(content));
+        if (content.Length == 0)
+        {
+            throw new ArgumentException("Content is empty.", nameof(content));
+        }
 
         var file = new PdfFile
         {
@@ -83,11 +87,15 @@ public class PdfFile : AuditableEntity
     private static string SanitizeFileName(string fileName)
     {
         if (string.IsNullOrWhiteSpace(fileName))
+        {
             throw new ArgumentException("File name is required.", nameof(fileName));
+        }
 
         var cleaned = fileName.Trim();
         foreach (var c in InvalidFileNameChars)
+        {
             cleaned = cleaned.Replace(c, '_');
+        }
 
         return cleaned.Length > 255 ? cleaned[..255] : cleaned;
     }

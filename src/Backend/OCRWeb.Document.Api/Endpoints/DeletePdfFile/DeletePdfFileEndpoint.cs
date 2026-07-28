@@ -5,7 +5,9 @@ using OCRWeb.Document.Application.Commands.DeletePdfFile;
 
 namespace OCRWeb.Document.Api.Endpoints.DeletePdfFile;
 
-/// <summary>DELETE /api/pdf-files/{Id} — delete a PDF file owned by the current user.</summary>
+/// <summary>
+/// DELETE /api/pdf-files/{Id} — delete a PDF file owned by the current user.
+/// </summary>
 public class DeletePdfFileEndpoint(IMediator mediator) : Endpoint<DeletePdfFileRequest, EmptyResponse>
 {
     public override void Configure()

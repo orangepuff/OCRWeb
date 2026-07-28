@@ -4,16 +4,12 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using OCRWeb.Document.Contract;
 using OCRWeb.Document.Application.Queries.GetPdfFileDetail;
 
-namespace OCRWeb.Document.Api.Endpoints.PdfFiles;
+namespace OCRWeb.Document.Api.Endpoints.PdfFiles.GetPdfFileDetailEndpoint;
 
-public class GetPdfFileDetailEndpointRequest
-{
-    public int Id { get; set; }
-}
-
-/// <summary>GET /api/pdf-files/{id} — full metadata for one PDF file.</summary>
-public class GetPdfFileDetailEndpoint(IMediator mediator)
-    : Endpoint<GetPdfFileDetailEndpointRequest, PdfFileDetailDto>
+/// <summary>
+/// GET /api/pdf-files/{id} — full metadata for one PDF file.
+/// </summary>
+public class GetPdfFileDetailEndpoint(IMediator mediator) : Endpoint<GetPdfFileDetailEndpointRequest, PdfFileDetailDto>
 {
     public override void Configure()
     {

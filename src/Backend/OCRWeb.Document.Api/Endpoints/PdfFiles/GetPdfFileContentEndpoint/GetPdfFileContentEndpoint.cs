@@ -5,16 +5,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using OCRWeb.Document.Application.Queries.GetPdfFileContent;
 
-namespace OCRWeb.Document.Api.Endpoints.PdfFiles;
+namespace OCRWeb.Document.Api.Endpoints.PdfFiles.GetPdfFileContentEndpoint;
 
-public class GetPdfFileContentEndpointRequest
-{
-    public int Id { get; set; }
-}
-
-/// <summary>GET /api/pdf-files/{id}/content — stream a PDF's binary content.</summary>
-public class GetPdfFileContentEndpoint(IMediator mediator)
-    : Endpoint<GetPdfFileContentEndpointRequest>
+/// <summary>
+/// GET /api/pdf-files/{id}/content — stream a PDF's binary content.
+/// </summary>
+public class GetPdfFileContentEndpoint(IMediator mediator) : Endpoint<GetPdfFileContentEndpointRequest>
 {
     public override void Configure()
     {

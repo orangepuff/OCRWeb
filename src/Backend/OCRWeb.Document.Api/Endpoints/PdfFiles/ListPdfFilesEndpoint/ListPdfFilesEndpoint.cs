@@ -4,16 +4,12 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using OCRWeb.Document.Contract;
 using OCRWeb.Document.Application.Queries.ListPdfFiles;
 
-namespace OCRWeb.Document.Api.Endpoints.PdfFiles;
+namespace OCRWeb.Document.Api.Endpoints.PdfFiles.ListPdfFilesEndpoint;
 
-public class ListPdfFilesEndpointRequest
-{
-    public int ProjectId { get; set; }
-}
-
-/// <summary>GET /api/pdf-files?projectId= — list a project's PDF files (metadata only).</summary>
-public class ListPdfFilesEndpoint(IMediator mediator)
-    : Endpoint<ListPdfFilesEndpointRequest, IReadOnlyList<PdfFileListItemDto>>
+/// <summary>
+/// GET /api/pdf-files?projectId= — list a project's PDF files (metadata only).
+/// </summary>
+public class ListPdfFilesEndpoint(IMediator mediator) : Endpoint<ListPdfFilesEndpointRequest, IReadOnlyList<PdfFileListItemDto>>
 {
     public override void Configure()
     {
