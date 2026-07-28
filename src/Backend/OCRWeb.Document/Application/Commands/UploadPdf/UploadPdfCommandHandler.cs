@@ -15,14 +15,14 @@ public class UploadPdfCommandHandler(
     ICurrentUserConfig currentUserConfig,
     ILogger<UploadPdfCommandHandler> logger) : IRequestHandler<UploadPdfCommand, int>
 {
-    private const int DefaultMaxUploadSizeBytes = 104_857_600; // 100 MB
+    private const int DefaultMaxUploadSizeMb = 100; // 100 MB
     private const string LogPrefix = nameof(UploadPdfCommandHandler) + "." + nameof(Handle);
 
     public async Task<int> Handle(UploadPdfCommand request, CancellationToken cancellationToken)
     {
         logger.LogInformation("{LogPrefix}: Start uploading file to ProjectId : {ProjectId}, FileName: {FileName}, FileLength: {FileLength} by UserId: {UserId}", LogPrefix, request.ProjectId, request.FileName, request.Content.Length, currentUser.UserId);
 
-        var maxBytes = currentUserConfig.GetInt(ConfigKeys.MaximumFileUploadSize, DefaultMaxUploadSizeBytes);
+        var maxBytes = (currentUserConfig.GetInt(ConfigKeys.MaximumFileUploadSize, DefaultMaxUploadSizeMb) * 1024 * 1024);
         if (request.Content.Length > maxBytes)
         {
             logger.LogError("{LogPrefix}: Upload of {FileLength} byte(s) exceeds the {ConfigLimit}", LogPrefix, request.Content.Length, maxBytes);
