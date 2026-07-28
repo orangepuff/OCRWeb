@@ -72,7 +72,7 @@ lib-slider {
     width: 100%;
     height: auto;
     box-sizing: border-box;
-    border: 1px solid var(--mat-sys-outline-variant);
+    border: 1px solid var(--op-project-card-border-color, var(--mat-sys-outline-variant));
   }
 }
 
@@ -88,8 +88,8 @@ lib-slider {
 
 .crop-pdf__selection {
   position: absolute;
-  border: 2px solid var(--mat-sys-primary);
-  background: color-mix(in srgb, var(--mat-sys-primary) 20%, transparent);
+  border: 2px solid var(--op-buttons-primary-background-color, var(--mat-sys-primary));
+  background: color-mix(in srgb, var(--op-buttons-primary-background-color, var(--mat-sys-primary)) 20%, transparent);
   cursor: move;
 }
 
@@ -98,7 +98,7 @@ lib-slider {
   width: 10px;
   height: 10px;
   margin: -5px;
-  background: var(--mat-sys-primary);
+  background: var(--op-buttons-primary-background-color, var(--mat-sys-primary));
   border: 1px solid var(--mat-sys-surface);
   border-radius: 2px;
 }
@@ -143,7 +143,7 @@ lib-slider {
 }
 
 .crop-pdf__error {
-  color: var(--mat-sys-error);
+  color: var(--op-alert-feedback-error-text-color, var(--mat-sys-error));
   font-size: 0.75rem;
   margin: 0;
 }

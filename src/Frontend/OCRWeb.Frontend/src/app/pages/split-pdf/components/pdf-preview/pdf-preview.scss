@@ -8,10 +8,10 @@
 .pdf-preview__canvas-wrap {
   position: relative;
   width: 100%;
-  border: 1px solid var(--mat-sys-outline-variant);
+  border: 1px solid var(--op-project-card-border-color, var(--mat-sys-outline-variant));
   border-radius: 4px;
   overflow: hidden;
-  background: var(--mat-sys-surface-container-low);
+  background: var(--op-project-card-background-color, var(--mat-sys-surface-container-low));
   min-height: 60px;
 }
 
@@ -44,7 +44,7 @@
   height: 22px;
   padding: 0;
   background: transparent;
-  border: 1px solid var(--mat-sys-outline-variant);
+  border: 1px solid var(--op-form-controls-input-border-color, var(--mat-sys-outline-variant));
   border-radius: 4px;
   color: var(--mat-sys-on-surface);
   font-size: 1rem;
@@ -52,7 +52,7 @@
   line-height: 1;
 
   &:hover:not(:disabled) {
-    background: var(--mat-sys-surface-container-high);
+    background: var(--op-table-row-hover-color, var(--mat-sys-surface-container-high));
   }
 
   &:disabled {

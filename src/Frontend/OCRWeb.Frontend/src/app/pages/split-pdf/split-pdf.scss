@@ -79,7 +79,7 @@
 }
 
 .split-pdf__error {
-  color: var(--mat-sys-error);
+  color: var(--op-alert-feedback-error-text-color, var(--mat-sys-error));
   font-size: 0.875rem;
   margin: 0;
 }
@@ -92,8 +92,8 @@
   justify-content: space-between;
   gap: 16px;
   padding: 16px 20px;
-  background: var(--mat-sys-surface-container-low);
-  border: 1px solid var(--mat-sys-outline-variant);
+  background: var(--op-project-card-background-color, var(--mat-sys-surface-container-low));
+  border: 1px solid var(--op-project-card-border-color, var(--mat-sys-outline-variant));
   border-radius: 12px;
 }
 
@@ -158,8 +158,8 @@
   gap: 16px;
   flex-wrap: wrap;
   padding: 14px 20px;
-  background: var(--mat-sys-surface-container-low);
-  border: 1px solid var(--mat-sys-outline-variant);
+  background: var(--op-project-card-background-color, var(--mat-sys-surface-container-low));
+  border: 1px solid var(--op-project-card-border-color, var(--mat-sys-outline-variant));
   border-radius: 12px;
 }
 
@@ -183,8 +183,8 @@
   align-items: center;
   gap: 6px;
   padding: 9px 18px;
-  background: var(--mat-sys-primary);
-  color: var(--mat-sys-on-primary);
+  background: var(--op-buttons-primary-background-color, var(--mat-sys-primary));
+  color: var(--op-buttons-primary-text-color, var(--mat-sys-on-primary));
   border: none;
   border-radius: 20px;
   font-size: 0.875rem;
@@ -215,8 +215,8 @@
   align-items: center;
   gap: 6px;
   padding: 9px 18px;
-  background: var(--mat-sys-primary);
-  color: var(--mat-sys-on-primary);
+  background: var(--op-buttons-primary-background-color, var(--mat-sys-primary));
+  color: var(--op-buttons-primary-text-color, var(--mat-sys-on-primary));
   border: none;
   border-radius: 20px;
   font-size: 0.875rem;

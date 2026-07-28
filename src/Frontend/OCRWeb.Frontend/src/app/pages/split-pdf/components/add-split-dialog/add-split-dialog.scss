@@ -44,21 +44,21 @@
 .add-split-dialog__input {
   height: 36px;
   padding: 0 10px;
-  border: 1px solid var(--mat-sys-outline-variant);
+  border: 1px solid var(--op-form-controls-input-border-color, var(--mat-sys-outline-variant));
   border-radius: 6px;
   background: transparent;
-  color: var(--mat-sys-on-surface);
+  color: var(--op-form-controls-input-text-color, var(--mat-sys-on-surface));
   font-size: 0.875rem;
   outline: none;
   box-sizing: border-box;
 
   &:focus {
-    border-color: var(--mat-sys-primary);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--mat-sys-primary) 20%, transparent);
+    border-color: var(--op-form-controls-input-focus-border-color, var(--mat-sys-primary));
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--op-form-controls-input-focus-border-color, var(--mat-sys-primary)) 20%, transparent);
   }
 
   &--error {
-    border-color: var(--mat-sys-error);
+    border-color: var(--op-alert-feedback-error-border-color, var(--mat-sys-error));
   }
 
   &--number {
@@ -68,5 +68,5 @@
 
 .add-split-dialog__error {
   font-size: 0.7rem;
-  color: var(--mat-sys-error);
+  color: var(--op-alert-feedback-error-text-color, var(--mat-sys-error));
 }
