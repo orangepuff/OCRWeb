@@ -14,11 +14,26 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="MediatR" />
-    <PackageReference Include="OrangepuffPortal.Shared" />
-    <PackageReference Include="OrangepuffPortal.Config.Contract" />
   </ItemGroup>
 
+  <!-- Use local source when available (local debug); fall back to NuGet in Docker / CI. -->
+  <Choose>
+    <When Condition="Exists('D:\orangepuffportal\src\OrangepuffPortal.Host\OrangepuffPortal.Host.csproj')">
+      <ItemGroup>
+        <ProjectReference Include="D:\orangepuffportal\src\OrangepuffPortal.Shared\OrangepuffPortal.Shared.csproj" />
+        <ProjectReference Include="D:\orangepuffportal\src\OrangepuffPortal.Config.Contract\OrangepuffPortal.Config.Contract.csproj" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <PackageReference Include="OrangepuffPortal.Shared" />
+        <PackageReference Include="OrangepuffPortal.Config.Contract" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+
   <ItemGroup>
+    <ProjectReference Include="..\OCRWeb.Shared\OCRWeb.Shared.csproj" />
     <ProjectReference Include="..\OCRWeb.Document.Contract\OCRWeb.Document.Contract.csproj" />
     <ProjectReference Include="..\OCRWeb.Pdf.Contract\OCRWeb.Pdf.Contract.csproj" />
     <ProjectReference Include="..\OCRWeb.ProjectManagement.Contract\OCRWeb.ProjectManagement.Contract.csproj" />

@@ -26,6 +26,19 @@
     <Project Path="tests/integration/OCRWeb.API.IntegrationTests/OCRWeb.API.IntegrationTests.csproj" />
     <Project Path="tests/integration/OCRWeb.Frontend.PlaywrightTests/OCRWeb.Frontend.PlaywrightTests.csproj" />
   </Folder>
+  <Folder Name="/orangepuffportal/">
+    <Project Path="D:\orangepuffportal\src\OrangepuffPortal.Shared\OrangepuffPortal.Shared.csproj" />
+    <Project Path="D:\orangepuffportal\src\OrangepuffPortal.Identity.Contract\OrangepuffPortal.Identity.Contract.csproj" />
+    <Project Path="D:\orangepuffportal\src\OrangepuffPortal.Identity\OrangepuffPortal.Identity.csproj" />
+    <Project Path="D:\orangepuffportal\src\OrangepuffPortal.ConfigText.Contract\OrangepuffPortal.ConfigText.Contract.csproj" />
+    <Project Path="D:\orangepuffportal\src\OrangepuffPortal.ConfigText\OrangepuffPortal.ConfigText.csproj" />
+    <Project Path="D:\orangepuffportal\src\OrangepuffPortal.Config.Contract\OrangepuffPortal.Config.Contract.csproj" />
+    <Project Path="D:\orangepuffportal\src\OrangepuffPortal.Config\OrangepuffPortal.Config.csproj" />
+    <Project Path="D:\orangepuffportal\src\OrangepuffPortal.ConfigData.Contract\OrangepuffPortal.ConfigData.Contract.csproj" />
+    <Project Path="D:\orangepuffportal\src\OrangepuffPortal.ConfigData\OrangepuffPortal.ConfigData.csproj" />
+    <Project Path="D:\orangepuffportal\src\OrangepuffPortal.Bff\OrangepuffPortal.Bff.csproj" />
+    <Project Path="D:\orangepuffportal\src\OrangepuffPortal.Host\OrangepuffPortal.Host.csproj" />
+  </Folder>
   <Folder Name="/tests/unit/">
     <Project Path="tests/unit/OCRWeb.Document.UnitTests/OCRWeb.Document.UnitTests.csproj" />
     <Project Path="tests/unit/OCRWeb.ProjectManagement.UnitTests/OCRWeb.ProjectManagement.UnitTests.csproj" />

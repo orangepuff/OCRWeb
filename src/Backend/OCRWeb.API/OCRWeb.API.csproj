@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -13,9 +13,23 @@
     <PackageReference Include="Orangepuff.Diagnostics.Abstractions" />
     <PackageReference Include="Orangepuff.Diagnostics.NLog" />
     <PackageReference Include="Orangepuff.Diagnostics.AspNetCore" />
-    <PackageReference Include="OrangepuffPortal.Host" />
-    <PackageReference Include="OrangepuffPortal.ConfigText.Contract" />
   </ItemGroup>
+
+  <!-- Use local source when available (local debug); fall back to NuGet in Docker / CI. -->
+  <Choose>
+    <When Condition="Exists('D:\orangepuffportal\src\OrangepuffPortal.Host\OrangepuffPortal.Host.csproj')">
+      <ItemGroup>
+        <ProjectReference Include="D:\orangepuffportal\src\OrangepuffPortal.Host\OrangepuffPortal.Host.csproj" />
+        <ProjectReference Include="D:\orangepuffportal\src\OrangepuffPortal.ConfigText.Contract\OrangepuffPortal.ConfigText.Contract.csproj" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <PackageReference Include="OrangepuffPortal.Host" />
+        <PackageReference Include="OrangepuffPortal.ConfigText.Contract" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
 
   <ItemGroup>
     <EmbeddedResource Include="ConfigText\en-US.json" />

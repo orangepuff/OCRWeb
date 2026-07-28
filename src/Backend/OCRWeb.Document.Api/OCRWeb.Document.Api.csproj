@@ -14,8 +14,21 @@
   <ItemGroup>
     <PackageReference Include="FastEndpoints" />
     <PackageReference Include="MediatR" />
-    <PackageReference Include="OrangepuffPortal.Config.Contract" />
   </ItemGroup>
+
+  <!-- Use local source when available (local debug); fall back to NuGet in Docker / CI. -->
+  <Choose>
+    <When Condition="Exists('D:\orangepuffportal\src\OrangepuffPortal.Host\OrangepuffPortal.Host.csproj')">
+      <ItemGroup>
+        <ProjectReference Include="D:\orangepuffportal\src\OrangepuffPortal.Config.Contract\OrangepuffPortal.Config.Contract.csproj" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <PackageReference Include="OrangepuffPortal.Config.Contract" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
 
   <ItemGroup>
     <ProjectReference Include="..\OCRWeb.Document\OCRWeb.Document.csproj" />

@@ -13,8 +13,21 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="MediatR" />
-    <PackageReference Include="OrangepuffPortal.Shared" />
   </ItemGroup>
+
+  <!-- Use local source when available (local debug); fall back to NuGet in Docker / CI. -->
+  <Choose>
+    <When Condition="Exists('D:\orangepuffportal\src\OrangepuffPortal.Host\OrangepuffPortal.Host.csproj')">
+      <ItemGroup>
+        <ProjectReference Include="D:\orangepuffportal\src\OrangepuffPortal.Shared\OrangepuffPortal.Shared.csproj" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <PackageReference Include="OrangepuffPortal.Shared" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
 
   <ItemGroup>
     <ProjectReference Include="..\OCRWeb.OCR.Contract\OCRWeb.OCR.Contract.csproj" />
