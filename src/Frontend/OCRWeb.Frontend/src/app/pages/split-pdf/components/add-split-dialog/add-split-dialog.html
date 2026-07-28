@@ -1,0 +1,52 @@
+<div class="add-split-dialog">
+  <h2 mat-dialog-title class="add-split-dialog__title">{{ i18n.labels().split.addSplitTitle }}</h2>
+
+  <mat-dialog-content>
+    <form class="add-split-dialog__form" [formGroup]="form" (ngSubmit)="add()">
+      <div class="add-split-dialog__field">
+        <label class="add-split-dialog__label" for="splitName">{{ i18n.labels().split.splitName }}</label>
+        <input
+          id="splitName"
+          class="add-split-dialog__input"
+          type="text"
+          [formControl]="nameControl"
+          [class.add-split-dialog__input--error]="nameControl.invalid && nameControl.touched"
+        />
+        @if (nameControl.invalid && nameControl.touched) {
+          <span class="add-split-dialog__error">{{ i18n.messages().split.nameRequired }}</span>
+        }
+      </div>
+
+      <div class="add-split-dialog__row">
+        <div class="add-split-dialog__field">
+          <label class="add-split-dialog__label" for="fromPage">{{ i18n.labels().split.fromPageLabel }}</label>
+          <input
+            id="fromPage"
+            class="add-split-dialog__input add-split-dialog__input--number"
+            type="number"
+            [min]="1"
+            [max]="data.totalPages"
+            [formControl]="fromPageControl"
+          />
+        </div>
+        <span class="add-split-dialog__sep">–</span>
+        <div class="add-split-dialog__field">
+          <label class="add-split-dialog__label" for="toPage">{{ i18n.labels().split.toPageLabel }}</label>
+          <input
+            id="toPage"
+            class="add-split-dialog__input add-split-dialog__input--number"
+            type="number"
+            [min]="1"
+            [max]="data.totalPages"
+            [formControl]="toPageControl"
+          />
+        </div>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <lib-button [label]="i18n.labels().common.cancel" (clicked)="cancel()" />
+    <lib-button [label]="i18n.labels().common.add" variant="primary" (clicked)="add()" />
+  </mat-dialog-actions>
+</div>

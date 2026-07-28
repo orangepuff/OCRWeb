@@ -1,0 +1,69 @@
+.pdf-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.pdf-preview__canvas-wrap {
+  position: relative;
+  width: 100%;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--mat-sys-surface-container-low);
+  min-height: 60px;
+}
+
+.pdf-preview__canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.pdf-preview__spinner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--mat-sys-surface) 70%, transparent);
+}
+
+.pdf-preview__nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pdf-preview__nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 4px;
+  color: var(--mat-sys-on-surface);
+  font-size: 1rem;
+  cursor: pointer;
+  line-height: 1;
+
+  &:hover:not(:disabled) {
+    background: var(--mat-sys-surface-container-high);
+  }
+
+  &:disabled {
+    opacity: 0.38;
+    cursor: default;
+  }
+}
+
+.pdf-preview__page-label {
+  font-size: 0.7rem;
+  color: var(--mat-sys-on-surface-variant);
+  min-width: 36px;
+  text-align: center;
+}

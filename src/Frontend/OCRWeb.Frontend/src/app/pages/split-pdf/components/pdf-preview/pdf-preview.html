@@ -1,0 +1,25 @@
+<div class="pdf-preview">
+  <div class="pdf-preview__canvas-wrap">
+    <canvas #canvas class="pdf-preview__canvas"></canvas>
+    @if (rendering()) {
+      <div class="pdf-preview__spinner">
+        <mat-spinner diameter="16" />
+      </div>
+    }
+  </div>
+  <div class="pdf-preview__nav">
+    <button
+      class="pdf-preview__nav-btn"
+      [disabled]="!canPrev()"
+      (click)="prev()"
+      aria-label="Previous page"
+    >&#8249;</button>
+    <span class="pdf-preview__page-label">{{ pageLabel() }}</span>
+    <button
+      class="pdf-preview__nav-btn"
+      [disabled]="!canNext()"
+      (click)="next()"
+      aria-label="Next page"
+    >&#8250;</button>
+  </div>
+</div>

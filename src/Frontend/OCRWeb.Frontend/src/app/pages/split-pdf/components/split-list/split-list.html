@@ -1,0 +1,44 @@
+<div class="split-list">
+  <!-- Column headers -->
+  <div class="split-list__header">
+    <div class="split-list__hcol split-list__hcol--drag"></div>
+    <div class="split-list__hcol split-list__hcol--num">#</div>
+    <div class="split-list__hcol split-list__hcol--check">
+      <mat-checkbox
+        [checked]="allSelected()"
+        [indeterminate]="someSelected()"
+        (change)="selectAllChange.emit($event.checked)"
+        [aria-label]="i18n.labels().split.selectAll"
+      />
+    </div>
+    <div class="split-list__hcol">{{ i18n.labels().split.columnBookmarkName }}</div>
+    <div class="split-list__hcol">{{ i18n.labels().split.columnPreview }}</div>
+    <div class="split-list__hcol">{{ i18n.labels().split.columnFromTo }}</div>
+    <div class="split-list__hcol">{{ i18n.labels().split.columnName }}</div>
+    <div class="split-list__hcol split-list__hcol--actions"></div>
+  </div>
+
+  <!-- Rows with drag-and-drop -->
+  <div
+    cdkDropList
+    class="split-list__rows"
+    (cdkDropListDropped)="onDrop($event)"
+  >
+    @for (split of splits(); track split.id; let i = $index) {
+      <div cdkDrag class="split-list__drag-item">
+        <app-split-row
+          [split]="split"
+          [pdfDoc]="pdfDoc()"
+          [index]="i"
+          [totalPages]="totalPages()"
+          (splitChange)="updateSplit.emit($event)"
+          (delete)="deleteSplit.emit(split.id)"
+          (duplicate)="duplicateSplit.emit(split.id)"
+        />
+        <ng-template cdkDragPlaceholder>
+          <div class="split-list__placeholder"></div>
+        </ng-template>
+      </div>
+    }
+  </div>
+</div>

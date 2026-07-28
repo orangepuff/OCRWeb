@@ -1,7 +1,95 @@
 <div class="split-pdf">
-  <lib-button [label]="i18n.labels().common.back" (clicked)="back()" />
 
-  <h1>{{ i18n.labels().project.splitPdf }}</h1>
+  <!-- Page header -->
+  <div class="split-pdf__page-header">
+    <nav class="split-pdf__breadcrumb">
+      <span class="split-pdf__breadcrumb-item">Document Processing</span>
+      <span class="split-pdf__breadcrumb-sep">›</span>
+      <span class="split-pdf__breadcrumb-item split-pdf__breadcrumb-item--current">{{ i18n.labels().split.pageTitle }}</span>
+    </nav>
+    <lib-button [label]="'← ' + i18n.labels().split.backToDocuments" (clicked)="back()" />
+  </div>
 
-  <p class="split-pdf__placeholder">{{ i18n.messages().project.splitNotImplemented }}</p>
+  <h1 class="split-pdf__title">{{ i18n.labels().split.pageTitle }}</h1>
+  <p class="split-pdf__subtitle">{{ i18n.labels().split.pageSubtitle }}</p>
+
+  <!-- Loading state -->
+  @if (!loaded()) {
+    <div class="split-pdf__loading">
+      <mat-spinner diameter="32" />
+      <p class="split-pdf__loading-text">{{ loadingStep() }}</p>
+      @if (downloadProgress(); as p) {
+        <p class="split-pdf__loading-sub">
+          {{ formatBytes(p.loaded) }}@if (p.total) { / {{ formatBytes(p.total) }}}
+        </p>
+      }
+    </div>
+  }
+
+  <!-- Error state -->
+  @if (loaded() && loadError()) {
+    <p class="split-pdf__error">{{ errorText() }}</p>
+  }
+
+  <!-- Main content -->
+  @if (loaded() && !loadError()) {
+
+    <!-- PDF info card -->
+    <div class="split-pdf__file-card">
+      <div class="split-pdf__file-info">
+        <div class="split-pdf__file-icon">PDF</div>
+        <div class="split-pdf__file-meta">
+          <span class="split-pdf__file-name">{{ pdfInfo()?.fileName }}</span>
+          <div class="split-pdf__file-stats">
+            <span class="split-pdf__file-stat">&#128196; {{ formatBytes(pdfInfo()?.sizeBytes ?? 0) }}</span>
+            <span class="split-pdf__file-stat">&#128195; {{ pdfInfo()?.totalPages }} {{ i18n.labels().split.pages }}</span>
+            <span class="split-pdf__file-stat">&#128278; {{ pdfInfo()?.bookmarkCount }} {{ i18n.labels().split.bookmarks }}</span>
+          </div>
+        </div>
+      </div>
+      <lib-button [label]="i18n.labels().split.openPdf" (clicked)="openPdf()" />
+    </div>
+
+    <!-- Toolbar -->
+    <div class="split-pdf__toolbar">
+      <div class="split-pdf__toolbar-left">
+        <button class="split-pdf__add-btn" [matMenuTriggerFor]="addMenu">
+          + {{ i18n.labels().split.addSplit }}
+          <span class="split-pdf__add-arrow">&#9660;</span>
+        </button>
+        <mat-menu #addMenu="matMenu">
+          <button mat-menu-item (click)="openAddDialog()">{{ i18n.labels().split.addManually }}</button>
+        </mat-menu>
+        <p class="split-pdf__toolbar-hint">{{ i18n.labels().split.splitHint }}</p>
+      </div>
+      <div class="split-pdf__toolbar-right">
+        <lib-button [label]="'↺ ' + i18n.labels().split.reset" (clicked)="resetSplits()" />
+        <button
+          class="split-pdf__save-btn"
+          [disabled]="submitting()"
+          (click)="saveSplits()"
+        >{{ submitting() ? i18n.labels().split.savingSplits : i18n.labels().split.saveSplits }}</button>
+      </div>
+    </div>
+
+    <!-- Split list -->
+    <app-split-list
+      [splits]="splits()"
+      [pdfDoc]="pdfDoc()"
+      [totalPages]="pdfInfo()?.totalPages ?? 0"
+      [allSelected]="allSelected()"
+      [someSelected]="someSelected()"
+      (splitsChange)="splits.set($event)"
+      (updateSplit)="onUpdateSplit($event)"
+      (deleteSplit)="onDeleteSplit($event)"
+      (duplicateSplit)="onDuplicateSplit($event)"
+      (selectAllChange)="onSelectAllChange($event)"
+    />
+
+    <!-- Footer -->
+    <div class="split-pdf__footer">
+      <span class="split-pdf__footer-count">{{ selectedCount() }} {{ i18n.labels().split.splitsSelectedSuffix }}</span>
+      <span class="split-pdf__footer-pages">{{ i18n.labels().split.totalPages }}: {{ totalSplitPages() }}</span>
+    </div>
+  }
 </div>

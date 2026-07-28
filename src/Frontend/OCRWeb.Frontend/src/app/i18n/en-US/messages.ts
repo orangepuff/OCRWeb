@@ -1,4 +1,14 @@
 export const messages = {
+  split: {
+    saveSuccess: 'Splits saved successfully',
+    saveError: 'Failed to save splits',
+    loadError: 'Failed to load the PDF for splitting',
+    noFileError: 'No PDF file found for this project',
+    resetConfirmTitle: 'Reset splits?',
+    resetConfirmMessage: 'This will discard all changes and restore the original bookmark splits.',
+    nameRequired: 'Split name is required',
+    noBookmarksWarning: 'No bookmarks found in this PDF. Add splits manually.'
+  },
   project: {
     nameRequired: 'Project name is required',
     pdfRequired: 'Please select a PDF file to upload',

@@ -1,0 +1,73 @@
+// Must stay in sync with split-row.scss $split-cols.
+$split-cols: 40px 44px 48px 1fr 120px 168px minmax(140px, 1fr) 44px;
+
+.split-list {
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--mat-sys-surface);
+}
+
+.split-list__header {
+  display: grid;
+  grid-template-columns: $split-cols;
+  align-items: center;
+  padding: 10px 0;
+  background: var(--mat-sys-surface-container-low);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.split-list__hcol {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0 8px;
+
+  &--drag,
+  &--actions {
+    padding: 0;
+  }
+
+  &--num {
+    text-align: center;
+    padding: 0 4px;
+  }
+
+  &--check {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+  }
+}
+
+.split-list__rows {
+  min-height: 64px;
+}
+
+.split-list__drag-item {
+  // Override cdk-drag default so the row fills the full width during drag.
+  &.cdk-drag-preview {
+    border-radius: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: var(--mat-sys-surface-container-high);
+  }
+
+  &.cdk-drag-animating {
+    transition: transform 200ms ease;
+  }
+}
+
+.split-list__rows.cdk-drop-list-dragging .split-list__drag-item:not(.cdk-drag-placeholder) {
+  transition: transform 200ms ease;
+}
+
+.split-list__placeholder {
+  height: 89px; // approximate row height (matches min-height + padding in split-row)
+  background: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
+  border: 2px dashed var(--mat-sys-primary);
+  border-radius: 4px;
+  margin: 2px 8px;
+}
