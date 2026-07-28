@@ -14,6 +14,7 @@ COPY ["src/Backend/OCRWeb.Pdf/OCRWeb.Pdf.csproj", "src/Backend/OCRWeb.Pdf/"]
 COPY ["src/Backend/OCRWeb.Pdf.Contract/OCRWeb.Pdf.Contract.csproj", "src/Backend/OCRWeb.Pdf.Contract/"]
 COPY ["src/Backend/OCRWeb.ProjectManagement/OCRWeb.ProjectManagement.csproj", "src/Backend/OCRWeb.ProjectManagement/"]
 COPY ["src/Backend/OCRWeb.ProjectManagement.Contract/OCRWeb.ProjectManagement.Contract.csproj", "src/Backend/OCRWeb.ProjectManagement.Contract/"]
+COPY ["src/Backend/OCRWeb.Shared/OCRWeb.Shared.csproj", "src/Backend/OCRWeb.Shared/"]
 RUN dotnet restore "src/Backend/OCRWeb.API/OCRWeb.API.csproj"
 
 COPY . .
