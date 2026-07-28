@@ -435,11 +435,15 @@ export class CropPdf implements OnInit {
       })
       .subscribe({
         next: () => {
-          // The source file id is gone after a successful crop (replaced by a new id) - drop its
-          // cached bytes rather than let them sit unused until they expire on their own.
+          // Drop the cached bytes for this file - crop mutates the file in place (same id),
+          // so the cached pre-crop bytes are stale and the split page needs a fresh download.
           void this.fileCache.remove(PDF_FILE_CACHE_SCOPE, file.id);
           this.snackBar.open(this.i18n.messages().project.cropSuccess, undefined, { duration: SNACK_DURATION_MS });
-          this.router.navigate(['/projects', this.projectId, 'split']);
+          void this.router.navigate(['/projects', this.projectId, 'split']).then((navigated) => {
+            if (!navigated) {
+              this.submitting.set(false);
+            }
+          });
         },
         error: () => {
           this.submitting.set(false);

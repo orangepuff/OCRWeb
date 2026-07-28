@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Moq;
 using OCRWeb.Document.Application.Commands.CropPdf;
 using OCRWeb.Pdf.Contract;
@@ -24,7 +25,7 @@ public class CropPdfCommandHandlerTests
         var currentUser = new Mock<ICurrentUser>();
         currentUser.SetupGet(u => u.UserId).Returns(7);
 
-        var handler = new CropPdfCommandHandler(repo.Object, manipulator.Object, currentUser.Object);
+        var handler = new CropPdfCommandHandler(repo.Object, manipulator.Object, currentUser.Object, Mock.Of<ILogger<CropPdfCommandHandler>>());
         var resultId = await handler.Handle(
             new CropPdfCommand(source.Id, PageNo: 1, CropX: 0, CropY: 0, Width: 10, Height: 10, FileName: null),
             CancellationToken.None);
@@ -50,7 +51,7 @@ public class CropPdfCommandHandlerTests
         var manipulator = new Mock<IPdfManipulator>();
         manipulator.Setup(m => m.Crop(It.IsAny<byte[]>(), It.IsAny<PdfCropArea>())).Returns([9, 9]);
 
-        var handler = new CropPdfCommandHandler(repo.Object, manipulator.Object, Mock.Of<ICurrentUser>());
+        var handler = new CropPdfCommandHandler(repo.Object, manipulator.Object, Mock.Of<ICurrentUser>(), Mock.Of<ILogger<CropPdfCommandHandler>>());
         await handler.Handle(
             new CropPdfCommand(source.Id, PageNo: 1, CropX: 0, CropY: 0, Width: 10, Height: 10, FileName: "renamed.pdf"),
             CancellationToken.None);
@@ -65,7 +66,7 @@ public class CropPdfCommandHandlerTests
         repo.Setup(r => r.GetWithContentAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((PdfFile?)null);
 
-        var handler = new CropPdfCommandHandler(repo.Object, Mock.Of<IPdfManipulator>(), Mock.Of<ICurrentUser>());
+        var handler = new CropPdfCommandHandler(repo.Object, Mock.Of<IPdfManipulator>(), Mock.Of<ICurrentUser>(), Mock.Of<ILogger<CropPdfCommandHandler>>());
 
         await Assert.ThrowsAsync<KeyNotFoundException>(() =>
             handler.Handle(new CropPdfCommand(999, 1, 0, 0, 10, 10, null), CancellationToken.None));
