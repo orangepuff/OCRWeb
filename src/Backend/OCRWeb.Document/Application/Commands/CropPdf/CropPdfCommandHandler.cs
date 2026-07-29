@@ -19,22 +19,35 @@ public class CropPdfCommandHandler(
     {
         logger.LogInformation("{LogPrefix}: cropping file {FileId} page {PageNo} for user {UserId}", LogPrefix, request.SourcePdfFileId, request.PageNo, currentUser.UserId);
 
-        var source = await repository.GetWithContentAsync(request.SourcePdfFileId, cancellationToken)
-            ?? throw new KeyNotFoundException($"PDF file {request.SourcePdfFileId} was not found.");
+        try
+        {
+            var source = await repository.GetWithContentAsync(request.SourcePdfFileId, cancellationToken);
 
-        var area = new PdfCropArea(request.PageNo, request.CropX, request.CropY, request.Width, request.Height);
-        var croppedBytes = manipulator.Crop(source.Content.Content, area);
+            if(source == null)
+            {
+                logger.LogError("{LogPrefix}: PDF file { request.SourcePdfFileId} was not found.", LogPrefix, request.SourcePdfFileId);
+                throw new KeyNotFoundException($"PDF file {request.SourcePdfFileId} was not found.");
+            }
 
-        var now = DateTime.UtcNow;
-        var properties = new FileProperties(request.PageNo, request.CropX, request.CropY, request.Width, request.Height);
-        var name = string.IsNullOrWhiteSpace(request.FileName) ? source.FileName : request.FileName!;
+            var area = new PdfCropArea(request.PageNo, request.CropX, request.CropY, request.Width, request.Height);
+            var croppedBytes = manipulator.Crop(source.Content.Content, area);
 
-        // Crop replaces the source file's own content rather than creating a separate derived
-        // file - there's only ever one current file per project, and cropping just updates it.
-        source.ApplyCrop(croppedBytes, name, properties, currentUser.UserId, now);
-        await repository.SaveChangesAsync(cancellationToken);
+            var now = DateTime.UtcNow;
+            var properties = new FileProperties(request.PageNo, request.CropX, request.CropY, request.Width, request.Height);
+            var name = string.IsNullOrWhiteSpace(request.FileName) ? source.FileName : request.FileName!;
 
-        logger.LogInformation("{LogPrefix}: cropped file {FileId} → {Bytes} bytes", LogPrefix, source.Id, croppedBytes.Length);
-        return source.Id;
+            // Crop replaces the source file's own content rather than creating a separate derived
+            // file - there's only ever one current file per project, and cropping just updates it.
+            source.ApplyCrop(croppedBytes, name, properties, currentUser.UserId, now);
+            await repository.SaveChangesAsync(cancellationToken);
+
+            logger.LogInformation("{LogPrefix}: cropped file {FileId} → {Bytes} bytes", LogPrefix, source.Id, croppedBytes.Length);
+            return source.Id;
+        }
+        catch(Exception ex)
+        {
+            logger.LogError("{LogPrefix}: Exception: {Exception}", LogPrefix, ex.Message);
+            throw;
+        }
     }
 }

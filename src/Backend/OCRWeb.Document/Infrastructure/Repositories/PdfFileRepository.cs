@@ -8,11 +8,9 @@ namespace OCRWeb.Document.Infrastructure.Repositories;
 
 public class PdfFileRepository(DocumentDbContext db) : IPdfFileRepository
 {
-    public Task<PdfFile?> GetByIdAsync(int id, CancellationToken ct = default) =>
-        db.PdfFiles.FirstOrDefaultAsync(x => x.Id == id, ct);
+    public Task<PdfFile?> GetByIdAsync(int id, CancellationToken ct = default) => db.PdfFiles.FirstOrDefaultAsync(x => x.Id == id, ct);
 
-    public Task<PdfFile?> GetWithContentAsync(int id, CancellationToken ct = default) =>
-        db.PdfFiles.Include(x => x.Content).FirstOrDefaultAsync(x => x.Id == id, ct);
+    public Task<PdfFile?> GetWithContentAsync(int id, CancellationToken ct = default) => db.PdfFiles.Include(x => x.Content).FirstOrDefaultAsync(x => x.Id == id, ct);
 
     // Bypasses EF Core on purpose: EF would materialize the whole blob into memory before
     // returning it, so a large file reads as a multi-second stall with zero response bytes
@@ -45,15 +43,11 @@ public class PdfFileRepository(DocumentDbContext db) : IPdfFileRepository
             .OrderByDescending(x => x.InsertedTime)
             .ToListAsync(ct);
 
-    public async Task AddAsync(PdfFile file, CancellationToken ct = default) =>
-        await db.PdfFiles.AddAsync(file, ct);
+    public async Task AddAsync(PdfFile file, CancellationToken ct = default) => await db.PdfFiles.AddAsync(file, ct);
 
-    public void Remove(PdfFile file) =>
-        db.PdfFiles.Remove(file);
+    public void Remove(PdfFile file) => db.PdfFiles.Remove(file);
 
-    public Task SaveChangesAsync(CancellationToken ct = default) =>
-        db.SaveChangesAsync(ct);
+    public Task SaveChangesAsync(CancellationToken ct = default) => db.SaveChangesAsync(ct);
 
-    public Task<int> RemoveAllByParentIdAsync(int parentId, CancellationToken ct = default) =>
-        db.PdfFiles.Where(x => x.ParentId == parentId).ExecuteDeleteAsync(ct);
+    public Task<int> RemoveAllByParentIdAsync(int parentId, CancellationToken ct = default) => db.PdfFiles.Where(x => x.ParentId == parentId).ExecuteDeleteAsync(ct);
 }
