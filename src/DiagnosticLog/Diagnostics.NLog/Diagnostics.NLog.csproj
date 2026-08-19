@@ -9,7 +9,7 @@
     <PackageId>Orangepuff.Diagnostics.NLog</PackageId>
     <Description>
       NLog adapter for the Diagnostics logging library: DB-backed config (Dapper),
-      SqlBulkCopy-backed custom targets for [Logs]/[Transactions], and the ITransactionLogger /
+      NpgsqlBinaryImporter-backed custom targets for [Logs]/[Transactions], and the ITransactionLogger /
       ILogger bridge. Implements the ports in Diagnostics.Abstractions.
     </Description>
   </PropertyGroup>
@@ -18,7 +18,7 @@
     <PackageReference Include="NLog" />
     <PackageReference Include="NLog.Extensions.Logging" />
     <PackageReference Include="Dapper" />
-    <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="Npgsql" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Options" />

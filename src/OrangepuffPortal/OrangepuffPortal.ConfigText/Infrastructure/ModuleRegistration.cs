@@ -18,8 +18,8 @@ public static class ModuleRegistration
     {
         var connectionString = configuration.GetConnectionString("Portal");
         services.AddDbContext<ConfigTextDbContext>(opt =>
-            opt.UseSqlServer(connectionString, sql =>
-                sql.MigrationsHistoryTable("__EFMigrationsHistory", ConfigTextDbContext.Schema)));
+            opt.UseNpgsql(connectionString, npgsql =>
+                npgsql.MigrationsHistoryTable("__EFMigrationsHistory", ConfigTextDbContext.Schema)));
 
         // IDistributedCache (Redis or fallback) is registered by AddOrangepuffPortal in OrangepuffPortal.Host.
         services.AddScoped<IConfigTextRepository, ConfigTextRepository>();

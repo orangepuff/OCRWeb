@@ -1,12 +1,13 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace OrangepuffPortal.Identity.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialIdentity : Migration
+    public partial class InitPostgres : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,15 +20,15 @@ namespace OrangepuffPortal.Identity.Infrastructure.Migrations
                 schema: "identity",
                 columns: table => new
                 {
-                    iId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    sCategoryDesc = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    sTextCode = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: true),
-                    btHidden = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    iInsertedUserId = table.Column<int>(type: "int", nullable: false),
-                    dtInsertedTime = table.Column<DateTime>(type: "datetime2(3)", nullable: false),
-                    iUpdatedUserId = table.Column<int>(type: "int", nullable: true),
-                    dtUpdatedTime = table.Column<DateTime>(type: "datetime2(3)", nullable: true)
+                    iId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    sCategoryDesc = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    sTextCode = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: true),
+                    btHidden = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    iInsertedUserId = table.Column<int>(type: "integer", nullable: false),
+                    dtInsertedTime = table.Column<DateTime>(type: "timestamp(3) without time zone", nullable: false),
+                    iUpdatedUserId = table.Column<int>(type: "integer", nullable: true),
+                    dtUpdatedTime = table.Column<DateTime>(type: "timestamp(3) without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -39,18 +40,20 @@ namespace OrangepuffPortal.Identity.Infrastructure.Migrations
                 schema: "identity",
                 columns: table => new
                 {
-                    iId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    sUsername = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    sEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    sDisplayName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    sPasswordHash = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    btActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    btTemplateUser = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    iParentId = table.Column<int>(type: "int", nullable: true),
-                    btAdmin = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    dtInsertedTime = table.Column<DateTime>(type: "datetime2(3)", nullable: false),
-                    dtUpdatedTime = table.Column<DateTime>(type: "datetime2(3)", nullable: true)
+                    iId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    sUsername = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    sEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    sDisplayName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    sPasswordHash = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    btActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    btTemplateUser = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    iParentId = table.Column<int>(type: "integer", nullable: true),
+                    btAdmin = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    sCultureCode = table.Column<string>(type: "varchar(10)", nullable: false, defaultValue: "en-US"),
+                    iThemeId = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    dtInsertedTime = table.Column<DateTime>(type: "timestamp(3) without time zone", nullable: false),
+                    dtUpdatedTime = table.Column<DateTime>(type: "timestamp(3) without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -69,19 +72,19 @@ namespace OrangepuffPortal.Identity.Infrastructure.Migrations
                 schema: "identity",
                 columns: table => new
                 {
-                    iId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    iRuleCategoryId = table.Column<int>(type: "int", nullable: false),
-                    sSecurityRuleCode = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    sSecurityRuleDesc = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    iRuleType = table.Column<int>(type: "int", nullable: false),
-                    iSortOrder = table.Column<int>(type: "int", nullable: true),
-                    sTextCode = table.Column<string>(type: "nvarchar(90)", maxLength: 90, nullable: true),
-                    btHidden = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    iInsertedUserId = table.Column<int>(type: "int", nullable: false),
-                    dtInsertedTime = table.Column<DateTime>(type: "datetime2(3)", nullable: false),
-                    iUpdatedUserId = table.Column<int>(type: "int", nullable: true),
-                    dtUpdatedTime = table.Column<DateTime>(type: "datetime2(3)", nullable: true)
+                    iId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    iRuleCategoryId = table.Column<int>(type: "integer", nullable: false),
+                    sSecurityRuleCode = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    sSecurityRuleDesc = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    iRuleType = table.Column<int>(type: "integer", nullable: false),
+                    iSortOrder = table.Column<int>(type: "integer", nullable: true),
+                    sTextCode = table.Column<string>(type: "character varying(90)", maxLength: 90, nullable: true),
+                    btHidden = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    iInsertedUserId = table.Column<int>(type: "integer", nullable: false),
+                    dtInsertedTime = table.Column<DateTime>(type: "timestamp(3) without time zone", nullable: false),
+                    iUpdatedUserId = table.Column<int>(type: "integer", nullable: true),
+                    dtUpdatedTime = table.Column<DateTime>(type: "timestamp(3) without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -100,12 +103,12 @@ namespace OrangepuffPortal.Identity.Infrastructure.Migrations
                 schema: "identity",
                 columns: table => new
                 {
-                    iId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    iUserId = table.Column<int>(type: "int", nullable: false),
-                    sProvider = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    sProviderKey = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    dtInsertedTime = table.Column<DateTime>(type: "datetime2(3)", nullable: false)
+                    iId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    iUserId = table.Column<int>(type: "integer", nullable: false),
+                    sProvider = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    sProviderKey = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    dtInsertedTime = table.Column<DateTime>(type: "timestamp(3) without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -124,11 +127,11 @@ namespace OrangepuffPortal.Identity.Infrastructure.Migrations
                 schema: "identity",
                 columns: table => new
                 {
-                    iUserId = table.Column<int>(type: "int", nullable: false),
-                    binAvatar = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    sContentType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    dtInsertedTime = table.Column<DateTime>(type: "datetime2(3)", nullable: false),
-                    dtUpdatedTime = table.Column<DateTime>(type: "datetime2(3)", nullable: true)
+                    iUserId = table.Column<int>(type: "integer", nullable: false),
+                    binAvatar = table.Column<byte[]>(type: "bytea", nullable: false),
+                    sContentType = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    dtInsertedTime = table.Column<DateTime>(type: "timestamp(3) without time zone", nullable: false),
+                    dtUpdatedTime = table.Column<DateTime>(type: "timestamp(3) without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -147,16 +150,16 @@ namespace OrangepuffPortal.Identity.Infrastructure.Migrations
                 schema: "identity",
                 columns: table => new
                 {
-                    iId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    iUserId = table.Column<int>(type: "int", nullable: false),
-                    iRuleItemId = table.Column<int>(type: "int", nullable: false),
-                    iAllowed = table.Column<int>(type: "int", nullable: true),
+                    iId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    iUserId = table.Column<int>(type: "integer", nullable: false),
+                    iRuleItemId = table.Column<int>(type: "integer", nullable: false),
+                    iAllowed = table.Column<int>(type: "integer", nullable: true),
                     nAllowed = table.Column<decimal>(type: "numeric(10,2)", nullable: true),
-                    iInsertedUserId = table.Column<int>(type: "int", nullable: false),
-                    dtInsertedTime = table.Column<DateTime>(type: "datetime2(3)", nullable: false),
-                    iUpdatedUserId = table.Column<int>(type: "int", nullable: true),
-                    dtUpdatedTime = table.Column<DateTime>(type: "datetime2(3)", nullable: true)
+                    iInsertedUserId = table.Column<int>(type: "integer", nullable: false),
+                    dtInsertedTime = table.Column<DateTime>(type: "timestamp(3) without time zone", nullable: false),
+                    iUpdatedUserId = table.Column<int>(type: "integer", nullable: true),
+                    dtUpdatedTime = table.Column<DateTime>(type: "timestamp(3) without time zone", nullable: true)
                 },
                 constraints: table =>
                 {

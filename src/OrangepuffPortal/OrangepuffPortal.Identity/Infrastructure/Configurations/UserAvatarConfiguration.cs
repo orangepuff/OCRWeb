@@ -20,8 +20,8 @@ public class UserAvatarConfiguration : IEntityTypeConfiguration<UserAvatar>
         builder.Property(x => x.Image).HasColumnName("binAvatar").IsRequired();
         builder.Property(x => x.ContentType).HasColumnName("sContentType").HasMaxLength(100).IsRequired();
 
-        builder.Property(x => x.InsertedTime).HasColumnName("dtInsertedTime").HasColumnType("datetime2(3)");
-        builder.Property(x => x.UpdatedTime).HasColumnName("dtUpdatedTime").HasColumnType("datetime2(3)");
+        builder.Property(x => x.InsertedTime).HasColumnName("dtInsertedTime").HasColumnType("timestamp(3)");
+        builder.Property(x => x.UpdatedTime).HasColumnName("dtUpdatedTime").HasColumnType("timestamp(3)");
 
         builder.HasOne<User>().WithOne().HasForeignKey<UserAvatar>(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
     }

@@ -19,8 +19,8 @@ public static class ModuleRegistration
     {
         var connectionString = configuration.GetConnectionString("Portal");
         services.AddDbContext<ThemeDbContext>(opt =>
-            opt.UseSqlServer(connectionString, sql =>
-                sql.MigrationsHistoryTable("__EFMigrationsHistory", ThemeDbContext.Schema)));
+            opt.UseNpgsql(connectionString, npgsql =>
+                npgsql.MigrationsHistoryTable("__EFMigrationsHistory", ThemeDbContext.Schema)));
 
         services.AddScoped<IThemeRepository, ThemeRepository>();
         services.AddScoped<ThemeDbSeeder>();

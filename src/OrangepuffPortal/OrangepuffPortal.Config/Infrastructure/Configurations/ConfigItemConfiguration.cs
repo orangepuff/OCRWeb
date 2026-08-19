@@ -20,21 +20,21 @@ public class ConfigItemConfiguration : IEntityTypeConfiguration<ConfigItem>
 
         builder.Property(x => x.SectionId).HasColumnName("iSectionId");
         builder.Property(x => x.ConfigCode).HasColumnName("sConfigCode").HasColumnType("varchar(60)").IsRequired();
-        builder.Property(x => x.ConfigName).HasColumnName("sConfigName").HasColumnType("nvarchar(255)").IsRequired();
+        builder.Property(x => x.ConfigName).HasColumnName("sConfigName").HasColumnType("varchar(255)").IsRequired();
         builder.Property(x => x.TextCode).HasColumnName("sTextCode").HasColumnType("varchar(100)").IsRequired();
         builder.Property(x => x.ConfigType).HasColumnName("iConfigType").HasDefaultValue(0);
         builder.Property(x => x.Show).HasColumnName("btShow").HasDefaultValue(true);
         builder.Property(x => x.AllowUserEdit).HasColumnName("btAllowUserEdit").HasDefaultValue(false);
         builder.Property(x => x.SortOrder).HasColumnName("iSortOrder");
-        builder.Property(x => x.DefaultStringValue).HasColumnName("sDefaultValue").HasColumnType("nvarchar(255)");
+        builder.Property(x => x.DefaultStringValue).HasColumnName("sDefaultValue").HasColumnType("varchar(255)");
         builder.Property(x => x.DefaultIntValue).HasColumnName("iDefaultValue");
         builder.Property(x => x.DefaultDecimalValue).HasColumnName("nDefaultValue").HasColumnType("decimal(8,3)");
         builder.Property(x => x.DefaultBoolValue).HasColumnName("btDefaultValue");
 
         builder.Property(x => x.InsertedUserId).HasColumnName("iInsertedUserId");
-        builder.Property(x => x.InsertedTime).HasColumnName("dtInsertedTime").HasColumnType("datetime");
+        builder.Property(x => x.InsertedTime).HasColumnName("dtInsertedTime").HasColumnType("timestamp");
         builder.Property(x => x.UpdatedUserId).HasColumnName("iUpdatedUserId");
-        builder.Property(x => x.UpdatedTime).HasColumnName("dtUpdatedTime").HasColumnType("datetime");
+        builder.Property(x => x.UpdatedTime).HasColumnName("dtUpdatedTime").HasColumnType("timestamp");
 
         builder.HasIndex(x => x.ConfigCode).IsUnique().HasDatabaseName("UQ_Configs_ConfigCode");
 

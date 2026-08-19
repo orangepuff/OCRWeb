@@ -1,12 +1,13 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace OrangepuffPortal.Theme.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitTheme : Migration
+    public partial class InitPostgres : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,15 +20,15 @@ namespace OrangepuffPortal.Theme.Infrastructure.Migrations
                 schema: "portal",
                 columns: table => new
                 {
-                    iId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    iId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     sThemeCode = table.Column<string>(type: "varchar(100)", nullable: false),
-                    sDescription = table.Column<string>(type: "nvarchar(500)", nullable: false),
-                    btActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    iInsertedUserId = table.Column<int>(type: "int", nullable: true),
-                    dtInsertedTime = table.Column<DateTime>(type: "datetime2(3)", nullable: false),
-                    iUpdatedUserId = table.Column<int>(type: "int", nullable: true),
-                    dtUpdatedTime = table.Column<DateTime>(type: "datetime2(3)", nullable: true)
+                    sDescription = table.Column<string>(type: "varchar(500)", nullable: false),
+                    btActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    iInsertedUserId = table.Column<int>(type: "integer", nullable: true),
+                    dtInsertedTime = table.Column<DateTime>(type: "timestamp(3) without time zone", nullable: false),
+                    iUpdatedUserId = table.Column<int>(type: "integer", nullable: true),
+                    dtUpdatedTime = table.Column<DateTime>(type: "timestamp(3) without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -39,16 +40,16 @@ namespace OrangepuffPortal.Theme.Infrastructure.Migrations
                 schema: "portal",
                 columns: table => new
                 {
-                    iId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    iThemeId = table.Column<int>(type: "int", nullable: false),
+                    iId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    iThemeId = table.Column<int>(type: "integer", nullable: false),
                     sSectionCode = table.Column<string>(type: "varchar(100)", nullable: false),
-                    sDescription = table.Column<string>(type: "nvarchar(500)", nullable: false),
-                    iSortOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
-                    iInsertedUserId = table.Column<int>(type: "int", nullable: true),
-                    dtInsertedTime = table.Column<DateTime>(type: "datetime2(3)", nullable: false),
-                    iUpdatedUserId = table.Column<int>(type: "int", nullable: true),
-                    dtUpdatedTime = table.Column<DateTime>(type: "datetime2(3)", nullable: true)
+                    sDescription = table.Column<string>(type: "varchar(500)", nullable: false),
+                    iSortOrder = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    iInsertedUserId = table.Column<int>(type: "integer", nullable: true),
+                    dtInsertedTime = table.Column<DateTime>(type: "timestamp(3) without time zone", nullable: false),
+                    iUpdatedUserId = table.Column<int>(type: "integer", nullable: true),
+                    dtUpdatedTime = table.Column<DateTime>(type: "timestamp(3) without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -67,16 +68,16 @@ namespace OrangepuffPortal.Theme.Infrastructure.Migrations
                 schema: "portal",
                 columns: table => new
                 {
-                    iId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    iThemeSectionId = table.Column<int>(type: "int", nullable: false),
+                    iId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    iThemeSectionId = table.Column<int>(type: "integer", nullable: false),
                     sElementCode = table.Column<string>(type: "varchar(100)", nullable: false),
-                    sDescription = table.Column<string>(type: "nvarchar(500)", nullable: false),
-                    iSortOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
-                    iInsertedUserId = table.Column<int>(type: "int", nullable: true),
-                    dtInsertedTime = table.Column<DateTime>(type: "datetime2(3)", nullable: false),
-                    iUpdatedUserId = table.Column<int>(type: "int", nullable: true),
-                    dtUpdatedTime = table.Column<DateTime>(type: "datetime2(3)", nullable: true)
+                    sDescription = table.Column<string>(type: "varchar(500)", nullable: false),
+                    iSortOrder = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    iInsertedUserId = table.Column<int>(type: "integer", nullable: true),
+                    dtInsertedTime = table.Column<DateTime>(type: "timestamp(3) without time zone", nullable: false),
+                    iUpdatedUserId = table.Column<int>(type: "integer", nullable: true),
+                    dtUpdatedTime = table.Column<DateTime>(type: "timestamp(3) without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -95,21 +96,21 @@ namespace OrangepuffPortal.Theme.Infrastructure.Migrations
                 schema: "portal",
                 columns: table => new
                 {
-                    iId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    iThemeElementId = table.Column<int>(type: "int", nullable: false),
+                    iId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    iThemeElementId = table.Column<int>(type: "integer", nullable: false),
                     sPropertyKey = table.Column<string>(type: "varchar(100)", nullable: false),
-                    sPropertyLabel = table.Column<string>(type: "nvarchar(200)", nullable: false),
-                    sPropertyDescription = table.Column<string>(type: "nvarchar(500)", nullable: false),
+                    sPropertyLabel = table.Column<string>(type: "varchar(200)", nullable: false),
+                    sPropertyDescription = table.Column<string>(type: "varchar(500)", nullable: false),
                     sPropertyType = table.Column<string>(type: "varchar(50)", nullable: false),
-                    sAllowedValues = table.Column<string>(type: "nvarchar(1000)", nullable: true),
-                    sPropertyValue = table.Column<string>(type: "nvarchar(500)", nullable: true),
+                    sAllowedValues = table.Column<string>(type: "varchar(1000)", nullable: true),
+                    sPropertyValue = table.Column<string>(type: "varchar(500)", nullable: true),
                     sUnit = table.Column<string>(type: "varchar(20)", nullable: true),
-                    iSortOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
-                    iInsertedUserId = table.Column<int>(type: "int", nullable: true),
-                    dtInsertedTime = table.Column<DateTime>(type: "datetime2(3)", nullable: false),
-                    iUpdatedUserId = table.Column<int>(type: "int", nullable: true),
-                    dtUpdatedTime = table.Column<DateTime>(type: "datetime2(3)", nullable: true)
+                    iSortOrder = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    iInsertedUserId = table.Column<int>(type: "integer", nullable: true),
+                    dtInsertedTime = table.Column<DateTime>(type: "timestamp(3) without time zone", nullable: false),
+                    iUpdatedUserId = table.Column<int>(type: "integer", nullable: true),
+                    dtUpdatedTime = table.Column<DateTime>(type: "timestamp(3) without time zone", nullable: true)
                 },
                 constraints: table =>
                 {

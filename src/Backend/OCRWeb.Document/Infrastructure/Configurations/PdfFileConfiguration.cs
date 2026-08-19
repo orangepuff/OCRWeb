@@ -41,9 +41,9 @@ public class PdfFileConfiguration : IEntityTypeConfiguration<PdfFile>
 
         // Audit
         builder.Property(x => x.InsertedUserId).HasColumnName("iInsertedUserId");
-        builder.Property(x => x.InsertedTime).HasColumnName("dtInsertedTime").HasColumnType("datetime2(3)");
+        builder.Property(x => x.InsertedTime).HasColumnName("dtInsertedTime").HasColumnType("timestamp(3)");
         builder.Property(x => x.UpdatedUserId).HasColumnName("iUpdatedUserId");
-        builder.Property(x => x.UpdatedTime).HasColumnName("dtUpdatedTime").HasColumnType("datetime2(3)");
+        builder.Property(x => x.UpdatedTime).HasColumnName("dtUpdatedTime").HasColumnType("timestamp(3)");
 
         // 1:1 with content via a unique FK (PdfFileContent.FileId); the content row's own PK is a separate technical identity column, see PdfFileContentConfiguration.
         builder.HasOne(x => x.Content)

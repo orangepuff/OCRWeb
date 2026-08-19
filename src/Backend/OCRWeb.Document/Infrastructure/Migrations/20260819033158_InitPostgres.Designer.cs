@@ -2,9 +2,9 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OCRWeb.Document.Infrastructure;
 
 #nullable disable
@@ -12,8 +12,8 @@ using OCRWeb.Document.Infrastructure;
 namespace OCRWeb.Document.Infrastructure.Migrations
 {
     [DbContext(typeof(DocumentDbContext))]
-    [Migration("20260725142059_FilesIdentityId")]
-    partial class FilesIdentityId
+    [Migration("20260819033158_InitPostgres")]
+    partial class InitPostgres
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -22,59 +22,59 @@ namespace OCRWeb.Document.Infrastructure.Migrations
             modelBuilder
                 .HasDefaultSchema("docproc")
                 .HasAnnotation("ProductVersion", "10.0.9")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("OCRWeb.Document.Domain.Entity.PdfFile", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iId");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<byte[]>("Checksum")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varbinary(32)")
+                        .HasColumnType("bytea")
                         .HasColumnName("binChecksum");
 
                     b.Property<string>("ContentType")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("sContentType");
 
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("sFileName");
 
                     b.Property<int>("FileType")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasDefaultValue(0)
                         .HasColumnName("iFileType");
 
                     b.Property<DateTime>("InsertedTime")
-                        .HasColumnType("datetime2(3)")
+                        .HasColumnType("timestamp(3)")
                         .HasColumnName("dtInsertedTime");
 
                     b.Property<int>("InsertedUserId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iInsertedUserId");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasDefaultValue(true)
                         .HasColumnName("btActive");
 
-                    b.Property<Guid>("ParentId")
-                        .HasColumnType("uniqueidentifier")
+                    b.Property<int>("ParentId")
+                        .HasColumnType("integer")
                         .HasColumnName("iParentId");
 
                     b.Property<long>("SizeBytes")
@@ -82,11 +82,11 @@ namespace OCRWeb.Document.Infrastructure.Migrations
                         .HasColumnName("biSizeBytes");
 
                     b.Property<DateTime?>("UpdatedTime")
-                        .HasColumnType("datetime2(3)")
+                        .HasColumnType("timestamp(3)")
                         .HasColumnName("dtUpdatedTime");
 
                     b.Property<int?>("UpdatedUserId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iUpdatedUserId");
 
                     b.HasKey("Id");
@@ -98,34 +98,34 @@ namespace OCRWeb.Document.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iId");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<byte[]>("Content")
                         .IsRequired()
-                        .HasColumnType("varbinary(max)")
+                        .HasColumnType("bytea")
                         .HasColumnName("binContent");
 
                     b.Property<int>("FileId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iFileId");
 
                     b.Property<DateTime>("InsertedTime")
-                        .HasColumnType("datetime2(3)")
+                        .HasColumnType("timestamp(3)")
                         .HasColumnName("dtInsertedTime");
 
                     b.Property<int>("InsertedUserId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iInsertedUserId");
 
                     b.Property<DateTime?>("UpdatedTime")
-                        .HasColumnType("datetime2(3)")
+                        .HasColumnType("timestamp(3)")
                         .HasColumnName("dtUpdatedTime");
 
                     b.Property<int?>("UpdatedUserId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iUpdatedUserId");
 
                     b.HasKey("Id");
@@ -158,7 +158,7 @@ namespace OCRWeb.Document.Infrastructure.Migrations
 
                             b1
                                 .ToJson("sFileProperties")
-                                .HasColumnType("nvarchar(max)");
+                                .HasColumnType("jsonb");
 
                             b1.WithOwner()
                                 .HasForeignKey("PdfFileId");

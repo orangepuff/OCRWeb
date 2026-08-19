@@ -18,15 +18,15 @@ public class ConfigSectionConfiguration : IEntityTypeConfiguration<ConfigSection
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).HasColumnName("iId").ValueGeneratedOnAdd();
 
-        builder.Property(x => x.SectionDesc).HasColumnName("sSectionDesc").HasColumnType("nvarchar(255)").IsRequired();
+        builder.Property(x => x.SectionDesc).HasColumnName("sSectionDesc").HasColumnType("varchar(255)").IsRequired();
         builder.Property(x => x.TextCode).HasColumnName("sTextCode").HasColumnType("varchar(100)").IsRequired();
         builder.Property(x => x.Show).HasColumnName("btShow").HasDefaultValue(true);
         builder.Property(x => x.SortOrder).HasColumnName("iSortOrder");
 
         builder.Property(x => x.InsertedUserId).HasColumnName("iInsertedUserId");
-        builder.Property(x => x.InsertedTime).HasColumnName("dtInsertedTime").HasColumnType("datetime");
+        builder.Property(x => x.InsertedTime).HasColumnName("dtInsertedTime").HasColumnType("timestamp");
         builder.Property(x => x.UpdatedUserId).HasColumnName("iUpdatedUserId");
-        builder.Property(x => x.UpdatedTime).HasColumnName("dtUpdatedTime").HasColumnType("datetime");
+        builder.Property(x => x.UpdatedTime).HasColumnName("dtUpdatedTime").HasColumnType("timestamp");
 
         // TextCode alone is now the uniqueness key (Module removed) - a consuming app seeding its own
         // default sections is expected to prefix its own STextCode values (e.g. "ocrProjectManagement.general"),

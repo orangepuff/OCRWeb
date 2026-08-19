@@ -14,12 +14,19 @@
     "target": "ES2022",
     "module": "preserve",
     "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
     "paths": {
       "@orangepuff/portal-frontend": [
         "projects/portal-frontend/src/public-api"
       ],
+      "@orangepuff/portal-frontend/*": [
+        "projects/portal-frontend/src/*"
+      ],
       "@orangepuff/portal-frontend-shared": [
         "projects/portal-frontend-shared/src/public-api"
+      ],
+      "@orangepuff/portal-frontend-shared/*": [
+        "projects/portal-frontend-shared/src/*"
       ]
     }
   },

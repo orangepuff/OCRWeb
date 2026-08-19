@@ -2,9 +2,9 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OrangepuffPortal.ConfigText.Infrastructure;
 
 #nullable disable
@@ -12,8 +12,8 @@ using OrangepuffPortal.ConfigText.Infrastructure;
 namespace OrangepuffPortal.ConfigText.Infrastructure.Migrations
 {
     [DbContext(typeof(ConfigTextDbContext))]
-    [Migration("20260725155137_InitialConfigText")]
-    partial class InitialConfigText
+    [Migration("20260819033239_InitPostgres")]
+    partial class InitPostgres
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -22,18 +22,18 @@ namespace OrangepuffPortal.ConfigText.Infrastructure.Migrations
             modelBuilder
                 .HasDefaultSchema("configtext")
                 .HasAnnotation("ProductVersion", "10.0.9")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("OrangepuffPortal.ConfigText.Domain.Entity.ConfigTextDefinition", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iId");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CultureCode")
                         .IsRequired()
@@ -41,11 +41,11 @@ namespace OrangepuffPortal.ConfigText.Infrastructure.Migrations
                         .HasColumnName("sCultureCode");
 
                     b.Property<DateTime?>("InsertedTime")
-                        .HasColumnType("datetime")
+                        .HasColumnType("timestamp")
                         .HasColumnName("dtInsertedTime");
 
                     b.Property<int?>("InsertedUserId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iInsertedUserId");
 
                     b.Property<string>("Module")
@@ -54,12 +54,12 @@ namespace OrangepuffPortal.ConfigText.Infrastructure.Migrations
                         .HasColumnName("sModule");
 
                     b.Property<string>("Note")
-                        .HasColumnType("nchar(255)")
+                        .HasColumnType("char(255)")
                         .HasColumnName("sNote");
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnType("varchar(1000)")
                         .HasColumnName("sText");
 
                     b.Property<string>("TextCode")
@@ -73,11 +73,11 @@ namespace OrangepuffPortal.ConfigText.Infrastructure.Migrations
                         .HasColumnName("sTextType");
 
                     b.Property<DateTime?>("UpdatedTime")
-                        .HasColumnType("datetime")
+                        .HasColumnType("timestamp")
                         .HasColumnName("dtUpdatedTime");
 
                     b.Property<int?>("UpdatedUserId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iUpdatedUserId");
 
                     b.HasKey("Id");

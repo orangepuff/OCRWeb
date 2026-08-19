@@ -20,16 +20,16 @@ public class ConfigUserConfiguration : IEntityTypeConfiguration<ConfigUser>
 
         builder.Property(x => x.UserId).HasColumnName("iUserId");
         builder.Property(x => x.ConfigId).HasColumnName("iConfigId");
-        builder.Property(x => x.StringValue).HasColumnName("sConfigValue").HasColumnType("nvarchar(255)");
+        builder.Property(x => x.StringValue).HasColumnName("sConfigValue").HasColumnType("varchar(255)");
         builder.Property(x => x.IntValue).HasColumnName("iConfigValue");
         builder.Property(x => x.DecimalValue).HasColumnName("nConfigValue").HasColumnType("decimal(8,3)");
         builder.Property(x => x.BoolValue).HasColumnName("btConfigValue");
         builder.Property(x => x.Active).HasColumnName("btActive").HasDefaultValue(true);
 
         builder.Property(x => x.InsertedUserId).HasColumnName("iInsertedUserId");
-        builder.Property(x => x.InsertedTime).HasColumnName("dtInsertedTime").HasColumnType("datetime");
+        builder.Property(x => x.InsertedTime).HasColumnName("dtInsertedTime").HasColumnType("timestamp");
         builder.Property(x => x.UpdatedUserId).HasColumnName("iUpdatedUserId");
-        builder.Property(x => x.UpdatedTime).HasColumnName("dtUpdatedTime").HasColumnType("datetime");
+        builder.Property(x => x.UpdatedTime).HasColumnName("dtUpdatedTime").HasColumnType("timestamp");
 
         builder.HasIndex(x => new { x.UserId, x.ConfigId }).IsUnique().HasDatabaseName("UQ_ConfigUsers_User_Config");
 

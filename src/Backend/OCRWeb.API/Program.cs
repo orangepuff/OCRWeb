@@ -14,6 +14,10 @@ using OrangepuffPortal.ConfigText.Contract.Interfaces;
 using OrangepuffPortal.Host;
 using System.Reflection;
 
+// Allow DateTime.UtcNow to be written to PostgreSQL timestamp columns (Npgsql 6+ default requires timestamptz).
+// The entire app stores UTC; this avoids changing every column type annotation.
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 const long MaxUploadBytes = 1024L * 1024 * 1024; // 1 GB — covers large scanned PDF documents.
 
 var builder = WebApplication.CreateBuilder(args);

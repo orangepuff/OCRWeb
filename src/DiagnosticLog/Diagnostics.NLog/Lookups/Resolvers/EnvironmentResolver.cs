@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using Dapper;
 using Diagnostics.NLog.Interfaces;
-using Microsoft.Data.SqlClient;
+using Npgsql;
 
 namespace Diagnostics.NLog.Lookups.Resolvers;
 
@@ -25,19 +25,19 @@ public sealed class EnvironmentResolver(string connectionString) : IEnvironmentR
     {
         try
         {
-            await using var connection = new SqlConnection(connectionString);
+            await using var connection = new NpgsqlConnection(connectionString);
 
             var id = await connection.QuerySingleOrDefaultAsync<int?>(
-                "SELECT TOP 1 iId FROM dbo.Environments WHERE sName = @name",
+                "SELECT iid FROM dbo.environments WHERE sname = @name LIMIT 1",
                 new { name }).ConfigureAwait(false);
 
             if (id is null)
             {
                 id = await connection.QuerySingleAsync<int>(
                     """
-                    INSERT INTO dbo.Environments (sName, sVersion, sUrl)
-                    OUTPUT INSERTED.iId
+                    INSERT INTO dbo.environments (sname, sversion, surl)
                     VALUES (@name, @version, @url)
+                    RETURNING iid
                     """,
                     new { name, version, url }).ConfigureAwait(false);
             }

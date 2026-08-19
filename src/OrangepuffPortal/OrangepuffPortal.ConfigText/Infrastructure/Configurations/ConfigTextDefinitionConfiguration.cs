@@ -22,13 +22,13 @@ public class ConfigTextDefinitionConfiguration : IEntityTypeConfiguration<Config
         builder.Property(x => x.TextCode).HasColumnName("sTextCode").HasColumnType("varchar(60)").IsRequired();
         builder.Property(x => x.CultureCode).HasColumnName("sCultureCode").HasColumnType("varchar(10)").IsRequired();
         builder.Property(x => x.TextType).HasColumnName("sTextType").HasColumnType("varchar(10)").IsRequired();
-        builder.Property(x => x.Text).HasColumnName("sText").HasColumnType("nvarchar(1000)").IsRequired();
-        builder.Property(x => x.Note).HasColumnName("sNote").HasColumnType("nchar(255)");
+        builder.Property(x => x.Text).HasColumnName("sText").HasColumnType("varchar(1000)").IsRequired();
+        builder.Property(x => x.Note).HasColumnName("sNote").HasColumnType("char(255)");
 
         builder.Property(x => x.InsertedUserId).HasColumnName("iInsertedUserId");
-        builder.Property(x => x.InsertedTime).HasColumnName("dtInsertedTime").HasColumnType("datetime");
+        builder.Property(x => x.InsertedTime).HasColumnName("dtInsertedTime").HasColumnType("timestamp");
         builder.Property(x => x.UpdatedUserId).HasColumnName("iUpdatedUserId");
-        builder.Property(x => x.UpdatedTime).HasColumnName("dtUpdatedTime").HasColumnType("datetime");
+        builder.Property(x => x.UpdatedTime).HasColumnName("dtUpdatedTime").HasColumnType("timestamp");
 
         builder.HasIndex(x => new { x.Module, x.TextCode, x.CultureCode, x.TextType })
             .IsUnique()

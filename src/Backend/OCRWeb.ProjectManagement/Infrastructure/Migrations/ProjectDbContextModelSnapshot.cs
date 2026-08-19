@@ -2,8 +2,8 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OCRWeb.ProjectManagement.Infrastructure;
 
 #nullable disable
@@ -19,39 +19,39 @@ namespace OCRWeb.ProjectManagement.Infrastructure.Migrations
             modelBuilder
                 .HasDefaultSchema("project")
                 .HasAnnotation("ProductVersion", "10.0.9")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("OCRWeb.ProjectManagement.Domain.Entity.Project", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("Id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("InsertedTime")
-                        .HasColumnType("datetime2(3)")
+                        .HasColumnType("timestamp(3)")
                         .HasColumnName("dtInsertedTime");
 
                     b.Property<int>("InsertedUserId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iInsertedUserId");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)")
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("sName");
 
                     b.Property<DateTime?>("UpdatedTime")
-                        .HasColumnType("datetime2(3)")
+                        .HasColumnType("timestamp(3)")
                         .HasColumnName("dtUpdatedTime");
 
                     b.Property<int?>("UpdatedUserId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iUpdatedUserId");
 
                     b.HasKey("Id");

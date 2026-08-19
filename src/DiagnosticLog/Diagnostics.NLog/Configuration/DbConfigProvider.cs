@@ -1,6 +1,6 @@
 using Dapper;
 using Diagnostics.NLog.Interfaces;
-using Microsoft.Data.SqlClient;
+using Npgsql;
 
 namespace Diagnostics.NLog.Configuration;
 
@@ -32,15 +32,15 @@ public sealed class DbConfigProvider(string connectionString, IEnvironmentResolv
 
         try
         {
-            await using var connection = new SqlConnection(connectionString);
+            await using var connection = new NpgsqlConnection(connectionString);
 
             var rows = (await connection.QueryAsync<ConfigurationRow>(
                 """
-                SELECT iId AS IId, sLoggerName AS SLoggerName, iEnvironmentId AS IEnvironmentId,
-                       CAST(xValue AS NVARCHAR(MAX)) AS XmlValue, dtUpdatedTime AS DtUpdatedTime
-                FROM dbo.Configurations
-                WHERE sLoggerName = @loggerName
-                  AND (iEnvironmentId = @environmentId OR iEnvironmentId IS NULL)
+                SELECT iid AS Id, sloggerName AS LoggerName, ienvironmentid AS EnvironmentId,
+                       xvalue AS XmlValue, dtupdatedtime AS UpdatedTime
+                FROM dbo.configurations
+                WHERE sloggername = @loggerName
+                  AND (ienvironmentid = @environmentId OR ienvironmentid IS NULL)
                 """,
                 new { loggerName, environmentId }).ConfigureAwait(false))
                 .ToList();

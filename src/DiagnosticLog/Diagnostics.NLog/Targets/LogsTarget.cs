@@ -1,18 +1,18 @@
-using System.Data;
 using System.Text.Json;
 using Diagnostics.Abstractions;
 using Diagnostics.Abstractions.Interfaces;
 using Diagnostics.NLog.Buffering;
 using Diagnostics.NLog.Interfaces;
-using Microsoft.Data.SqlClient;
+using Npgsql;
+using NpgsqlTypes;
 using NLog;
 using NLog.Targets;
 
 namespace Diagnostics.NLog.Targets;
 
 /// <summary>
-/// Custom NLog target: one row per <c>ILogger</c> event → bounded/batched → <c>SqlBulkCopy</c> → <c>[dbo].[Logs]</c> (design doc §3/§6).
-/// <c>iCategoryId</c> is resolved from the ambient transaction's category (or the <see cref="CategoryNames.None"/> guardrail) — never from the NLog logger name, which is instead captured into <c>sCustomAttributes</c>.
+/// Custom NLog target: one row per <c>ILogger</c> event → bounded/batched → <c>NpgsqlBinaryImporter</c> → <c>dbo.logs</c> (design doc §3/§6).
+/// <c>icategoryid</c> is resolved from the ambient transaction's category (or the <see cref="CategoryNames.None"/> guardrail) — never from the NLog logger name, which is instead captured into <c>scustomattributes</c>.
 /// </summary>
 [Target("DiagnosticsLogs")]
 public sealed class LogsTarget : Target
@@ -128,7 +128,7 @@ public sealed class LogsTarget : Target
             if (_categoryIdCache.TryGetValue(category, out var cached))
             {
                 return cached;
-            } 
+            }
         }
 
         // Rare path (new category name) — resolver itself caches, so subsequent calls are fast.
@@ -165,44 +165,72 @@ public sealed class LogsTarget : Target
 
     private async Task FlushBatchAsync(IReadOnlyList<LogRow> rows, CancellationToken ct)
     {
-        using var table = new DataTable();
-        table.Columns.Add("sTransactionId", typeof(Guid));
-        table.Columns.Add("iEnvironmentId", typeof(int));
-        table.Columns.Add("iCategoryId", typeof(int));
-        table.Columns.Add("sCorrelationId", typeof(Guid));
-        table.Columns.Add("dtTimeLogged", typeof(DateTime));
-        table.Columns.Add("sMessage", typeof(string));
-        table.Columns.Add("sException", typeof(string));
-        table.Columns.Add("sSeverity", typeof(string));
-        table.Columns.Add("sUser", typeof(string));
-        table.Columns.Add("sCustomAttributes", typeof(string));
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync(ct).ConfigureAwait(false);
+
+        await using var writer = await connection.BeginBinaryImportAsync(
+            "COPY dbo.logs (stransactionid, ienvironmentid, icategoryid, scorrelationid, " +
+            "dttimelogged, smessage, sexception, sseverity, suser, scustomattributes) " +
+            "FROM STDIN (FORMAT BINARY)", ct).ConfigureAwait(false);
 
         foreach (var row in rows)
         {
-            table.Rows.Add(
-                (object?)row.TransactionId ?? DBNull.Value,
-                row.EnvironmentId,
-                row.CategoryId,
-                row.CorrelationId,
-                row.TimeLogged,
-                (object?)row.Message ?? DBNull.Value,
-                (object?)row.Exception ?? DBNull.Value,
-                row.Severity,
-                (object?)row.User ?? DBNull.Value,
-                (object?)row.CustomAttributesJson ?? DBNull.Value);
+            await writer.StartRowAsync(ct).ConfigureAwait(false);
+
+            if (row.TransactionId.HasValue)
+            {
+                await writer.WriteAsync(row.TransactionId.Value, NpgsqlDbType.Uuid, ct).ConfigureAwait(false);
+            }
+            else
+            {
+                await writer.WriteNullAsync(ct).ConfigureAwait(false);
+            }
+
+            await writer.WriteAsync(row.EnvironmentId, NpgsqlDbType.Integer, ct).ConfigureAwait(false);
+            await writer.WriteAsync(row.CategoryId, NpgsqlDbType.Integer, ct).ConfigureAwait(false);
+            await writer.WriteAsync(row.CorrelationId, NpgsqlDbType.Uuid, ct).ConfigureAwait(false);
+            await writer.WriteAsync(row.TimeLogged, NpgsqlDbType.TimestampTz, ct).ConfigureAwait(false);
+
+            if (row.Message is not null)
+            {
+                await writer.WriteAsync(row.Message, NpgsqlDbType.Text, ct).ConfigureAwait(false);
+            }
+            else
+            {
+                await writer.WriteNullAsync(ct).ConfigureAwait(false);
+            }
+
+            if (row.Exception is not null)
+            {
+                await writer.WriteAsync(row.Exception, NpgsqlDbType.Text, ct).ConfigureAwait(false);
+            }
+            else
+            {
+                await writer.WriteNullAsync(ct).ConfigureAwait(false);
+            }
+
+            await writer.WriteAsync(row.Severity, NpgsqlDbType.Varchar, ct).ConfigureAwait(false);
+
+            if (row.User is not null)
+            {
+                await writer.WriteAsync(row.User, NpgsqlDbType.Varchar, ct).ConfigureAwait(false);
+            }
+            else
+            {
+                await writer.WriteNullAsync(ct).ConfigureAwait(false);
+            }
+
+            if (row.CustomAttributesJson is not null)
+            {
+                await writer.WriteAsync(row.CustomAttributesJson, NpgsqlDbType.Text, ct).ConfigureAwait(false);
+            }
+            else
+            {
+                await writer.WriteNullAsync(ct).ConfigureAwait(false);
+            }
         }
 
-        await using var connection = new SqlConnection(_connectionString);
-        await connection.OpenAsync(ct).ConfigureAwait(false);
-
-        using var bulkCopy = new SqlBulkCopy(connection);
-        bulkCopy.DestinationTableName = "dbo.Logs";
-        foreach (DataColumn column in table.Columns)
-        {
-            bulkCopy.ColumnMappings.Add(column.ColumnName, column.ColumnName);
-        }
-        
-        await bulkCopy.WriteToServerAsync(table, ct).ConfigureAwait(false);
+        await writer.CompleteAsync(ct).ConfigureAwait(false);
     }
 
     private void WriteFallback(IReadOnlyList<LogRow> rows)
@@ -213,7 +241,7 @@ public sealed class LogsTarget : Target
         {
             Directory.CreateDirectory(directory);
         }
-        
+
         File.AppendAllLines(path, rows.Select(r => JsonSerializer.Serialize(r)));
     }
 

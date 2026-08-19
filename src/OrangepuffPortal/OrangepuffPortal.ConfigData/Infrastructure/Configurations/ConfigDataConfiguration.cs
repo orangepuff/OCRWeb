@@ -19,14 +19,14 @@ public class ConfigDataConfiguration : IEntityTypeConfiguration<ConfigDataEntry>
         builder.Property(x => x.Id).HasColumnName("iId").ValueGeneratedOnAdd();
 
         builder.Property(x => x.Key).HasColumnName("sKey").HasColumnType("varchar(100)").IsRequired();
-        builder.Property(x => x.Value).HasColumnName("sValue").HasColumnType("varchar(max)");
+        builder.Property(x => x.Value).HasColumnName("sValue").HasColumnType("text");
         builder.Property(x => x.AllowEditByScreen).HasColumnName("bAllowEditByScreen");
         builder.Property(x => x.Description).HasColumnName("sDescription").HasColumnType("varchar(255)");
 
         builder.Property(x => x.InsertedUserId).HasColumnName("iInsertedUserId");
-        builder.Property(x => x.InsertedTime).HasColumnName("dtInsertedTime").HasColumnType("datetime");
+        builder.Property(x => x.InsertedTime).HasColumnName("dtInsertedTime").HasColumnType("timestamp");
         builder.Property(x => x.UpdatedUserId).HasColumnName("iUpdatedUserId");
-        builder.Property(x => x.UpdatedTime).HasColumnName("dtUpdatedTime").HasColumnType("datetime");
+        builder.Property(x => x.UpdatedTime).HasColumnName("dtUpdatedTime").HasColumnType("timestamp");
 
         builder.HasIndex(x => x.Key).IsUnique().HasDatabaseName("UQ_ConfigData_Key");
     }

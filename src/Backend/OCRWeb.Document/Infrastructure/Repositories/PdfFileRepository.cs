@@ -1,6 +1,7 @@
 using System.Data;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
+using NpgsqlTypes;
 using OCRWeb.Document.Domain.Entity;
 using OCRWeb.Document.Domain.Repositories;
 
@@ -20,12 +21,12 @@ public class PdfFileRepository(DocumentDbContext db) : IPdfFileRepository
     // read off the wire instead.
     public async Task<Stream?> OpenContentStreamAsync(int id, CancellationToken ct = default)
     {
-        var connection = new SqlConnection(db.Database.GetConnectionString());
+        var connection = new NpgsqlConnection(db.Database.GetConnectionString());
         await connection.OpenAsync(ct);
 
         var command = connection.CreateCommand();
-        command.CommandText = $"SELECT binContent FROM {DocumentDbContext.Schema}.FileContents WHERE iFileId = @id";
-        command.Parameters.Add(new SqlParameter("@id", SqlDbType.Int) { Value = id });
+        command.CommandText = $"SELECT bincontent FROM {DocumentDbContext.Schema}.filecontents WHERE ifileid = @id";
+        command.Parameters.Add(new NpgsqlParameter("@id", NpgsqlDbType.Integer) { Value = id });
 
         var reader = await command.ExecuteReaderAsync(CommandBehavior.SequentialAccess | CommandBehavior.SingleRow, ct);
         if (!await reader.ReadAsync(ct))
@@ -36,7 +37,7 @@ public class PdfFileRepository(DocumentDbContext db) : IPdfFileRepository
             return null;
         }
 
-        return new SqlBlobStream(connection, command, reader, reader.GetStream(0));
+        return new NpgsqlBlobStream(connection, command, reader, reader.GetStream(0));
     }
 
     public async Task<IReadOnlyList<PdfFile>> ListByProjectAsync(int projectId, CancellationToken ct = default) =>

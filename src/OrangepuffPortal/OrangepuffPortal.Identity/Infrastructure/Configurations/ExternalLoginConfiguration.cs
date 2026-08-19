@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OrangepuffPortal.Identity.Domain.Entity;
 
@@ -21,7 +21,7 @@ namespace OrangepuffPortal.Identity.Infrastructure.Configurations
             builder.Property(x => x.UserId).HasColumnName("iUserId").IsRequired();
             builder.Property(x => x.Provider).HasColumnName("sProvider").HasMaxLength(50).IsRequired();
             builder.Property(x => x.ProviderKey).HasColumnName("sProviderKey").HasMaxLength(256).IsRequired();
-            builder.Property(x => x.InsertedTime).HasColumnName("dtInsertedTime").HasColumnType("datetime2(3)");
+            builder.Property(x => x.InsertedTime).HasColumnName("dtInsertedTime").HasColumnType("timestamp(3)");
 
             builder.HasIndex(x => new { x.Provider, x.ProviderKey }).IsUnique().HasDatabaseName("UQ_ExternalLogins_Provider_ProviderKey");
             builder.HasIndex(x => new { x.UserId, x.Provider }).IsUnique().HasDatabaseName("UQ_ExternalLogins_UserId_Provider");

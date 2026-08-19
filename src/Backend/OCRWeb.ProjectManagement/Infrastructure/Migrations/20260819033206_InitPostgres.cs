@@ -1,12 +1,13 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace OCRWeb.ProjectManagement.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialProjectManagement : Migration
+    public partial class InitPostgres : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,12 +20,13 @@ namespace OCRWeb.ProjectManagement.Infrastructure.Migrations
                 schema: "project",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    sName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    iInsertedUserId = table.Column<int>(type: "int", nullable: false),
-                    dtInsertedTime = table.Column<DateTime>(type: "datetime2(3)", nullable: false),
-                    iUpdatedUserId = table.Column<int>(type: "int", nullable: true),
-                    dtUpdatedTime = table.Column<DateTime>(type: "datetime2(3)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    sName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    iInsertedUserId = table.Column<int>(type: "integer", nullable: false),
+                    dtInsertedTime = table.Column<DateTime>(type: "timestamp(3) without time zone", nullable: false),
+                    iUpdatedUserId = table.Column<int>(type: "integer", nullable: true),
+                    dtUpdatedTime = table.Column<DateTime>(type: "timestamp(3) without time zone", nullable: true)
                 },
                 constraints: table =>
                 {

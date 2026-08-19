@@ -15,8 +15,8 @@ public static class ModuleRegistration
     {
         var connectionString = configuration.GetConnectionString("OCRWeb");
         services.AddDbContext<ProjectDbContext>(opt =>
-            opt.UseSqlServer(connectionString, sql =>
-                sql.MigrationsHistoryTable("__EFMigrationsHistory", ProjectDbContext.Schema)));
+            opt.UseNpgsql(connectionString, npgsql =>
+                npgsql.MigrationsHistoryTable("__EFMigrationsHistory", ProjectDbContext.Schema)));
 
         services.AddScoped<IProjectRepository, ProjectRepository>();
 

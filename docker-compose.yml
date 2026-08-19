@@ -1,7 +1,7 @@
-# SQL Server is expected to be running externally (permanent instance), so it is
+# PostgreSQL is expected to be running externally (permanent instance), so it is
 # not managed by this compose file. The API reads its connection string from
 # src/Backend/OCRWeb.API/appsettings*.json. From inside the containers the host
-# SQL Server is reachable via host.docker.internal.
+# PostgreSQL is reachable via host.docker.internal.
 services:
   api:
     image: ocrweb-api
@@ -19,7 +19,6 @@ services:
       Authentication__Google__ClientId: "${GOOGLE_CLIENT_ID}"
       Authentication__Google__ClientSecret: "${GOOGLE_CLIENT_SECRET}"
     ports:
-      - "5201:8080"
       - "7201:8081"
     volumes:
       - ./certs:/https:ro
@@ -30,13 +29,8 @@ services:
       - "host.docker.internal:host-gateway"
 
   # ---------------------------------------------------------------------------
-  # Frontend (Angular portal shell) — scaffolded via @orangepuff/portal-frontend +
-  # @orangepuff/portal-frontend-shared (see src/Frontend/OCRWeb.Frontend), but it still
-  # has no Dockerfile, so this service is guarded by the "frontend" profile and is
-  # skipped by a plain `docker compose up`. Run it locally with `ng serve` instead
-  # (`.claude/launch.json`'s "frontend" config). Once a Dockerfile is added, remove the
-  # `profiles:` line (or run `docker compose --profile frontend up`) to bring it up
-  # together with the rest of the stack.
+  # Frontend (Angular portal shell) — built with Node 22/ng build, served by nginx.
+  # nginx proxies /bff/* and /api/* to the api container (http://api:8080).
   # ---------------------------------------------------------------------------
   frontend:
     image: ocrweb-frontend
@@ -44,12 +38,10 @@ services:
       context: .
       dockerfile: src/Frontend/OCRWeb.Frontend/Dockerfile
     container_name: ocrweb-frontend
-    profiles: ["frontend"]
-    environment:
-      # Angular talks only to the /bff/* routes, all served by the single api container now.
-      BFF_BASE_URL: "http://api:8080"
     ports:
-      - "4300:80"
+      - "4300:443"
+    volumes:
+      - ./certs:/https:ro
     depends_on:
       api:
         condition: service_started

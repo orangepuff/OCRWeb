@@ -2,9 +2,9 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OrangepuffPortal.Identity.Infrastructure;
 
 #nullable disable
@@ -12,8 +12,8 @@ using OrangepuffPortal.Identity.Infrastructure;
 namespace OrangepuffPortal.Identity.Infrastructure.Migrations
 {
     [DbContext(typeof(UserDbContext))]
-    [Migration("20260725233547_AddUserCultureCode")]
-    partial class AddUserCultureCode
+    [Migration("20260819033214_InitPostgres")]
+    partial class InitPostgres
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -22,37 +22,37 @@ namespace OrangepuffPortal.Identity.Infrastructure.Migrations
             modelBuilder
                 .HasDefaultSchema("identity")
                 .HasAnnotation("ProductVersion", "10.0.9")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("OrangepuffPortal.Identity.Domain.Entity.ExternalLogin", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iId");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("InsertedTime")
-                        .HasColumnType("datetime2(3)")
+                        .HasColumnType("timestamp(3)")
                         .HasColumnName("dtInsertedTime");
 
                     b.Property<string>("Provider")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("character varying(50)")
                         .HasColumnName("sProvider");
 
                     b.Property<string>("ProviderKey")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasColumnName("sProviderKey");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iUserId");
 
                     b.HasKey("Id");
@@ -72,42 +72,42 @@ namespace OrangepuffPortal.Identity.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iId");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CategoryDesc")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("sCategoryDesc");
 
                     b.Property<bool>("Hidden")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("btHidden");
 
                     b.Property<DateTime>("InsertedTime")
-                        .HasColumnType("datetime2(3)")
+                        .HasColumnType("timestamp(3)")
                         .HasColumnName("dtInsertedTime");
 
                     b.Property<int>("InsertedUserId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iInsertedUserId");
 
                     b.Property<string>("TextCode")
                         .HasMaxLength(60)
-                        .HasColumnType("nvarchar(60)")
+                        .HasColumnType("character varying(60)")
                         .HasColumnName("sTextCode");
 
                     b.Property<DateTime?>("UpdatedTime")
-                        .HasColumnType("datetime2(3)")
+                        .HasColumnType("timestamp(3)")
                         .HasColumnName("dtUpdatedTime");
 
                     b.Property<int?>("UpdatedUserId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iUpdatedUserId");
 
                     b.HasKey("Id");
@@ -123,60 +123,60 @@ namespace OrangepuffPortal.Identity.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iId");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CategoryId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iRuleCategoryId");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("sSecurityRuleCode");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("sSecurityRuleDesc");
 
                     b.Property<bool>("Hidden")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("btHidden");
 
                     b.Property<DateTime>("InsertedTime")
-                        .HasColumnType("datetime2(3)")
+                        .HasColumnType("timestamp(3)")
                         .HasColumnName("dtInsertedTime");
 
                     b.Property<int>("InsertedUserId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iInsertedUserId");
 
                     b.Property<int>("RuleType")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iRuleType");
 
                     b.Property<int?>("SortOrder")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iSortOrder");
 
                     b.Property<string>("TextCode")
                         .HasMaxLength(90)
-                        .HasColumnType("nvarchar(90)")
+                        .HasColumnType("character varying(90)")
                         .HasColumnName("sTextCode");
 
                     b.Property<DateTime?>("UpdatedTime")
-                        .HasColumnType("datetime2(3)")
+                        .HasColumnType("timestamp(3)")
                         .HasColumnName("dtUpdatedTime");
 
                     b.Property<int?>("UpdatedUserId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iUpdatedUserId");
 
                     b.HasKey("Id");
@@ -194,13 +194,13 @@ namespace OrangepuffPortal.Identity.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iId");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("Allowed")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iAllowed");
 
                     b.Property<decimal?>("AllowedDecimal")
@@ -208,27 +208,27 @@ namespace OrangepuffPortal.Identity.Infrastructure.Migrations
                         .HasColumnName("nAllowed");
 
                     b.Property<DateTime>("InsertedTime")
-                        .HasColumnType("datetime2(3)")
+                        .HasColumnType("timestamp(3)")
                         .HasColumnName("dtInsertedTime");
 
                     b.Property<int>("InsertedUserId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iInsertedUserId");
 
                     b.Property<int>("RuleItemId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iRuleItemId");
 
                     b.Property<DateTime?>("UpdatedTime")
-                        .HasColumnType("datetime2(3)")
+                        .HasColumnType("timestamp(3)")
                         .HasColumnName("dtUpdatedTime");
 
                     b.Property<int?>("UpdatedUserId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iUpdatedUserId");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iUserId");
 
                     b.HasKey("Id");
@@ -246,10 +246,10 @@ namespace OrangepuffPortal.Identity.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iId");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CultureCode")
                         .IsRequired()
@@ -260,53 +260,59 @@ namespace OrangepuffPortal.Identity.Infrastructure.Migrations
 
                     b.Property<string>("DisplayName")
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)")
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("sDisplayName");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasColumnName("sEmail");
 
                     b.Property<DateTime>("InsertedTime")
-                        .HasColumnType("datetime2(3)")
+                        .HasColumnType("timestamp(3)")
                         .HasColumnName("dtInsertedTime");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasDefaultValue(true)
                         .HasColumnName("btActive");
 
                     b.Property<bool>("IsAdmin")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("btAdmin");
 
                     b.Property<bool>("IsTemplateUser")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("btTemplateUser");
 
                     b.Property<int?>("ParentId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iParentId");
 
                     b.Property<string>("PasswordHash")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasColumnName("sPasswordHash");
 
+                    b.Property<int>("ThemeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("iThemeId");
+
                     b.Property<DateTime?>("UpdatedTime")
-                        .HasColumnType("datetime2(3)")
+                        .HasColumnType("timestamp(3)")
                         .HasColumnName("dtUpdatedTime");
 
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("sUsername");
 
                     b.HasKey("Id");
@@ -323,26 +329,26 @@ namespace OrangepuffPortal.Identity.Infrastructure.Migrations
             modelBuilder.Entity("OrangepuffPortal.Identity.Domain.Entity.UserAvatar", b =>
                 {
                     b.Property<int>("UserId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("iUserId");
 
                     b.Property<string>("ContentType")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("sContentType");
 
                     b.Property<byte[]>("Image")
                         .IsRequired()
-                        .HasColumnType("varbinary(max)")
+                        .HasColumnType("bytea")
                         .HasColumnName("binAvatar");
 
                     b.Property<DateTime>("InsertedTime")
-                        .HasColumnType("datetime2(3)")
+                        .HasColumnType("timestamp(3)")
                         .HasColumnName("dtInsertedTime");
 
                     b.Property<DateTime?>("UpdatedTime")
-                        .HasColumnType("datetime2(3)")
+                        .HasColumnType("timestamp(3)")
                         .HasColumnName("dtUpdatedTime");
 
                     b.HasKey("UserId");

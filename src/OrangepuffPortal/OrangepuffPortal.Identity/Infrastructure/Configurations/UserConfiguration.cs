@@ -31,8 +31,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.CultureCode).HasColumnName("sCultureCode").HasColumnType("varchar(10)").IsRequired().HasDefaultValue(User.DefaultCultureCode);
         builder.Property(x => x.ThemeId).HasColumnName("iThemeId").HasDefaultValue(0);
 
-        builder.Property(x => x.InsertedTime).HasColumnName("dtInsertedTime").HasColumnType("datetime2(3)");
-        builder.Property(x => x.UpdatedTime).HasColumnName("dtUpdatedTime").HasColumnType("datetime2(3)");
+        builder.Property(x => x.InsertedTime).HasColumnName("dtInsertedTime").HasColumnType("timestamp(3)");
+        builder.Property(x => x.UpdatedTime).HasColumnName("dtUpdatedTime").HasColumnType("timestamp(3)");
 
         // Self-reference to the template user this user inherits permissions from (one level only).
         builder.HasOne<User>().WithMany().HasForeignKey(x => x.ParentId).OnDelete(DeleteBehavior.Restrict);

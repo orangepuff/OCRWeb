@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using Dapper;
 using Diagnostics.NLog.Interfaces;
-using Microsoft.Data.SqlClient;
+using Npgsql;
 
 namespace Diagnostics.NLog.Lookups.Resolvers;
 
@@ -25,19 +25,19 @@ public sealed class CategoryResolver(string connectionString) : ICategoryResolve
     {
         try
         {
-            await using var connection = new SqlConnection(connectionString);
+            await using var connection = new NpgsqlConnection(connectionString);
 
             var id = await connection.QuerySingleOrDefaultAsync<int?>(
-                "SELECT TOP 1 iId FROM dbo.Categories WHERE sName = @name",
+                "SELECT iid FROM dbo.categories WHERE sname = @name LIMIT 1",
                 new { name }).ConfigureAwait(false);
 
             if (id is null)
             {
                 id = await connection.QuerySingleAsync<int>(
                     """
-                    INSERT INTO dbo.Categories (sName)
-                    OUTPUT INSERTED.iId
+                    INSERT INTO dbo.categories (sname)
                     VALUES (@name)
+                    RETURNING iid
                     """,
                     new { name }).ConfigureAwait(false);
             }

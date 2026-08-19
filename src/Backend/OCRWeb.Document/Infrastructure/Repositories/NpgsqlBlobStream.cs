@@ -1,14 +1,14 @@
-using Microsoft.Data.SqlClient;
+using Npgsql;
 
 namespace OCRWeb.Document.Infrastructure.Repositories;
 
 /// <summary>
-/// Wraps the stream returned by <see cref="SqlDataReader.GetStream"/> so the owning
+/// Wraps the stream returned by <see cref="NpgsqlDataReader.GetStream"/> so the owning
 /// reader/command/connection are disposed together with it, instead of being left open
 /// until the caller separately remembers to dispose three other objects.
 /// </summary>
-internal sealed class SqlBlobStream(
-    SqlConnection connection, SqlCommand command, SqlDataReader reader, Stream inner) : Stream
+internal sealed class NpgsqlBlobStream(
+    NpgsqlConnection connection, NpgsqlCommand command, NpgsqlDataReader reader, Stream inner) : Stream
 {
     public override bool CanRead => true;
     public override bool CanSeek => false;

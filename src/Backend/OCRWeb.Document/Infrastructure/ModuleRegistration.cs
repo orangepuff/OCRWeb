@@ -15,8 +15,8 @@ public static class ModuleRegistration
     {
         var connectionString = configuration.GetConnectionString("OCRWeb");
         services.AddDbContext<DocumentDbContext>(opt =>
-            opt.UseSqlServer(connectionString, sql =>
-                sql.MigrationsHistoryTable("__EFMigrationsHistory", DocumentDbContext.Schema)));
+            opt.UseNpgsql(connectionString, npgsql =>
+                npgsql.MigrationsHistoryTable("__EFMigrationsHistory", DocumentDbContext.Schema)));
 
         services.AddScoped<IPdfFileRepository, PdfFileRepository>();
 

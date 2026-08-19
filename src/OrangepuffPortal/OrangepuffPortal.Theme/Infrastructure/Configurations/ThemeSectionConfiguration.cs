@@ -18,13 +18,13 @@ public class ThemeSectionConfiguration : IEntityTypeConfiguration<ThemeSection>
 
         builder.Property(x => x.ThemeId).HasColumnName("iThemeId").IsRequired();
         builder.Property(x => x.SectionCode).HasColumnName("sSectionCode").HasColumnType("varchar(100)").IsRequired();
-        builder.Property(x => x.Description).HasColumnName("sDescription").HasColumnType("nvarchar(500)").IsRequired();
+        builder.Property(x => x.Description).HasColumnName("sDescription").HasColumnType("varchar(500)").IsRequired();
         builder.Property(x => x.SortOrder).HasColumnName("iSortOrder").HasDefaultValue(0);
 
         builder.Property(x => x.InsertedUserId).HasColumnName("iInsertedUserId");
-        builder.Property(x => x.InsertedTime).HasColumnName("dtInsertedTime").HasColumnType("datetime2(3)");
+        builder.Property(x => x.InsertedTime).HasColumnName("dtInsertedTime").HasColumnType("timestamp(3)");
         builder.Property(x => x.UpdatedUserId).HasColumnName("iUpdatedUserId");
-        builder.Property(x => x.UpdatedTime).HasColumnName("dtUpdatedTime").HasColumnType("datetime2(3)");
+        builder.Property(x => x.UpdatedTime).HasColumnName("dtUpdatedTime").HasColumnType("timestamp(3)");
 
         builder.HasIndex(x => new { x.ThemeId, x.SectionCode }).IsUnique().HasDatabaseName("UQ_ThemeSections_ThemeId_SectionCode");
 

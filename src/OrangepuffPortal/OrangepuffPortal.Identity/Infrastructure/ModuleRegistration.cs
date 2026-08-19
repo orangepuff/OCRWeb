@@ -21,8 +21,8 @@ public static class ModuleRegistration
 
         var connectionString = configuration.GetConnectionString("Portal");
         services.AddDbContext<UserDbContext>(opt =>
-            opt.UseSqlServer(connectionString, sql =>
-                sql.MigrationsHistoryTable("__EFMigrationsHistory", UserDbContext.Schema)));
+            opt.UseNpgsql(connectionString, npgsql =>
+                npgsql.MigrationsHistoryTable("__EFMigrationsHistory", UserDbContext.Schema)));
 
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ISecurityRuleCategoryRepository, SecurityRuleCategoryRepository>();

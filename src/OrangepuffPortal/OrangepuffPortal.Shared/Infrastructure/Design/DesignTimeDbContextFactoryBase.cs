@@ -22,8 +22,8 @@ public abstract class DesignTimeDbContextFactoryBase<TContext> : IDesignTimeDbCo
         var connectionString = DesignTimeConfiguration.GetConnectionString("Portal");
 
         var options = new DbContextOptionsBuilder<TContext>()
-            .UseSqlServer(connectionString, sql =>
-                sql.MigrationsHistoryTable("__EFMigrationsHistory", MigrationsHistorySchema))
+            .UseNpgsql(connectionString, npgsql =>
+                npgsql.MigrationsHistoryTable("__EFMigrationsHistory", MigrationsHistorySchema))
             .Options;
 
         return Create(options);

@@ -1,14 +1,14 @@
-using System.Data;
 using Diagnostics.Abstractions;
 using Diagnostics.Abstractions.Interfaces;
 using Diagnostics.NLog.Buffering;
 using Diagnostics.NLog.Interfaces;
-using Microsoft.Data.SqlClient;
+using Npgsql;
+using NpgsqlTypes;
 
 namespace Diagnostics.NLog.Targets;
 
 /// <summary>
-/// Sink for completed <see cref="ITransactionScope"/> spans: bounded/batched → <c>SqlBulkCopy</c> → <c>[dbo].[Transactions]</c> (design doc §3/§6).
+/// Sink for completed <see cref="ITransactionScope"/> spans: bounded/batched → <c>NpgsqlBinaryImporter</c> → <c>dbo.transactions</c> (design doc §3/§6).
 /// Named "Target" to mirror <see cref="LogsTarget"/>, but fed directly by <c>TransactionScopeImpl.Dispose</c> (<see cref="Enqueue"/>) rather than through NLog's logger dispatch — a transaction always flushes exactly one row regardless of NLog min level rules, matching the unconditional "measures duration and flushes on dispose" semantics in §3.
 /// </summary>
 public sealed class TransactionsTarget : IAsyncDisposable
@@ -44,7 +44,9 @@ public sealed class TransactionsTarget : IAsyncDisposable
     public void EnsureStarted()
     {
         if (_writer is not null)
+        {
             return;
+        }
 
         try
         {
@@ -80,7 +82,7 @@ public sealed class TransactionsTarget : IAsyncDisposable
             if (_categoryIdCache.TryGetValue(category, out var cached))
             {
                 return cached;
-            } 
+            }
         }
 
         var resolved = _categoryResolver.ResolveIdAsync(category).GetAwaiter().GetResult();
@@ -95,63 +97,77 @@ public sealed class TransactionsTarget : IAsyncDisposable
 
     private async Task FlushBatchAsync(IReadOnlyList<TransactionRecord> rows, CancellationToken ct)
     {
-        using var table = new DataTable();
-        table.Columns.Add("sId", typeof(Guid));
-        table.Columns.Add("sParentId", typeof(Guid));
-        table.Columns.Add("iEnvironmentId", typeof(int));
-        table.Columns.Add("iCategoryId", typeof(int));
-        table.Columns.Add("sCorrelationId", typeof(Guid));
-        table.Columns.Add("sMessage", typeof(string));
-        table.Columns.Add("sUrl", typeof(string));
-        table.Columns.Add("dtStartTime", typeof(DateTime));
-        table.Columns.Add("iDuration", typeof(int));
-        table.Columns.Add("xRequestXml", typeof(string));
-        table.Columns.Add("sRequestJson", typeof(string));
-        table.Columns.Add("sRequestText", typeof(string));
-        table.Columns.Add("xResponseXml", typeof(string));
-        table.Columns.Add("sResponseJson", typeof(string));
-        table.Columns.Add("sResponseText", typeof(string));
-        table.Columns.Add("sUser", typeof(string));
-        table.Columns.Add("sCustomAttributes", typeof(string));
-        table.Columns.Add("sSql", typeof(string));
-        table.Columns.Add("sBaseUrl", typeof(string));
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync(ct).ConfigureAwait(false);
+
+        await using var writer = await connection.BeginBinaryImportAsync(
+            "COPY dbo.transactions (sid, sparentid, ienvironmentid, icategoryid, scorrelationid, " +
+            "smessage, surl, dtstarttime, iduration, xrequestxml, srequestjson, srequesttext, " +
+            "xresponsexml, sresponsejson, sresponsetext, suser, scustomattributes, ssql, sbaseurl) " +
+            "FROM STDIN (FORMAT BINARY)", ct).ConfigureAwait(false);
 
         foreach (var row in rows)
         {
-            table.Rows.Add(
-                row.Id,
-                (object?)row.ParentId ?? DBNull.Value,
-                _environmentId,
-                ResolveCategoryIdCached(row.Category),
-                row.CorrelationId,
-                (object?)row.Message ?? DBNull.Value,
-                (object?)row.Url ?? DBNull.Value,
-                row.StartTime,
-                (object?)row.DurationMs ?? DBNull.Value,
-                (object?)row.RequestXml ?? DBNull.Value,
-                (object?)row.RequestJson ?? DBNull.Value,
-                (object?)row.RequestText ?? DBNull.Value,
-                (object?)row.ResponseXml ?? DBNull.Value,
-                (object?)row.ResponseJson ?? DBNull.Value,
-                (object?)row.ResponseText ?? DBNull.Value,
-                (object?)row.User ?? DBNull.Value,
-                (object?)row.CustomAttributesJson ?? DBNull.Value,
-                (object?)row.Sql ?? DBNull.Value,
-                (object?)row.BaseUrl ?? DBNull.Value);
+            await writer.StartRowAsync(ct).ConfigureAwait(false);
+
+            await writer.WriteAsync(row.Id, NpgsqlDbType.Uuid, ct).ConfigureAwait(false);
+
+            if (row.ParentId.HasValue)
+            {
+                await writer.WriteAsync(row.ParentId.Value, NpgsqlDbType.Uuid, ct).ConfigureAwait(false);
+            }
+            else
+            {
+                await writer.WriteNullAsync(ct).ConfigureAwait(false);
+            }
+
+            await writer.WriteAsync(_environmentId, NpgsqlDbType.Integer, ct).ConfigureAwait(false);
+            await writer.WriteAsync(ResolveCategoryIdCached(row.Category), NpgsqlDbType.Integer, ct).ConfigureAwait(false);
+            await writer.WriteAsync(row.CorrelationId, NpgsqlDbType.Uuid, ct).ConfigureAwait(false);
+
+            if (row.Message is not null) { await writer.WriteAsync(row.Message, NpgsqlDbType.Text, ct).ConfigureAwait(false); }
+            else { await writer.WriteNullAsync(ct).ConfigureAwait(false); }
+
+            if (row.Url is not null) { await writer.WriteAsync(row.Url, NpgsqlDbType.Text, ct).ConfigureAwait(false); }
+            else { await writer.WriteNullAsync(ct).ConfigureAwait(false); }
+
+            await writer.WriteAsync(row.StartTime, NpgsqlDbType.TimestampTz, ct).ConfigureAwait(false);
+
+            if (row.DurationMs.HasValue) { await writer.WriteAsync(row.DurationMs.Value, NpgsqlDbType.Integer, ct).ConfigureAwait(false); }
+            else { await writer.WriteNullAsync(ct).ConfigureAwait(false); }
+
+            if (row.RequestXml is not null) { await writer.WriteAsync(row.RequestXml, NpgsqlDbType.Text, ct).ConfigureAwait(false); }
+            else { await writer.WriteNullAsync(ct).ConfigureAwait(false); }
+
+            if (row.RequestJson is not null) { await writer.WriteAsync(row.RequestJson, NpgsqlDbType.Text, ct).ConfigureAwait(false); }
+            else { await writer.WriteNullAsync(ct).ConfigureAwait(false); }
+
+            if (row.RequestText is not null) { await writer.WriteAsync(row.RequestText, NpgsqlDbType.Text, ct).ConfigureAwait(false); }
+            else { await writer.WriteNullAsync(ct).ConfigureAwait(false); }
+
+            if (row.ResponseXml is not null) { await writer.WriteAsync(row.ResponseXml, NpgsqlDbType.Text, ct).ConfigureAwait(false); }
+            else { await writer.WriteNullAsync(ct).ConfigureAwait(false); }
+
+            if (row.ResponseJson is not null) { await writer.WriteAsync(row.ResponseJson, NpgsqlDbType.Text, ct).ConfigureAwait(false); }
+            else { await writer.WriteNullAsync(ct).ConfigureAwait(false); }
+
+            if (row.ResponseText is not null) { await writer.WriteAsync(row.ResponseText, NpgsqlDbType.Text, ct).ConfigureAwait(false); }
+            else { await writer.WriteNullAsync(ct).ConfigureAwait(false); }
+
+            if (row.User is not null) { await writer.WriteAsync(row.User, NpgsqlDbType.Varchar, ct).ConfigureAwait(false); }
+            else { await writer.WriteNullAsync(ct).ConfigureAwait(false); }
+
+            if (row.CustomAttributesJson is not null) { await writer.WriteAsync(row.CustomAttributesJson, NpgsqlDbType.Text, ct).ConfigureAwait(false); }
+            else { await writer.WriteNullAsync(ct).ConfigureAwait(false); }
+
+            if (row.Sql is not null) { await writer.WriteAsync(row.Sql, NpgsqlDbType.Text, ct).ConfigureAwait(false); }
+            else { await writer.WriteNullAsync(ct).ConfigureAwait(false); }
+
+            if (row.BaseUrl is not null) { await writer.WriteAsync(row.BaseUrl, NpgsqlDbType.Text, ct).ConfigureAwait(false); }
+            else { await writer.WriteNullAsync(ct).ConfigureAwait(false); }
         }
 
-        await using var connection = new SqlConnection(_connectionString);
-        await connection.OpenAsync(ct).ConfigureAwait(false);
-
-        using var bulkCopy = new SqlBulkCopy(connection);
-        bulkCopy.DestinationTableName = "dbo.Transactions";
-
-        foreach (DataColumn column in table.Columns)
-        {
-            bulkCopy.ColumnMappings.Add(column.ColumnName, column.ColumnName);
-        }
-
-        await bulkCopy.WriteToServerAsync(table, ct).ConfigureAwait(false);
+        await writer.CompleteAsync(ct).ConfigureAwait(false);
     }
 
     private void WriteFallback(IReadOnlyList<TransactionRecord> rows)
@@ -163,7 +179,7 @@ public sealed class TransactionsTarget : IAsyncDisposable
             Directory.CreateDirectory(directory);
         }
 
-        File.AppendAllLines(path, rows.Select(r =>  $"[TRANSACTION] {r.StartTime:O} id={r.Id} parent={r.ParentId} category={r.Category} " + $"duration={r.DurationMs}ms message={r.Message}"));
+        File.AppendAllLines(path, rows.Select(r => $"[TRANSACTION] {r.StartTime:O} id={r.Id} parent={r.ParentId} category={r.Category} " + $"duration={r.DurationMs}ms message={r.Message}"));
     }
 
     private static string ResolveFallbackPath(string template) => template.Replace("${shortdate}", DateTime.UtcNow.ToString("yyyy-MM-dd"));
@@ -173,6 +189,6 @@ public sealed class TransactionsTarget : IAsyncDisposable
         if (_writer is not null)
         {
             await _writer.DisposeAsync().ConfigureAwait(false);
-        } 
+        }
     }
 }

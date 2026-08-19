@@ -17,8 +17,8 @@ public static class ModuleRegistration
     {
         var connectionString = configuration.GetConnectionString("Portal");
         services.AddDbContext<ConfigDbContext>(opt =>
-            opt.UseSqlServer(connectionString, sql =>
-                sql.MigrationsHistoryTable("__EFMigrationsHistory", ConfigDbContext.Schema)));
+            opt.UseNpgsql(connectionString, npgsql =>
+                npgsql.MigrationsHistoryTable("__EFMigrationsHistory", ConfigDbContext.Schema)));
 
         services.AddScoped<IConfigRepository, ConfigRepository>();
         services.AddScoped<IConfigCatalogWriter, ConfigCatalogWriter>();
