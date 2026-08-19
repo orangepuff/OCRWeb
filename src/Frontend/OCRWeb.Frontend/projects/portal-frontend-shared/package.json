@@ -1,0 +1,20 @@
+{
+  "name": "@orangepuff/portal-frontend-shared",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/orangepuff/orangepuffportal"
+  },
+  "peerDependencies": {
+    "@angular/animations": "^22.0.0",
+    "@angular/cdk": "^22.0.0",
+    "@angular/common": "^22.0.0",
+    "@angular/core": "^22.0.0",
+    "@angular/forms": "^22.0.0",
+    "@angular/material": "^22.0.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false
+}

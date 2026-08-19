@@ -1,0 +1,112 @@
+// Light green "selected" tab (+ the content panel it merges into) vs. white "unselected" tabs,
+// framed by a visible border on every side — a literal color choice per request, not a theme token
+// (the app's M3 theme is teal, not green, so there's no system token to reuse here).
+$config-admin-tab-border: #d0d0d0;
+$config-admin-tab-inactive-bg: #ffffff;
+$config-admin-tab-active-bg: #e8f5e9;
+
+.config-admin-page {
+  padding: 16px;
+
+  // M3 tab tokens only cover label/indicator color, not backgrounds or borders — Material always
+  // stamps `.mdc-tab--active` on the selected tab regardless of theme, so the rest needs a scoped
+  // ::ng-deep touch (tab labels are rendered by MatTabGroup itself, not this component's own
+  // template, so plain scoped CSS can't reach them at all).
+  --mat-tab-header-label-text-weight: 600;
+  --mat-tab-header-active-label-text-color: #1b1b1b;
+  --mat-tab-header-active-ripple-color: #1b1b1b;
+  --mat-tab-header-active-focus-indicator-color: #1b1b1b;
+  --mat-tab-header-inactive-label-text-color: #4a4a4a;
+
+  ::ng-deep {
+    .mat-mdc-tab-header {
+      border: 1px solid $config-admin-tab-border;
+      border-bottom: none;
+    }
+
+    .mat-mdc-tab-labels {
+      width: 100%;
+    }
+
+    .mdc-tab {
+      flex: 1 1 0;
+      background-color: $config-admin-tab-inactive-bg;
+      border-right: 1px solid $config-admin-tab-border;
+
+      &:last-of-type {
+        border-right: none;
+      }
+    }
+
+    .mdc-tab--active {
+      background-color: $config-admin-tab-active-bg;
+    }
+
+    // The colored underline would be redundant with the background swap above and isn't in the
+    // requested look — the border + background contrast alone marks the active tab.
+    .mdc-tab-indicator {
+      display: none;
+    }
+
+    // Below ~600px, Material's own horizontal-scroll/pagination-arrow behavior for overflowing tabs
+    // needs the tabs to be allowed to shrink to their content width instead of stretching to fill —
+    // otherwise four equal-width flex tabs just squeeze their labels instead of scrolling.
+    @media (max-width: 599px) {
+      .mdc-tab {
+        flex: 0 0 auto;
+      }
+    }
+  }
+}
+
+.config-admin-page__tab {
+  padding: 16px;
+  border: 1px solid $config-admin-tab-border;
+  background-color: $config-admin-tab-active-bg;
+}
+
+.config-admin-page__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.config-admin-page__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.config-admin-page__loading-bar {
+  // Reserves the bar's height whether or not it's showing, so the table underneath doesn't jump up
+  // and down every time a load starts/finishes.
+  height: 4px;
+  margin-bottom: 12px;
+}
+
+.config-admin-page__table {
+  width: 100%;
+
+  .mat-mdc-row:nth-child(even) {
+    background-color: var(--mat-sys-surface-container-low);
+  }
+
+  .mat-mdc-row:hover {
+    background-color: var(--mat-sys-surface-container-high);
+  }
+}
+
+.config-admin-page__bool-icon {
+  vertical-align: middle;
+
+  &--yes {
+    color: #2e7d32;
+  }
+
+  &--no {
+    color: #c62828;
+  }
+}

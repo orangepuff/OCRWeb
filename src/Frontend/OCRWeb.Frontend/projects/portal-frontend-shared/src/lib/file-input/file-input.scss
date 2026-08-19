@@ -1,0 +1,41 @@
+:host {
+  display: block;
+}
+
+.lib-file-input__label {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--mat-sys-on-surface-variant);
+  margin-bottom: 4px;
+}
+
+.lib-file-input__input {
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--mat-sys-on-surface);
+
+  &::file-selector-button {
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 8px 16px;
+    margin-right: 12px;
+    border: none;
+    border-radius: 20px;
+    background: var(--mat-sys-secondary-container);
+    color: var(--mat-sys-on-secondary-container);
+    cursor: pointer;
+
+    &:hover {
+      filter: brightness(0.95);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.5;
+
+    &::file-selector-button {
+      cursor: not-allowed;
+    }
+  }
+}

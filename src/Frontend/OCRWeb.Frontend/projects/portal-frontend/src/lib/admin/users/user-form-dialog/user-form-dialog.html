@@ -1,0 +1,45 @@
+<h2 mat-dialog-title>{{ 'admin.users.form.title.add' | translate:module }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="save()">
+  <mat-dialog-content class="user-form-dialog__content">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'username' | translate:'OrangepuffPortal.Common' }}</mat-label>
+      <input matInput formControlName="username" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'email' | translate:'OrangepuffPortal.Common' }}</mat-label>
+      <input matInput type="email" formControlName="email" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'displayName' | translate:'OrangepuffPortal.Common' }}</mat-label>
+      <input matInput formControlName="displayName" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'password' | translate:'OrangepuffPortal.Common' }}</mat-label>
+      <input matInput type="password" formControlName="password" autocomplete="new-password" />
+      <mat-hint>{{ 'admin.users.form.passwordHint' | translate:module }}</mat-hint>
+    </mat-form-field>
+
+    <mat-checkbox formControlName="isTemplateUser">{{ 'admin.users.form.isTemplateUser' | translate:module }}</mat-checkbox>
+
+    @if (!form.controls.isTemplateUser.value) {
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'admin.users.form.inheritFromTemplate' | translate:module }}</mat-label>
+        <mat-select formControlName="parentId">
+          <mat-option [value]="null">{{ 'admin.users.form.noTemplate' | translate:module }}</mat-option>
+          @for (templateUser of data.templateUsers; track templateUser.id) {
+            <mat-option [value]="templateUser.id">{{ templateUser.username }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="cancel()">{{ 'cancel' | translate:'OrangepuffPortal.Common' }}</button>
+    <button mat-flat-button type="submit" [disabled]="form.invalid">{{ 'save' | translate:'OrangepuffPortal.Common' }}</button>
+  </mat-dialog-actions>
+</form>

@@ -10,11 +10,11 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="FastEndpoints" />
-    <PackageReference Include="Orangepuff.Diagnostics.Abstractions" />
-    <PackageReference Include="Orangepuff.Diagnostics.NLog" />
-    <PackageReference Include="Orangepuff.Diagnostics.AspNetCore" />
-    <PackageReference Include="OrangepuffPortal.Host" />
-    <PackageReference Include="OrangepuffPortal.ConfigText.Contract" />
+    <ProjectReference Include="..\..\DiagnosticLog\Diagnostics.Abstractions\Diagnostics.Abstractions.csproj" />
+    <ProjectReference Include="..\..\DiagnosticLog\Diagnostics.NLog\Diagnostics.NLog.csproj" />
+    <ProjectReference Include="..\..\DiagnosticLog\Diagnostics.AspNetCore\Diagnostics.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\OrangepuffPortal\OrangepuffPortal.Host\OrangepuffPortal.Host.csproj" />
+    <ProjectReference Include="..\..\OrangepuffPortal\OrangepuffPortal.ConfigText.Contract\OrangepuffPortal.ConfigText.Contract.csproj" />
   </ItemGroup>
 
   <ItemGroup>

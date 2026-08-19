@@ -1,0 +1,15 @@
+:host {
+  display: block;
+}
+
+.lib-slider__label {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--mat-sys-on-surface-variant);
+  margin-bottom: 4px;
+}
+
+mat-slider {
+  display: block;
+  width: 100%;
+}

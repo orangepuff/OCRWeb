@@ -1,0 +1,44 @@
+<main class="landing">
+  <div class="landing__hero">
+    @if (content.heroImageUrl) {
+      <img class="landing__hero-media" [src]="content.heroImageUrl" [alt]="content.title" />
+    } @else {
+      <svg class="landing__hero-media" viewBox="0 0 200 160" [attr.aria-label]="content.title" role="img">
+        <circle cx="78" cy="90" r="58" fill="var(--mat-sys-primary-container)" opacity="0.7" />
+        <circle cx="128" cy="58" r="42" fill="var(--mat-sys-secondary)" opacity="0.6" />
+        <circle cx="118" cy="112" r="30" fill="var(--mat-sys-primary)" opacity="0.9" />
+        <circle cx="60" cy="46" r="10" fill="var(--mat-sys-primary)" />
+      </svg>
+    }
+  </div>
+  <h1>{{ content.title }}</h1>
+  <p>{{ content.tagline }}</p>
+
+  @if (!showPasswordForm()) {
+    <div class="landing__actions">
+      <button mat-flat-button type="button" (click)="signInWithGoogle()">{{ 'landing.signInWithGoogle' | translate:module }}</button>
+      <button mat-stroked-button type="button" (click)="togglePasswordForm()">{{ 'landing.signInWithAccount' | translate:module }}</button>
+    </div>
+  } @else {
+    <form class="landing__password-form" [formGroup]="passwordForm" (ngSubmit)="submitPasswordSignIn()">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'landing.usernameOrEmail' | translate:module }}</mat-label>
+        <input matInput formControlName="usernameOrEmail" autocomplete="username" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'password' | translate:'OrangepuffPortal.Common' }}</mat-label>
+        <input matInput type="password" formControlName="password" autocomplete="current-password" />
+      </mat-form-field>
+
+      @if (errorMessage()) {
+        <p class="landing__error">{{ errorMessage() }}</p>
+      }
+
+      <div class="landing__actions">
+        <button mat-flat-button type="submit" [disabled]="passwordForm.invalid || submitting()">{{ 'landing.signIn' | translate:module }}</button>
+        <button mat-button type="button" (click)="togglePasswordForm()">{{ 'back' | translate:'OrangepuffPortal.Common' }}</button>
+      </div>
+    </form>
+  }
+</main>

@@ -1,0 +1,38 @@
+.app-header {
+  background: var(--mat-sys-surface-container-highest);
+  color: var(--mat-sys-on-surface);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 56px;
+}
+
+.app-header__title {
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.app-header__trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: var(--mat-sys-corner-full);
+  background: var(--mat-sys-surface-container-high);
+  border: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--mat-sys-surface-container-low);
+  }
+}
+
+.app-header__menu-section {
+  padding: 8px 16px 4px;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--mat-sys-on-surface-variant);
+}

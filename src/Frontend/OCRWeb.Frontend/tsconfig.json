@@ -12,7 +12,16 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "ES2022",
-    "module": "preserve"
+    "module": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@orangepuff/portal-frontend": [
+        "projects/portal-frontend/src/public-api"
+      ],
+      "@orangepuff/portal-frontend-shared": [
+        "projects/portal-frontend-shared/src/public-api"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
@@ -26,6 +35,18 @@
     },
     {
       "path": "./tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/portal-frontend/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/portal-frontend/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/portal-frontend-shared/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/portal-frontend-shared/tsconfig.spec.json"
     }
   ]
 }

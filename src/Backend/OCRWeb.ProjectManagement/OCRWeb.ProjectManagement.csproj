@@ -7,7 +7,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="MediatR" />
-    <PackageReference Include="OrangepuffPortal.Shared" />
+    <ProjectReference Include="..\..\OrangepuffPortal\OrangepuffPortal.Shared\OrangepuffPortal.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

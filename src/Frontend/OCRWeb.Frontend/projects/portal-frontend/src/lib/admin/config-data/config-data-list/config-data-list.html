@@ -1,0 +1,58 @@
+<div class="config-data-list">
+  <div class="config-data-list__toolbar">
+    <h1>{{ 'admin.configData.title' | translate:module }}</h1>
+    <button mat-flat-button type="button" (click)="openAddDialog()">{{ 'admin.configData.addButton' | translate:module }}</button>
+  </div>
+
+  <div class="config-data-list__filter">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'admin.configData.form.key' | translate:module }}</mat-label>
+      <input matInput [formControl]="keyFilter" />
+    </mat-form-field>
+  </div>
+
+  <table mat-table [dataSource]="rows()" class="config-data-list__table">
+    <ng-container matColumnDef="key">
+      <th mat-header-cell *matHeaderCellDef>{{ 'admin.configData.column.key' | translate:module }}</th>
+      <td mat-cell *matCellDef="let row">{{ row.key }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="value">
+      <th mat-header-cell *matHeaderCellDef>{{ 'admin.configData.column.value' | translate:module }}</th>
+      <td mat-cell *matCellDef="let row">{{ row.value ?? '—' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="allowEditByScreen">
+      <th mat-header-cell *matHeaderCellDef>{{ 'admin.configData.column.allowEditByScreen' | translate:module }}</th>
+      <td mat-cell *matCellDef="let row">
+        @if (row.allowEditByScreen === true) {
+          <mat-icon>check</mat-icon>
+        } @else if (row.allowEditByScreen === false) {
+          <mat-icon>close</mat-icon>
+        } @else {
+          —
+        }
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef>{{ 'description' | translate:'OrangepuffPortal.Common' }}</th>
+      <td mat-cell *matCellDef="let row">{{ row.description ?? '—' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let row">
+        <button mat-icon-button type="button" (click)="openEditDialog(row)" [attr.aria-label]="'edit' | translate:'OrangepuffPortal.Common'">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button type="button" (click)="deleteRow(row)" [attr.aria-label]="'delete' | translate:'OrangepuffPortal.Common'">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+</div>

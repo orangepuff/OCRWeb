@@ -1,0 +1,14 @@
+@switch (variant()) {
+  @case ('primary') {
+    <button mat-flat-button [type]="type()" [disabled]="disabled()" (click)="onClick()">{{ label() }}</button>
+  }
+  @case ('raised') {
+    <button mat-raised-button [type]="type()" [disabled]="disabled()" (click)="onClick()">{{ label() }}</button>
+  }
+  @case ('stroked') {
+    <button mat-stroked-button [type]="type()" [disabled]="disabled()" (click)="onClick()">{{ label() }}</button>
+  }
+  @default {
+    <button mat-button [type]="type()" [disabled]="disabled()" (click)="onClick()">{{ label() }}</button>
+  }
+}

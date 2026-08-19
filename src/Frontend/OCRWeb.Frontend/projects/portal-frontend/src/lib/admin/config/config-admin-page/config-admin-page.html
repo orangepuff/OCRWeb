@@ -1,0 +1,161 @@
+<div class="config-admin-page">
+  <h1>{{ 'admin.config.title' | translate:module }}</h1>
+
+  <mat-tab-group>
+    <mat-tab [label]="'admin.config.tab.configs' | translate:module">
+      <div class="config-admin-page__tab">
+        <div class="config-admin-page__toolbar">
+          <button mat-flat-button type="button" (click)="openAddConfigDialog()">{{ 'admin.config.item.addButton' | translate:module }}</button>
+        </div>
+
+        <form [formGroup]="filterForm" (ngSubmit)="applyFilter()" class="config-admin-page__filters">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'section' | translate:'OrangepuffPortal.Common' }}</mat-label>
+            <mat-select formControlName="sectionId">
+              <mat-option [value]="null">{{ 'admin.config.item.filter.any' | translate:module }}</mat-option>
+              @for (section of sections(); track section.id) {
+                <mat-option [value]="section.id">{{ section.sSectionDesc }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'admin.config.item.form.configCode' | translate:module }}</mat-label>
+            <input matInput formControlName="configCode" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'admin.config.item.form.configName' | translate:module }}</mat-label>
+            <input matInput formControlName="configName" />
+          </mat-form-field>
+
+          <button mat-flat-button type="submit">{{ 'search' | translate:'OrangepuffPortal.Common' }}</button>
+          <button mat-button type="button" (click)="clearFilter()">{{ 'clear' | translate:'OrangepuffPortal.Common' }}</button>
+        </form>
+
+        <div class="config-admin-page__loading-bar">
+          @if (itemsLoading()) {
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          }
+        </div>
+
+        <table mat-table [dataSource]="items()" matSort (matSortChange)="onSortChange($event)" class="config-admin-page__table">
+          <ng-container matColumnDef="sSectionDesc">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="section">{{ 'section' | translate:'OrangepuffPortal.Common' }}</th>
+            <td mat-cell *matCellDef="let item">{{ item.sSectionDesc }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="sConfigCode">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="configCode">{{ 'admin.config.item.form.configCode' | translate:module }}</th>
+            <td mat-cell *matCellDef="let item">{{ item.sConfigCode }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="sConfigName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="configName">{{ 'admin.config.item.column.name' | translate:module }}</th>
+            <td mat-cell *matCellDef="let item">{{ item.sConfigName }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="iConfigType">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="configType">{{ 'type' | translate:'OrangepuffPortal.Common' }}</th>
+            <td mat-cell *matCellDef="let item">{{ configTypeName(item) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="btShow">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="show">{{ 'shown' | translate:'OrangepuffPortal.Common' }}</th>
+            <td mat-cell *matCellDef="let item">
+              @if (item.btShow) {
+                <mat-icon class="config-admin-page__bool-icon config-admin-page__bool-icon--yes" [attr.aria-label]="'yes' | translate:'OrangepuffPortal.Common'">check</mat-icon>
+              } @else {
+                <mat-icon class="config-admin-page__bool-icon config-admin-page__bool-icon--no" [attr.aria-label]="'no' | translate:'OrangepuffPortal.Common'">close</mat-icon>
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="btAllowUserEdit">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="allowUserEdit">{{ 'admin.config.item.column.userEditable' | translate:module }}</th>
+            <td mat-cell *matCellDef="let item">
+              @if (item.btAllowUserEdit) {
+                <mat-icon class="config-admin-page__bool-icon config-admin-page__bool-icon--yes" [attr.aria-label]="'yes' | translate:'OrangepuffPortal.Common'">check</mat-icon>
+              } @else {
+                <mat-icon class="config-admin-page__bool-icon config-admin-page__bool-icon--no" [attr.aria-label]="'no' | translate:'OrangepuffPortal.Common'">close</mat-icon>
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="iSortOrder">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="sortOrder">{{ 'sortOrder' | translate:'OrangepuffPortal.Common' }}</th>
+            <td mat-cell *matCellDef="let item">{{ item.iSortOrder ?? '—' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="defaultValue">
+            <th mat-header-cell *matHeaderCellDef>{{ 'admin.config.item.column.defaultValue' | translate:module }}</th>
+            <td mat-cell *matCellDef="let item">{{ defaultValueDisplay(item) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let item">
+              <button mat-icon-button type="button" (click)="openEditConfigDialog(item)" [attr.aria-label]="'edit' | translate:'OrangepuffPortal.Common'">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button type="button" (click)="deleteConfig(item)" [attr.aria-label]="'delete' | translate:'OrangepuffPortal.Common'">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="itemColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: itemColumns"></tr>
+        </table>
+
+        <mat-paginator [length]="totalCount()" [pageSize]="50" [pageSizeOptions]="pageSizeOptions" (page)="onPage($event)"></mat-paginator>
+      </div>
+    </mat-tab>
+
+    <mat-tab [label]="'admin.config.tab.sections' | translate:module">
+      <div class="config-admin-page__tab">
+        <div class="config-admin-page__toolbar">
+          <button mat-flat-button type="button" (click)="openAddSectionDialog()">{{ 'admin.config.section.addButton' | translate:module }}</button>
+        </div>
+
+        <table mat-table [dataSource]="sectionsDataSource" matSort #sectionSort="matSort" class="config-admin-page__table">
+          <ng-container matColumnDef="sSectionDesc">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'description' | translate:'OrangepuffPortal.Common' }}</th>
+            <td mat-cell *matCellDef="let section">{{ section.sSectionDesc }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="sTextCode">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'textCode' | translate:'OrangepuffPortal.Common' }}</th>
+            <td mat-cell *matCellDef="let section">{{ section.sTextCode }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="btShow">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'shown' | translate:'OrangepuffPortal.Common' }}</th>
+            <td mat-cell *matCellDef="let section">
+              @if (section.btShow) {
+                <mat-icon class="config-admin-page__bool-icon config-admin-page__bool-icon--yes" [attr.aria-label]="'yes' | translate:'OrangepuffPortal.Common'">check</mat-icon>
+              } @else {
+                <mat-icon class="config-admin-page__bool-icon config-admin-page__bool-icon--no" [attr.aria-label]="'no' | translate:'OrangepuffPortal.Common'">close</mat-icon>
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let section">
+              <button mat-icon-button type="button" (click)="openEditSectionDialog(section)" [attr.aria-label]="'edit' | translate:'OrangepuffPortal.Common'">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button type="button" (click)="deleteSection(section)" [attr.aria-label]="'delete' | translate:'OrangepuffPortal.Common'">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="sectionColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: sectionColumns"></tr>
+        </table>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

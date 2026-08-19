@@ -1,0 +1,38 @@
+<div class="security-rule-category-list">
+  <div class="security-rule-category-list__toolbar">
+    <h1>{{ 'admin.securityRuleCategories.title' | translate:module }}</h1>
+    <button mat-flat-button type="button" (click)="openAddDialog()">{{ 'admin.securityRuleCategories.addButton' | translate:module }}</button>
+  </div>
+
+  <table mat-table [dataSource]="categories()" class="security-rule-category-list__table">
+    <ng-container matColumnDef="categoryDesc">
+      <th mat-header-cell *matHeaderCellDef>{{ 'description' | translate:'OrangepuffPortal.Common' }}</th>
+      <td mat-cell *matCellDef="let category">{{ category.categoryDesc }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="textCode">
+      <th mat-header-cell *matHeaderCellDef>{{ 'textCode' | translate:'OrangepuffPortal.Common' }}</th>
+      <td mat-cell *matCellDef="let category">{{ category.textCode ?? '—' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="hidden">
+      <th mat-header-cell *matHeaderCellDef>{{ 'hidden' | translate:'OrangepuffPortal.Common' }}</th>
+      <td mat-cell *matCellDef="let category">{{ (category.hidden ? 'yes' : 'no') | translate:'OrangepuffPortal.Common' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let category">
+        <button mat-icon-button type="button" (click)="openEditDialog(category)" [attr.aria-label]="'edit' | translate:'OrangepuffPortal.Common'">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button type="button" (click)="deleteCategory(category)" [attr.aria-label]="'delete' | translate:'OrangepuffPortal.Common'">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+</div>

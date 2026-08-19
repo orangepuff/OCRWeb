@@ -1,0 +1,26 @@
+.lib-avatar {
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--mat-sys-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    // While a missing avatar's request is in flight (or briefly between load and the error
+    // handler swapping in the initials span), some browsers render the alt text overflowing
+    // the image's box instead of clipping it to size — silence that text entirely.
+    font-size: 0;
+    color: transparent;
+  }
+}
+
+.lib-avatar__initials {
+  color: var(--mat-sys-on-tertiary);
+  font-weight: 500;
+  font-size: 12px;
+}

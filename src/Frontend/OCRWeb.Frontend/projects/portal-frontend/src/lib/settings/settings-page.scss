@@ -1,0 +1,73 @@
+.settings-page {
+  padding: 16px;
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.settings-page__card {
+  width: 100%;
+}
+
+.settings-page__avatar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.settings-page__avatar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-page__form-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.settings-page__form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 320px;
+}
+
+// flex-basis is a main-axis size — 220px means width in a row but height in a column, so the
+// growth behavior below must stay scoped to row containers or every column field stretches
+// vertically to fill the container instead of just being full-width.
+.settings-page__form-row .settings-page__field {
+  flex: 1 1 220px;
+}
+
+.settings-page__form-column .settings-page__field {
+  flex: none;
+  width: 100%;
+}
+
+.settings-page__config-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 4px 0;
+}
+
+.settings-page__config-label {
+  color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
+}
+
+.settings-page__field--compact {
+  flex: 0 1 240px;
+}
+
+.settings-page__error {
+  color: var(--mat-sys-error, #b3261e);
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+}

@@ -1,0 +1,7 @@
+@if (safeBodyAppUrl) {
+  <iframe class="body-app-frame" [src]="safeBodyAppUrl" [title]="'home.bodyAppIframeTitle' | translate:module"></iframe>
+} @else {
+  <div class="body-app-placeholder">
+    <p>{{ 'home.noBodyApp' | translate:module }}</p>
+  </div>
+}

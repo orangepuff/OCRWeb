@@ -7,6 +7,26 @@
     <File Path="README.md" />
   </Folder>
   <Folder Name="/src/" />
+  <Folder Name="/src/DiagnosticLog/">
+    <Project Path="src/DiagnosticLog/Diagnostics.Abstractions/Diagnostics.Abstractions.csproj" />
+    <Project Path="src/DiagnosticLog/Diagnostics.AspNetCore/Diagnostics.AspNetCore.csproj" />
+    <Project Path="src/DiagnosticLog/Diagnostics.NLog/Diagnostics.NLog.csproj" />
+  </Folder>
+  <Folder Name="/src/OrangepuffPortal/">
+    <Project Path="src/OrangepuffPortal/OrangepuffPortal.Bff/OrangepuffPortal.Bff.csproj" />
+    <Project Path="src/OrangepuffPortal/OrangepuffPortal.Config/OrangepuffPortal.Config.csproj" />
+    <Project Path="src/OrangepuffPortal/OrangepuffPortal.Config.Contract/OrangepuffPortal.Config.Contract.csproj" />
+    <Project Path="src/OrangepuffPortal/OrangepuffPortal.ConfigData/OrangepuffPortal.ConfigData.csproj" />
+    <Project Path="src/OrangepuffPortal/OrangepuffPortal.ConfigData.Contract/OrangepuffPortal.ConfigData.Contract.csproj" />
+    <Project Path="src/OrangepuffPortal/OrangepuffPortal.ConfigText/OrangepuffPortal.ConfigText.csproj" />
+    <Project Path="src/OrangepuffPortal/OrangepuffPortal.ConfigText.Contract/OrangepuffPortal.ConfigText.Contract.csproj" />
+    <Project Path="src/OrangepuffPortal/OrangepuffPortal.Host/OrangepuffPortal.Host.csproj" />
+    <Project Path="src/OrangepuffPortal/OrangepuffPortal.Identity/OrangepuffPortal.Identity.csproj" />
+    <Project Path="src/OrangepuffPortal/OrangepuffPortal.Identity.Contract/OrangepuffPortal.Identity.Contract.csproj" />
+    <Project Path="src/OrangepuffPortal/OrangepuffPortal.Shared/OrangepuffPortal.Shared.csproj" />
+    <Project Path="src/OrangepuffPortal/OrangepuffPortal.Theme/OrangepuffPortal.Theme.csproj" />
+    <Project Path="src/OrangepuffPortal/OrangepuffPortal.Theme.Contract/OrangepuffPortal.Theme.Contract.csproj" />
+  </Folder>
   <Folder Name="/src/Backend/">
     <Project Path="src/Backend/OCRWeb.API/OCRWeb.API.csproj" />
     <Project Path="src/Backend/OCRWeb.Document/OCRWeb.Document.csproj" />

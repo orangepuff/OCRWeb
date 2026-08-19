@@ -1,0 +1,26 @@
+.config-data-list {
+  padding: 16px;
+}
+
+.config-data-list__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.config-data-list__filter {
+  margin-bottom: 16px;
+}
+
+.config-data-list__table {
+  width: 100%;
+
+  .mat-mdc-row:nth-child(even) {
+    background-color: var(--mat-sys-surface-container-low);
+  }
+
+  .mat-mdc-row:hover {
+    background-color: var(--mat-sys-surface-container-high);
+  }
+}

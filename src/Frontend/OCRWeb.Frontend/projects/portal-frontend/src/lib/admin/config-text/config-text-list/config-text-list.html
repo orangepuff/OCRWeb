@@ -1,0 +1,85 @@
+<div class="config-text-list">
+  <div class="config-text-list__toolbar">
+    <h1>{{ 'admin.configText.title' | translate:module }}</h1>
+    <button mat-flat-button type="button" (click)="openAddDialog()">{{ 'admin.configText.addButton' | translate:module }}</button>
+  </div>
+
+  <form [formGroup]="filterForm" (ngSubmit)="applyFilter()" class="config-text-list__filters">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'module' | translate:'OrangepuffPortal.Common' }}</mat-label>
+      <input matInput formControlName="module" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'textCode' | translate:'OrangepuffPortal.Common' }}</mat-label>
+      <input matInput formControlName="textCode" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'admin.configText.filter.cultureCode' | translate:module }}</mat-label>
+      <input matInput formControlName="cultureCode" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'admin.configText.filter.textType' | translate:module }}</mat-label>
+      <input matInput formControlName="textType" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'admin.configText.filter.textContains' | translate:module }}</mat-label>
+      <input matInput formControlName="text" />
+    </mat-form-field>
+
+    <button mat-flat-button type="submit">{{ 'search' | translate:'OrangepuffPortal.Common' }}</button>
+    <button mat-button type="button" (click)="clearFilter()">{{ 'clear' | translate:'OrangepuffPortal.Common' }}</button>
+  </form>
+
+  <table mat-table [dataSource]="rows()" class="config-text-list__table">
+    <ng-container matColumnDef="sModule">
+      <th mat-header-cell *matHeaderCellDef>{{ 'module' | translate:'OrangepuffPortal.Common' }}</th>
+      <td mat-cell *matCellDef="let row">{{ row.sModule }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="sTextCode">
+      <th mat-header-cell *matHeaderCellDef>{{ 'textCode' | translate:'OrangepuffPortal.Common' }}</th>
+      <td mat-cell *matCellDef="let row">{{ row.sTextCode }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="sCultureCode">
+      <th mat-header-cell *matHeaderCellDef>{{ 'admin.configText.column.culture' | translate:module }}</th>
+      <td mat-cell *matCellDef="let row">{{ row.sCultureCode }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="sTextType">
+      <th mat-header-cell *matHeaderCellDef>{{ 'type' | translate:'OrangepuffPortal.Common' }}</th>
+      <td mat-cell *matCellDef="let row">{{ row.sTextType }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="sText">
+      <th mat-header-cell *matHeaderCellDef>{{ 'admin.configText.column.text' | translate:module }}</th>
+      <td mat-cell *matCellDef="let row">{{ row.sText }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="sNote">
+      <th mat-header-cell *matHeaderCellDef>{{ 'admin.configText.column.note' | translate:module }}</th>
+      <td mat-cell *matCellDef="let row">{{ row.sNote ?? '—' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let row">
+        <button mat-icon-button type="button" (click)="openEditDialog(row)" [attr.aria-label]="'edit' | translate:'OrangepuffPortal.Common'">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button type="button" (click)="deleteRow(row)" [attr.aria-label]="'delete' | translate:'OrangepuffPortal.Common'">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+  <mat-paginator [length]="totalCount()" [pageSize]="50" [pageSizeOptions]="pageSizeOptions" (page)="onPage($event)"></mat-paginator>
+</div>

@@ -1,0 +1,8 @@
+<label class="lib-file-input__label">{{ label() }}</label>
+<input
+  class="lib-file-input__input"
+  type="file"
+  [accept]="accept() ?? undefined"
+  [disabled]="disabled()"
+  (change)="onChange($event)"
+/>

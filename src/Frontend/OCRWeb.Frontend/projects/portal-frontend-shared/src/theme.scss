@@ -1,0 +1,18 @@
+// Shared Angular Material M3 theme baseline. @use this from any app's global styles.scss
+// so every app built on this template gets identical baseline colors/typography.
+// Manage Themes' runtime color overrides layer on top via CSS custom properties and are
+// unaffected by this file.
+@use '@angular/material' as mat;
+
+@mixin apply-theme {
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$cyan-palette,
+        tertiary: mat.$orange-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}

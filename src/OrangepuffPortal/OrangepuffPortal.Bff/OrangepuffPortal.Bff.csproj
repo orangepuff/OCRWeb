@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrangepuffPortal.Config.Contract\OrangepuffPortal.Config.Contract.csproj" />
+    <ProjectReference Include="..\OrangepuffPortal.Theme.Contract\OrangepuffPortal.Theme.Contract.csproj" />
+    <ProjectReference Include="..\OrangepuffPortal.Theme\OrangepuffPortal.Theme.csproj" />
+    <ProjectReference Include="..\OrangepuffPortal.ConfigData.Contract\OrangepuffPortal.ConfigData.Contract.csproj" />
+    <ProjectReference Include="..\OrangepuffPortal.ConfigText.Contract\OrangepuffPortal.ConfigText.Contract.csproj" />
+    <ProjectReference Include="..\OrangepuffPortal.Identity\OrangepuffPortal.Identity.csproj" />
+    <ProjectReference Include="..\OrangepuffPortal.Identity.Contract\OrangepuffPortal.Identity.Contract.csproj" />
+  </ItemGroup>
+
+</Project>

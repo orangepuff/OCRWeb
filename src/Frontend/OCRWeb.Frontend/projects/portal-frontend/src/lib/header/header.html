@@ -1,0 +1,59 @@
+<header class="app-header">
+  <span class="app-header__title">{{ config.appName }}</span>
+
+  @if (authService.checked() && authService.isAuthenticated()) {
+    <button type="button" class="app-header__trigger" [matMenuTriggerFor]="userMenu">
+      <lib-avatar
+        [userId]="authService.currentUser()!.userId"
+        [displayName]="authService.currentUser()!.displayName"
+        [size]="30"
+      />
+      <span>{{ 'header.helloPrefix' | translate:module }}{{ authService.currentUser()!.displayName ?? authService.currentUser()!.email }}</span>
+      <mat-icon>expand_more</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu">
+      <a mat-menu-item [routerLink]="['/Users', authService.currentUser()!.userId, 'Settings']">
+        <mat-icon>settings</mat-icon>
+        {{ 'header.settings' | translate:module }}
+      </a>
+
+      @if (authService.currentUser()!.isAdmin) {
+        <div class="app-header__menu-section">{{ 'header.adminSection' | translate:module }}</div>
+        <a mat-menu-item routerLink="/admin/users">
+          <mat-icon>group</mat-icon>
+          {{ 'header.menu.manageUsers' | translate:module }}
+        </a>
+        <a mat-menu-item routerLink="/admin/security-rule-categories">
+          <mat-icon>verified_user</mat-icon>
+          {{ 'header.menu.manageRuleCategories' | translate:module }}
+        </a>
+        <a mat-menu-item routerLink="/admin/security-rule-items">
+          <mat-icon>rule</mat-icon>
+          {{ 'header.menu.manageRuleItems' | translate:module }}
+        </a>
+        <a mat-menu-item routerLink="/admin/themes">
+          <mat-icon>palette</mat-icon>
+          {{ 'header.menu.manageThemes' | translate:module }}
+        </a>
+        <a mat-menu-item routerLink="/admin/config">
+          <mat-icon>tune</mat-icon>
+          {{ 'header.menu.manageConfig' | translate:module }}
+        </a>
+        <a mat-menu-item routerLink="/admin/config-text">
+          <mat-icon>translate</mat-icon>
+          {{ 'header.menu.manageConfigText' | translate:module }}
+        </a>
+        <a mat-menu-item routerLink="/admin/config-data">
+          <mat-icon>storage</mat-icon>
+          {{ 'header.menu.manageConfigData' | translate:module }}
+        </a>
+      }
+
+      <button mat-menu-item type="button" (click)="signOut()">
+        <mat-icon>logout</mat-icon>
+        {{ 'header.signOut' | translate:module }}
+      </button>
+    </mat-menu>
+  }
+</header>

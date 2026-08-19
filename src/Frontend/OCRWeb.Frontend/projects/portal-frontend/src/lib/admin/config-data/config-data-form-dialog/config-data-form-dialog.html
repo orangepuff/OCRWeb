@@ -1,0 +1,29 @@
+<h2 mat-dialog-title>{{ (isEdit ? 'admin.configData.form.title.edit' : 'admin.configData.form.title.add') | translate:module }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="save()">
+  <mat-dialog-content class="config-data-form-dialog__content">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'admin.configData.form.key' | translate:module }}</mat-label>
+      <input matInput formControlName="sKey" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'admin.configData.form.value' | translate:module }}</mat-label>
+      <input matInput formControlName="sValue" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'description' | translate:'OrangepuffPortal.Common' }}</mat-label>
+      <input matInput formControlName="sDescription" />
+    </mat-form-field>
+
+    <mat-checkbox formControlName="bAllowEditByScreen">
+      {{ 'admin.configData.form.allowEditByScreen' | translate:module }}
+    </mat-checkbox>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="cancel()">{{ 'cancel' | translate:'OrangepuffPortal.Common' }}</button>
+    <button mat-flat-button type="submit" [disabled]="form.invalid">{{ 'save' | translate:'OrangepuffPortal.Common' }}</button>
+  </mat-dialog-actions>
+</form>

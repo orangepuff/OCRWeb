@@ -1,0 +1,42 @@
+<h2 mat-dialog-title>{{ (isEdit ? 'admin.configText.form.title.edit' : 'admin.configText.form.title.add') | translate:module }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="save()">
+  <mat-dialog-content class="config-text-form-dialog__content">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'module' | translate:'OrangepuffPortal.Common' }}</mat-label>
+      <input matInput formControlName="sModule" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'textCode' | translate:'OrangepuffPortal.Common' }}</mat-label>
+      <input matInput formControlName="sTextCode" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'admin.configText.filter.cultureCode' | translate:module }}</mat-label>
+      <input matInput formControlName="sCultureCode" />
+      <mat-hint>{{ 'admin.configText.form.cultureCodeHint' | translate:module }}</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'admin.configText.filter.textType' | translate:module }}</mat-label>
+      <input matInput formControlName="sTextType" />
+      <mat-hint>{{ 'admin.configText.form.textTypeHint' | translate:module }}</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'admin.configText.form.text' | translate:module }}</mat-label>
+      <textarea matInput formControlName="sText" rows="3"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'admin.configText.form.note' | translate:module }}</mat-label>
+      <input matInput formControlName="sNote" />
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="cancel()">{{ 'cancel' | translate:'OrangepuffPortal.Common' }}</button>
+    <button mat-flat-button type="submit" [disabled]="form.invalid">{{ 'save' | translate:'OrangepuffPortal.Common' }}</button>
+  </mat-dialog-actions>
+</form>

@@ -1,0 +1,170 @@
+<div class="settings-page">
+  <h1>{{ 'settings.title' | translate:module }}</h1>
+
+  <mat-card class="settings-page__card">
+    <mat-card-header>
+      <mat-card-title>{{ 'settings.avatar.title' | translate:module }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="settings-page__avatar">
+      <lib-avatar
+        [userId]="targetUserId()"
+        [displayName]="isOwnSettings() ? (identityService.currentUser()?.displayName ?? null) : null"
+        [size]="96"
+        [version]="avatarVersion()"
+      />
+
+      @if (canEditAvatar()) {
+        <div class="settings-page__avatar-actions">
+          <button mat-flat-button type="button" (click)="fileInput.click()">{{ 'settings.avatar.uploadPhoto' | translate:module }}</button>
+          <button mat-button type="button" (click)="removeAvatar()">{{ 'settings.avatar.remove' | translate:module }}</button>
+          <input #fileInput type="file" accept="image/*" hidden (change)="onFileSelected($event)" />
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  @if (isOwnSettings()) {
+    <mat-card class="settings-page__card">
+      <mat-card-header>
+        <mat-card-title>Theme</mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="settings-page__theme">
+        <mat-form-field appearance="outline" class="settings-page__field">
+          <mat-label>Theme</mat-label>
+          <mat-select [value]="selectedThemeId()" (selectionChange)="changeTheme($event.value)" [disabled]="savingTheme()">
+            <mat-option [value]="0">Default</mat-option>
+            @for (t of availableThemes(); track t.id) {
+              <mat-option [value]="t.id">{{ t.description }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        @if (savingTheme()) {
+          <mat-spinner diameter="20" />
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (isAdmin() && targetUser(); as user) {
+    <mat-card class="settings-page__card">
+      <mat-card-header>
+        <mat-card-title>{{ 'settings.account.title' | translate:module }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="accountForm" (ngSubmit)="saveAccount()">
+          <div class="settings-page__form-row">
+            <mat-form-field appearance="outline" class="settings-page__field">
+              <mat-label>{{ 'username' | translate:'OrangepuffPortal.Common' }}</mat-label>
+              <input matInput [value]="user.username" disabled />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="settings-page__field">
+              <mat-label>{{ 'email' | translate:'OrangepuffPortal.Common' }}</mat-label>
+              <input matInput type="email" formControlName="email" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="settings-page__field">
+              <mat-label>{{ 'displayName' | translate:'OrangepuffPortal.Common' }}</mat-label>
+              <input matInput formControlName="displayName" />
+            </mat-form-field>
+          </div>
+
+          <div class="settings-page__form-row">
+            <mat-checkbox formControlName="isActive">{{ 'active' | translate:'OrangepuffPortal.Common' }}</mat-checkbox>
+            <mat-checkbox formControlName="isTemplateUser">{{ 'admin.users.form.isTemplateUser' | translate:module }}</mat-checkbox>
+          </div>
+
+          @if (!accountForm.controls.isTemplateUser.value) {
+            <mat-form-field appearance="outline" class="settings-page__field">
+              <mat-label>{{ 'admin.users.form.inheritFromTemplate' | translate:module }}</mat-label>
+              <mat-select formControlName="parentId">
+                <mat-option [value]="null">{{ 'admin.users.form.noTemplate' | translate:module }}</mat-option>
+                @for (templateUser of templateUsers(); track templateUser.id) {
+                  @if (templateUser.id !== user.id) {
+                    <mat-option [value]="templateUser.id">{{ templateUser.username }}</mat-option>
+                  }
+                }
+              </mat-select>
+            </mat-form-field>
+          }
+
+          <button mat-flat-button type="submit" [disabled]="accountForm.invalid">{{ 'settings.account.saveButton' | translate:module }}</button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (isOwnSettings()) {
+    <mat-card class="settings-page__card">
+      <mat-card-header>
+        <mat-card-title>{{ 'settings.profile.title' | translate:module }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form class="settings-page__form-row" [formGroup]="displayNameForm" (ngSubmit)="saveDisplayName()">
+          <mat-form-field appearance="outline" class="settings-page__field">
+            <mat-label>{{ 'displayName' | translate:'OrangepuffPortal.Common' }}</mat-label>
+            <input matInput formControlName="displayName" />
+          </mat-form-field>
+          <button mat-flat-button type="submit" [disabled]="displayNameForm.invalid">{{ 'settings.profile.saveDisplayName' | translate:module }}</button>
+        </form>
+
+        <form #passwordFormRef="ngForm" class="settings-page__form-column" [formGroup]="passwordForm" (ngSubmit)="changePassword(passwordFormRef)">
+          <mat-form-field appearance="outline" class="settings-page__field">
+            <mat-label>{{ 'settings.password.current' | translate:module }}</mat-label>
+            <input matInput type="password" formControlName="currentPassword" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="settings-page__field">
+            <mat-label>{{ 'settings.password.new' | translate:module }}</mat-label>
+            <input matInput type="password" formControlName="newPassword" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="settings-page__field">
+            <mat-label>{{ 'settings.password.confirmNew' | translate:module }}</mat-label>
+            <input matInput type="password" formControlName="confirmPassword" />
+          </mat-form-field>
+          @if (passwordMismatch()) {
+            <p class="settings-page__error">{{ 'passwordMismatch' | translate:'OrangepuffPortal.Common' }}</p>
+          }
+          <button mat-flat-button type="submit" [disabled]="passwordForm.invalid || passwordMismatch()">{{ 'settings.password.changeButton' | translate:module }}</button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @for (section of sections(); track section.sTextCode) {
+    <mat-card class="settings-page__card">
+      <mat-card-header>
+        <mat-card-title>{{ section.sSectionDesc }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @for (item of section.configs; track item.sConfigCode) {
+          <div class="settings-page__config-row">
+            <label class="settings-page__config-label" [for]="item.sConfigCode">{{ item.sConfigName }}</label>
+
+            @switch (item.configType) {
+              @case (ConfigValueType.Boolean) {
+                <mat-checkbox [id]="item.sConfigCode" [formControl]="getControl(item.sConfigCode)" />
+              }
+              @case (ConfigValueType.Int) {
+                <mat-form-field appearance="outline" class="settings-page__field settings-page__field--compact">
+                  <input matInput [id]="item.sConfigCode" type="number" step="1" [formControl]="getControl(item.sConfigCode)" />
+                </mat-form-field>
+              }
+              @case (ConfigValueType.Decimal) {
+                <mat-form-field appearance="outline" class="settings-page__field settings-page__field--compact">
+                  <input matInput [id]="item.sConfigCode" type="number" step="0.001" [formControl]="getControl(item.sConfigCode)" />
+                </mat-form-field>
+              }
+              @default {
+                <mat-form-field appearance="outline" class="settings-page__field settings-page__field--compact">
+                  <input matInput [id]="item.sConfigCode" [formControl]="getControl(item.sConfigCode)" />
+                </mat-form-field>
+              }
+            }
+          </div>
+        }
+
+        @if (isAdmin()) {
+          <button mat-flat-button type="button" (click)="saveSection(section)">{{ 'save' | translate:'OrangepuffPortal.Common' }}</button>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

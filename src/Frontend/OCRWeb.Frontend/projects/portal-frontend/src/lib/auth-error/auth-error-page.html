@@ -1,0 +1,5 @@
+<main class="auth-error">
+  <h1>{{ 'authError.title' | translate:module }}</h1>
+  <p>{{ message }}</p>
+  <button mat-flat-button type="button" (click)="retry()">{{ 'authError.backToSignIn' | translate:module }}</button>
+</main>

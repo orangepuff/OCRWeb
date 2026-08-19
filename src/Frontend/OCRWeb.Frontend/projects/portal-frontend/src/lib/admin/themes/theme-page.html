@@ -1,0 +1,302 @@
+<div class="theme-page">
+
+  <!-- ── Header ────────────────────────────────────────────────────────────── -->
+  <div class="theme-page__header">
+    <div class="theme-page__header-title">
+      <h1>Manage Theme</h1>
+      <p class="theme-page__header-subtitle">Create and manage themes, sections and their visual details.</p>
+    </div>
+    <div class="theme-page__header-actions">
+      <button mat-stroked-button type="button" (click)="addTheme()" [disabled]="saving()">
+        <mat-icon>add</mat-icon> Add Theme
+      </button>
+      <button mat-stroked-button type="button" (click)="duplicateTheme()" [disabled]="!selectedTheme() || saving()">
+        <mat-icon>content_copy</mat-icon> Duplicate
+      </button>
+      <button mat-stroked-button type="button" class="theme-page__btn-delete" (click)="deleteTheme()" [disabled]="!selectedTheme() || isDefault() || saving()">
+        <mat-icon>delete</mat-icon> Delete
+      </button>
+      <button mat-flat-button type="button" class="theme-page__btn-save" (click)="saveChanges()" [disabled]="!selectedTheme() || saving()">
+        @if (saving()) {
+          <mat-spinner diameter="16"></mat-spinner>
+        } @else {
+          <mat-icon>save</mat-icon>
+        }
+        {{ saving() ? 'Saving…' : 'Save Changes' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Body ──────────────────────────────────────────────────────────────── -->
+  <div class="theme-page__body">
+
+    <!-- Left panel -->
+    <aside class="theme-page__left">
+
+      <!-- Theme selector -->
+      <div class="theme-page__panel-block">
+        <div class="theme-page__panel-label">THEME</div>
+        <mat-form-field appearance="outline" class="theme-page__theme-select">
+          <mat-select [value]="selectedTheme()?.id" (selectionChange)="onThemeSelect($event.value)">
+            @for (t of themes(); track t.id) {
+              <mat-option [value]="t.id">
+                <span class="theme-page__theme-option">
+                  <mat-icon class="theme-page__theme-icon">light_mode</mat-icon>
+                  {{ t.description }}
+                  @if (t.isActive) {
+                    <span class="theme-page__badge theme-page__badge--active">Active</span>
+                  }
+                </span>
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Description -->
+      <div class="theme-page__panel-block">
+        <div class="theme-page__panel-label">DESCRIPTION</div>
+        <mat-form-field appearance="outline" class="theme-page__desc-field">
+          <textarea matInput rows="2" [value]="selectedTheme()?.description ?? ''" readonly></textarea>
+        </mat-form-field>
+      </div>
+
+      <!-- Sections list -->
+      <div class="theme-page__panel-block theme-page__sections-block">
+        <div class="theme-page__panel-label">SECTIONS</div>
+        <div class="theme-page__sections-search">
+          <mat-form-field appearance="outline" class="theme-page__search-field">
+            <mat-icon matPrefix>search</mat-icon>
+            <input matInput placeholder="Search sections..." [ngModel]="sectionSearch()" (ngModelChange)="sectionSearch.set($event)" />
+          </mat-form-field>
+          <button mat-icon-button type="button" matTooltip="Add section (coming soon)" disabled>
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+
+        <nav class="theme-page__section-list">
+          @for (section of filteredSections(); track section.id) {
+            <button type="button"
+              class="theme-page__section-item"
+              [class.theme-page__section-item--active]="selectedSection()?.id === section.id"
+              (click)="selectSection(section)">
+              <mat-icon class="theme-page__section-icon">folder</mat-icon>
+              <span>{{ section.description }}</span>
+              <mat-icon class="theme-page__section-chevron">chevron_right</mat-icon>
+            </button>
+          }
+        </nav>
+      </div>
+
+    </aside>
+
+    <!-- Centre panel -->
+    <main class="theme-page__centre">
+      @if (loading()) {
+        <div class="theme-page__centre-loading">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+      } @else if (selectedSection()) {
+        <div class="theme-page__section-header">
+          <div>
+            <h2>{{ selectedSection()!.description }}</h2>
+            <p class="theme-page__section-subtitle">
+              Manage colors, typography and other visual settings for {{ selectedSection()!.description }} section.
+            </p>
+          </div>
+          <button mat-stroked-button type="button" (click)="resetToDefault()">
+            <mat-icon>restart_alt</mat-icon> Reset to Default
+          </button>
+        </div>
+
+        <!-- Element tabs -->
+        <mat-tab-group class="theme-page__element-tabs" (selectedIndexChange)="selectElement(selectedSection()!.elements[$event])">
+          @for (element of selectedSection()!.elements; track element.id) {
+            <mat-tab [label]="element.description">
+              <!-- Property table -->
+              <div class="theme-page__property-table">
+                <div class="theme-page__property-header">
+                  <span class="theme-page__col-property">Property</span>
+                  <span class="theme-page__col-value">Value</span>
+                  <span class="theme-page__col-preview">Preview</span>
+                </div>
+
+                @for (detail of element.details; track detail.id) {
+                  <div class="theme-page__property-row">
+                    <div class="theme-page__col-property">
+                      <span class="theme-page__prop-label">{{ detail.propertyLabel }}</span>
+                      <span class="theme-page__prop-desc">{{ detail.propertyDescription }}</span>
+                    </div>
+
+                    <div class="theme-page__col-value">
+                      @switch (detail.propertyType) {
+
+                        @case ('color') {
+                          <div class="theme-page__color-input">
+                            <input type="color" class="theme-page__color-swatch"
+                              [ngModel]="detail.editValue"
+                              (ngModelChange)="detail.editValue = $event" />
+                            <input type="text" class="theme-page__color-text mat-mdc-outlined-text-field"
+                              [ngModel]="detail.editValue"
+                              (ngModelChange)="detail.editValue = $event"
+                              maxlength="7" placeholder="#000000" />
+                          </div>
+                        }
+
+                        @case ('number_unit') {
+                          <div class="theme-page__number-unit">
+                            <input type="number" class="theme-page__number-input mat-mdc-outlined-text-field"
+                              [ngModel]="detail.editValue"
+                              (ngModelChange)="detail.editValue = $event" />
+                            <mat-form-field appearance="outline" class="theme-page__unit-select">
+                              <mat-select [ngModel]="detail.editUnit" (ngModelChange)="detail.editUnit = $event">
+                                @for (u of unitOptions; track u) {
+                                  <mat-option [value]="u">{{ u }}</mat-option>
+                                }
+                              </mat-select>
+                            </mat-form-field>
+                          </div>
+                        }
+
+                        @case ('dropdown') {
+                          <mat-form-field appearance="outline" class="theme-page__dropdown">
+                            <mat-select [ngModel]="detail.editValue" (ngModelChange)="detail.editValue = $event">
+                              @for (opt of getAllowedValues(detail); track opt) {
+                                <mat-option [value]="opt">{{ opt }}</mat-option>
+                              }
+                            </mat-select>
+                          </mat-form-field>
+                        }
+
+                        @default {
+                          <input type="text" class="theme-page__text-input mat-mdc-outlined-text-field"
+                            [ngModel]="detail.editValue"
+                            (ngModelChange)="detail.editValue = $event" />
+                        }
+                      }
+                    </div>
+
+                    <div class="theme-page__col-preview">
+                      @if (detail.propertyType === 'color') {
+                        <div class="theme-page__preview-swatch" [style.background]="previewStyle(detail)"></div>
+                      } @else if (detail.propertyType === 'number_unit') {
+                        <div class="theme-page__preview-box">
+                          <div class="theme-page__preview-box-inner"></div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            </mat-tab>
+          }
+        </mat-tab-group>
+      } @else {
+        <div class="theme-page__centre-empty">Select a section to edit its properties.</div>
+      }
+    </main>
+
+    <!-- Right panel: live preview -->
+    <aside class="theme-page__right">
+      <div class="theme-page__preview-header">
+        <span class="theme-page__preview-label">LIVE PREVIEW</span>
+        <div class="theme-page__preview-modes">
+          <button mat-icon-button type="button" [class.theme-page__mode-active]="previewMode() === 'desktop'" (click)="setPreviewMode('desktop')" matTooltip="Desktop">
+            <mat-icon>desktop_windows</mat-icon>
+          </button>
+          <button mat-icon-button type="button" [class.theme-page__mode-active]="previewMode() === 'tablet'" (click)="setPreviewMode('tablet')" matTooltip="Tablet">
+            <mat-icon>tablet_mac</mat-icon>
+          </button>
+          <button mat-icon-button type="button" [class.theme-page__mode-active]="previewMode() === 'mobile'" (click)="setPreviewMode('mobile')" matTooltip="Mobile">
+            <mat-icon>smartphone</mat-icon>
+          </button>
+          <button mat-icon-button type="button" matTooltip="Refresh">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="theme-page__preview-viewport" [class]="'theme-page__preview-viewport--' + previewMode()">
+
+        <!-- Sample card -->
+        <div class="theme-page__preview-card">
+          <div class="theme-page__preview-card-header">
+            <span class="theme-page__preview-card-title">Sample Card</span>
+            <mat-icon class="theme-page__preview-card-menu">more_vert</mat-icon>
+          </div>
+          <p class="theme-page__preview-card-body">This is a sample card to preview how your settings will look in the application.</p>
+          <div class="theme-page__preview-card-actions">
+            <button mat-flat-button class="theme-page__preview-btn-primary">Primary Button</button>
+            <button mat-stroked-button class="theme-page__preview-btn-secondary">Secondary Button</button>
+          </div>
+        </div>
+
+        <!-- Form preview -->
+        <div class="theme-page__preview-card theme-page__preview-form">
+          <div class="theme-page__preview-form-title">Form Preview</div>
+          <div class="theme-page__preview-form-field">
+            <label class="theme-page__preview-form-label">Label</label>
+            <div class="theme-page__preview-input">Enter text</div>
+          </div>
+          <div class="theme-page__preview-form-field">
+            <label class="theme-page__preview-form-label">Select</label>
+            <div class="theme-page__preview-select">Select option <mat-icon>expand_more</mat-icon></div>
+          </div>
+          <div class="theme-page__preview-checkrow">
+            <div class="theme-page__preview-checkbox">
+              <mat-icon>check_box</mat-icon> Checkbox
+            </div>
+            <div class="theme-page__preview-toggle">
+              <mat-icon>toggle_on</mat-icon> Switch
+            </div>
+          </div>
+        </div>
+
+        <!-- Data table preview -->
+        <div class="theme-page__preview-card">
+          <div class="theme-page__preview-form-title">Data Table Preview</div>
+          <table class="theme-page__preview-table">
+            <thead>
+              <tr>
+                <th>ID</th><th>Name</th><th>Status</th><th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td><td>Project One</td>
+                <td><span class="theme-page__preview-badge theme-page__preview-badge--active">Active</span></td>
+                <td><mat-icon>more_vert</mat-icon></td>
+              </tr>
+              <tr>
+                <td>2</td><td>Project Two</td>
+                <td><span class="theme-page__preview-badge theme-page__preview-badge--progress">In Progress</span></td>
+                <td><mat-icon>more_vert</mat-icon></td>
+              </tr>
+              <tr>
+                <td>3</td><td>Project Three</td>
+                <td><span class="theme-page__preview-badge theme-page__preview-badge--done">Completed</span></td>
+                <td><mat-icon>more_vert</mat-icon></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="theme-page__preview-pagination">
+            <mat-icon>chevron_left</mat-icon>
+            <span class="theme-page__preview-page theme-page__preview-page--active">1</span>
+            <span class="theme-page__preview-page">2</span>
+            <span class="theme-page__preview-page">3</span>
+            <mat-icon>chevron_right</mat-icon>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- Bottom notice -->
+  <div class="theme-page__notice">
+    <mat-icon>info</mat-icon>
+    Changes affect the UI across the application that uses this theme.
+  </div>
+
+</div>

@@ -1,0 +1,9 @@
+<button mat-icon-button type="button" [attr.aria-label]="ariaLabel()" [matMenuTriggerFor]="itemMenu">
+  <mat-icon>{{ icon() }}</mat-icon>
+</button>
+
+<mat-menu #itemMenu="matMenu">
+  @for (item of items(); track item.id) {
+    <button mat-menu-item type="button" (click)="onItemClick(item.id)">{{ item.label }}</button>
+  }
+</mat-menu>

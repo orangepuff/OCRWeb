@@ -85,6 +85,64 @@
           "builder": "@angular/build:unit-test"
         }
       }
+    },
+    "portal-frontend": {
+      "projectType": "library",
+      "root": "projects/portal-frontend",
+      "sourceRoot": "projects/portal-frontend/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "options": {
+            "project": "projects/portal-frontend/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/portal-frontend/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/portal-frontend/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/portal-frontend/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "portal-frontend-shared": {
+      "projectType": "library",
+      "root": "projects/portal-frontend-shared",
+      "sourceRoot": "projects/portal-frontend-shared/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "options": {
+            "project": "projects/portal-frontend-shared/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/portal-frontend-shared/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/portal-frontend-shared/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/portal-frontend-shared/tsconfig.spec.json"
+          }
+        }
+      }
     }
   }
 }
