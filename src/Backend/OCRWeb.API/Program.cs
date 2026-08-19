@@ -28,6 +28,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = MaxUploadBytes);
 builder.Services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = MaxUploadBytes);
 
+builder.Services.AddHealthChecks();
+
 // Web / API surface. Endpoints live in the per-module *.Api assemblies; point discovery at them.
 builder.Services.AddOpenApi();
 builder.Services.AddFastEndpoints(o => o.Assemblies =
@@ -94,6 +96,7 @@ app.UseAuthorization();
 // Correlation id + per-request transaction span (metadata only — see Diagnostics.AspNetCore).
 app.UseDiagnostics();
 
+app.MapHealthChecks("/health");
 app.MapOrangepuffPortal();
 app.UseFastEndpoints();
 

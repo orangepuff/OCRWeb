@@ -25,6 +25,12 @@ services:
       # Data Protection keys, so auth cookies survive container recreation instead of
       # being silently invalidated on every rebuild/restart.
       - ./data-protection-keys/api:/keys
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 30s
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
@@ -44,4 +50,4 @@ services:
       - ./certs:/https:ro
     depends_on:
       api:
-        condition: service_started
+        condition: service_healthy

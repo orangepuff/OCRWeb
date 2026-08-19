@@ -144,7 +144,7 @@ public sealed class LogsTarget : Target
 
     private static string SerializeCustomAttributes(LogEventInfo logEvent)
     {
-        var attributes = new Dictionary<string, object?> { ["LoggerName"] = logEvent.LoggerName };
+        var attributes = new Dictionary<string, string?> { ["LoggerName"] = logEvent.LoggerName };
 
         foreach (var property in logEvent.Properties)
         {
@@ -154,7 +154,7 @@ public sealed class LogsTarget : Target
                 continue;
             }
 
-            attributes[key] = property.Value;
+            attributes[key] = property.Value?.ToString();
         }
 
         return JsonSerializer.Serialize(attributes);
