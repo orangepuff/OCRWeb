@@ -25,7 +25,7 @@ public class PdfFileRepository(DocumentDbContext db) : IPdfFileRepository
         await connection.OpenAsync(ct);
 
         var command = connection.CreateCommand();
-        command.CommandText = $"SELECT bincontent FROM {DocumentDbContext.Schema}.filecontents WHERE ifileid = @id";
+        command.CommandText = $"""SELECT "binContent" FROM "{DocumentDbContext.Schema}"."FileContents" WHERE "iFileId" = @id""";
         command.Parameters.Add(new NpgsqlParameter("@id", NpgsqlDbType.Integer) { Value = id });
 
         var reader = await command.ExecuteReaderAsync(CommandBehavior.SequentialAccess | CommandBehavior.SingleRow, ct);
